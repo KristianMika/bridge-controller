@@ -37,13 +37,21 @@
       "active": false
     },
     "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "mpc-bridge",
-        "width": 800,
-        "height": 600
-      }
-    ]
+        {
+          "fullscreen": false,
+          "height": 600,
+          "resizable": false,
+          "title": "mpc-bridge",
+          "width": 600,
+          "visible": false,
+          "hiddenTitle": true,
+          "decorations": false,
+          "transparent": false
+        }
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    }
   }
 }
