@@ -9,13 +9,25 @@ fn greet(name: &str) -> String {
 
 mod system_tray;
 use system_tray::{create_tray_menu, system_tray_event_handler};
-use tauri::SystemTray;
+use tauri::{GlobalWindowEvent, SystemTray, WindowEvent};
 
+/// Handles window events, such as clicks outside the window
+fn window_event_handler(event: GlobalWindowEvent) {
+    match event.event() {
+        WindowEvent::Focused(is_focused) => {
+            if !is_focused {
+                event.window().hide().unwrap();
+            }
+        }
+        _ => {}
+    }
+}
 fn main() {
     env_logger::init();
     tauri::Builder::default()
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
         .on_system_tray_event(system_tray_event_handler)
+        .on_window_event(window_event_handler)
         .run(tauri::generate_context!())
         .expect("Couldn't run application");
 }
