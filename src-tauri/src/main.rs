@@ -7,9 +7,15 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+mod system_tray;
+use system_tray::{create_tray_menu, system_tray_event_handler};
+use tauri::SystemTray;
+
 fn main() {
+    env_logger::init();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .system_tray(SystemTray::new().with_menu(create_tray_menu()))
+        .on_system_tray_event(system_tray_event_handler)
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("Couldn't run application");
 }
