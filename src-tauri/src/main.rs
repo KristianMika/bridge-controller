@@ -7,9 +7,10 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-mod system_tray;
 use system_tray::{create_tray_menu, system_tray_event_handler};
 use tauri::{GlobalWindowEvent, SystemTray, WindowEvent};
+
+mod system_tray;
 
 /// Handles window events, such as clicks outside the window
 fn window_event_handler(event: GlobalWindowEvent) {
@@ -25,6 +26,7 @@ fn window_event_handler(event: GlobalWindowEvent) {
 fn main() {
     env_logger::init();
     tauri::Builder::default()
+        .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
         .on_system_tray_event(system_tray_event_handler)
         .on_window_event(window_event_handler)
