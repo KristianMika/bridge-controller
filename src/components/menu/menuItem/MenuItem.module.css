@@ -4,6 +4,8 @@
   justify-content: center;
   align-items: center;
   width: var(--menu-item-width);
+  will-change: filter;
+  transition: 0.25s;
 }
 
 .menu__menu-item--selected {
