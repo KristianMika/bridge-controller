@@ -39,10 +39,10 @@
     "windows": [
         {
           "fullscreen": false,
-          "height": 500,
+          "height": 400,
           "resizable": false,
           "title": "mpc-bridge",
-          "width": 400,
+          "width": 500,
           "visible": false,
           "hiddenTitle": true,
           "decorations": false,

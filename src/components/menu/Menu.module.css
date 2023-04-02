@@ -1,8 +1,12 @@
 .menu {
   display: flex;
-  flex-direction: row;
-  width: 90%;
-  height: var(--menu-height);
-  margin: 0.5rem auto;
+  flex-direction: column;
+  margin-top: 50%;
+  height: 50%;
   justify-content: space-evenly;
+}
+
+.menu_wrapper {
+  height: 100%;
+  width: var(--menu-width);
 }

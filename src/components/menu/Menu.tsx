@@ -26,15 +26,17 @@ export const Menu: React.FC = () => {
   ];
 
   return (
-    <div className={styles.menu}>
-      {menuItems.map((menuItem) => (
-        <MenuItem
-          title={menuItem.title}
-          icon={menuItem.icon}
-          isSelected={menuItem.title === selectedItem}
-          onClick={onClick}
-        />
-      ))}
+    <div className={styles.menu_wrapper}>
+      <div className={styles.menu}>
+        {menuItems.map((menuItem) => (
+          <MenuItem
+            title={menuItem.title}
+            icon={menuItem.icon}
+            isSelected={menuItem.title === selectedItem}
+            onClick={onClick}
+          />
+        ))}
+      </div>
     </div>
   );
 };
