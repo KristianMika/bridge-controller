@@ -1,0 +1,61 @@
+.interface-configuration {
+  flex: 1;
+}
+
+.interface-configuration__form {
+  margin: 15% auto;
+  height: 80%;
+  width: 90%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "enable_label enable"
+    "autopass_label autopass"
+    "controller_input_label controller_input"
+    "select_pubkey_label select_pubkey"
+    "apply_button apply_button";
+  grid-template-rows: 15% 15% 15% 15% auto;
+  justify-items: center;
+  align-items: center;
+}
+
+.form__enabled {
+  grid-area: enable;
+}
+
+.form__enabled_label {
+  grid-area: enable_label;
+}
+
+.form__controler_input {
+  padding: 0.5rem;
+  width: calc(100% - 1rem);
+  grid-area: controller_input;
+}
+
+.form__controler_input_label {
+  grid-area: controller_input_label;
+}
+
+.form__autopass {
+  grid-area: autopass;
+}
+
+.form__autopass_label {
+  grid-area: autopass_label;
+}
+
+.form__select_pubkey {
+  grid-area: select_pubkey;
+  width: 100%;
+}
+
+.form__select_pubkey_label {
+  grid-area: select_pubkey_label;
+}
+
+.form__apply {
+  grid-area: apply_button;
+  width: 60%;
+  height: 2rem;
+}
