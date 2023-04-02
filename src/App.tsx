@@ -2,6 +2,8 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
+import { Menu } from "./components/menu/Menu";
+import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -46,6 +48,8 @@ function App() {
         </form>
       </div>
       <p>{greetMsg}</p>
+      <MenuSeparator />
+      <Menu />
     </div>
   );
 }

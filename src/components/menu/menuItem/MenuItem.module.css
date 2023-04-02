@@ -1,0 +1,15 @@
+.menu__menu-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: var(--menu-item-width);
+}
+
+.menu__menu-item--selected {
+  filter: var(--hover-highlight-filter);
+}
+
+.menu__menu-item:hover {
+  filter: var(--hover-highlight-filter);
+}

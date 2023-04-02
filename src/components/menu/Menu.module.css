@@ -1,0 +1,8 @@
+.menu {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  height: var(--menu-height);
+  margin: 0.5rem auto;
+  justify-content: space-evenly;
+}
