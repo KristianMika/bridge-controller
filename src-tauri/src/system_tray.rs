@@ -6,7 +6,7 @@ use tauri_plugin_positioner::{Position, WindowExt};
 
 /// Creates a system tray menu with options `show`, `hide`, and `quit`
 pub(crate) fn create_tray_menu() -> SystemTrayMenu {
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit").accelerator("Cmd+Q");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
     let show = CustomMenuItem::new("show".to_string(), "Show");
     SystemTrayMenu::new()
