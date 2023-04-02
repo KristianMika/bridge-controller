@@ -13,10 +13,9 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --menu-separator-color: #e6e6e6;
-  --menu-height: 4rem;
+  --menu-separator-color: #e6e6e615;
+  --menu-height: 3rem;
   --menu-item-width: 4rem;
-  --hover-highlight-filter: drop-shadow(0 0 0.5rem #24c8db);
 }
 
 .container {

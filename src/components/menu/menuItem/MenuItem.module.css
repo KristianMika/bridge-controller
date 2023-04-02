@@ -4,14 +4,18 @@
   justify-content: center;
   align-items: center;
   width: var(--menu-item-width);
-  will-change: filter;
-  transition: 0.25s;
+  border-bottom: 2px solid transparent;
 }
 
+.menu__menu-item:hover,
 .menu__menu-item--selected {
-  filter: var(--hover-highlight-filter);
-}
-
-.menu__menu-item:hover {
-  filter: var(--hover-highlight-filter);
+  background: rgb(135, 135, 135);
+  background: linear-gradient(
+    0deg,
+    rgba(135, 135, 135, 0.5858718487394958) 0%,
+    rgba(47, 47, 47, 0.49343487394957986) 91%
+  );
+  border-bottom: 2px solid rgb(163, 163, 163);
+  border-bottom-left-radius: 0.1rem;
+  border-bottom-right-radius: 0.1rem;
 }

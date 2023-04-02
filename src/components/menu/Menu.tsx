@@ -1,5 +1,5 @@
-import { TbCoinBitcoin } from "react-icons/tb";
-import { AiOutlineQuestionCircle } from "react-icons/ai";
+import { BiBitcoin } from "react-icons/bi";
+import { AiOutlineQuestion } from "react-icons/ai";
 import { MenuItem } from "./menuItem/MenuItem";
 import styles from "./Menu.module.css";
 import { IconType } from "react-icons";
@@ -20,9 +20,9 @@ export const Menu: React.FC = () => {
   };
 
   const menuItems: IMenuItem[] = [
-    { title: "HWI", icon: TbCoinBitcoin },
-    { title: "FIDO", icon: AiOutlineQuestionCircle },
-    { title: "PKCS#11", icon: AiOutlineQuestionCircle },
+    { title: "HWI", icon: BiBitcoin },
+    { title: "FIDO", icon: AiOutlineQuestion },
+    { title: "PKCS#11", icon: AiOutlineQuestion },
   ];
 
   return (

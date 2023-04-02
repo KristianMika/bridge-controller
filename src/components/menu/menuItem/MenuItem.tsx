@@ -23,10 +23,13 @@ export const MenuItem: React.FC<IMenuItem> = (props) => {
   };
 
   return (
-    <div className={`${styles["menu__menu-item"]} ${addClassIfSelected()}`}>
-      <a data-name={props.title} href="#" onClick={props.onClick}>
-        {<props.icon style={menuIconStyle} title={props.title} />}
-      </a>
-    </div>
+    <a
+      className={`${styles["menu__menu-item"]} ${addClassIfSelected()}`}
+      data-name={props.title}
+      href="#"
+      onClick={props.onClick}
+    >
+      {<props.icon style={menuIconStyle} title={props.title} />}
+    </a>
   );
 };
