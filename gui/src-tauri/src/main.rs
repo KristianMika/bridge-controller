@@ -17,7 +17,7 @@ fn window_event_handler(event: GlobalWindowEvent) {
     match event.event() {
         WindowEvent::Focused(is_focused) => {
             if !is_focused {
-                event.window().hide().unwrap();
+                // event.window().hide().unwrap();
             }
         }
         _ => {}
