@@ -97,11 +97,11 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         *ppFunctionList = libc::malloc(mem::size_of::<CK_FUNCTION_LIST>() as libc::size_t)
             as *mut CK_FUNCTION_LIST;
         if (*ppFunctionList).is_null() {
-            return CKR_HOST_MEMORY as u64;
+            return CKR_HOST_MEMORY as CK_RV;
         }
         **ppFunctionList = function_list;
     }
-    CKR_OK as u64
+    CKR_OK as CK_RV
 }
 
 #[no_mangle]
@@ -322,7 +322,7 @@ pub extern "C" fn C_UnwrapKey(
 #[cfg(test)]
 mod test {
     use crate::{
-        bindings::{CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR},
+        bindings::{CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR, CK_RV},
         C_GetFunctionList,
     };
 
@@ -331,7 +331,7 @@ mod test {
         let mut funct_list_ptr: CK_FUNCTION_LIST_PTR = 0 as *mut CK_FUNCTION_LIST;
         let return_value = C_GetFunctionList(&mut funct_list_ptr);
         assert_eq!(
-            return_value, CKR_OK as u64,
+            return_value, CKR_OK as CK_RV,
             "C_GetFunctionList didn't return CKR_OK",
         );
         assert!(
