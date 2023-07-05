@@ -317,3 +317,26 @@ pub extern "C" fn C_UnwrapKey(
 ) -> CK_RV {
     unimplemented!()
 }
+
+#[cfg(test)]
+mod test {
+    use crate::{
+        bindings::{CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR},
+        C_GetFunctionList,
+    };
+
+    #[test]
+    fn c_get_function_list_returns_ckr_ok() {
+        let mut funct_list_ptr: CK_FUNCTION_LIST_PTR = 0 as *mut CK_FUNCTION_LIST;
+        let return_value = C_GetFunctionList(&mut funct_list_ptr);
+        assert_eq!(
+            return_value, CKR_OK as u64,
+            "C_GetFunctionList didn't return CKR_OK",
+        );
+        assert!(
+            !funct_list_ptr.is_null(),
+            "C_GetFunctionList set null pointer"
+        );
+        unsafe { libc::free(funct_list_ptr as *mut libc::c_void) }
+    }
+}
