@@ -1,0 +1,31 @@
+name: PKCS#11
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  pkcs11-build-and-test:
+    name: PKCS#11 build & test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./pkcs11
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Install valgrind and requirements
+        run: apt-get update && apt-get install --assume-yes valgrind clang libc6-dbg
+      - name: Build
+        run: cargo build --verbose
+      - name: Install cargo-valgrind
+        run: cargo install cargo-valgrind
+      - name: Run tests
+        # setting the limit for max # of FDs because of this bug https://bugs.kde.org/show_bug.cgi?id=465435
+        run: ulimit -n 1024 && cargo valgrind test
