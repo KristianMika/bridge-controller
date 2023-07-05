@@ -1,15 +1,106 @@
+extern crate libc;
+
 use bindings::{
-    CK_ATTRIBUTE_PTR, CK_BBOOL, CK_BYTE_PTR, CK_FLAGS, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR,
-    CK_NOTIFY, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE,
-    CK_SESSION_HANDLE_PTR, CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR,
-    CK_USER_TYPE, CK_UTF8CHAR_PTR, CK_VOID_PTR,
+    C_Finalize, CKR_HOST_MEMORY, CKR_OK, CK_ATTRIBUTE_PTR, CK_BBOOL, CK_BYTE_PTR, CK_FLAGS,
+    CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR, CK_NOTIFY, CK_OBJECT_HANDLE,
+    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR, CK_SLOT_ID,
+    CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR, CK_USER_TYPE, CK_UTF8CHAR_PTR,
+    CK_VERSION, CK_VOID_PTR,
 };
 
+use std::mem;
 mod bindings;
 
+/// Obtains a pointer to the Cryptoki library’s list of function pointers
+///
+/// # Arguments
+///
+/// * `ppFunctionList` - points to a value which will receive a pointer to the library’s CK_FUNCTION_LIST structure
+#[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) -> CK_RV {
-    unimplemented!()
+    let version = CK_VERSION { major: 0, minor: 1 };
+    let function_list = CK_FUNCTION_LIST {
+        version,
+        C_Initialize: Some(C_Initialize),
+        C_Finalize: Some(C_Finalize),
+        C_GetInfo: None,
+        C_GetFunctionList: Some(C_GetFunctionList),
+        C_GetSlotList: Some(C_GetSlotList),
+        C_GetSlotInfo: None,
+        C_GetTokenInfo: Some(C_GetTokenInfo),
+        C_GetMechanismList: None,
+        C_GetMechanismInfo: None,
+        C_InitToken: None,
+        C_InitPIN: None,
+        C_SetPIN: None,
+        C_OpenSession: Some(C_OpenSession),
+        C_CloseSession: Some(C_CloseSession),
+        C_CloseAllSessions: None,
+        C_GetSessionInfo: None,
+        C_GetOperationState: None,
+        C_SetOperationState: None,
+        C_Login: Some(C_Login),
+        C_Logout: Some(C_Logout),
+        C_CreateObject: Some(C_CreateObject),
+        C_CopyObject: None,
+        C_DestroyObject: Some(C_DestroyObject),
+        C_GetObjectSize: None,
+        C_GetAttributeValue: Some(C_GetAttributeValue),
+        C_SetAttributeValue: None,
+        C_FindObjectsInit: Some(C_FindObjectsInit),
+        C_FindObjects: Some(C_FindObjects),
+        C_FindObjectsFinal: Some(C_FindObjectsFinal),
+        C_EncryptInit: Some(C_EncryptInit),
+        C_Encrypt: Some(C_Encrypt),
+        C_EncryptUpdate: Some(C_EncryptUpdate),
+        C_EncryptFinal: Some(C_EncryptFinal),
+        C_DecryptInit: Some(C_DecryptInit),
+        C_Decrypt: Some(C_Decrypt),
+        C_DecryptUpdate: None,
+        C_DecryptFinal: None,
+        C_DigestInit: Some(C_DigestInit),
+        C_Digest: Some(C_Digest),
+        C_DigestUpdate: None,
+        C_DigestKey: None,
+        C_DigestFinal: None,
+        C_SignInit: None,
+        C_Sign: None,
+        C_SignUpdate: None,
+        C_SignFinal: None,
+        C_SignRecoverInit: None,
+        C_SignRecover: None,
+        C_VerifyInit: None,
+        C_Verify: None,
+        C_VerifyUpdate: None,
+        C_VerifyFinal: None,
+        C_VerifyRecoverInit: None,
+        C_VerifyRecover: None,
+        C_DigestEncryptUpdate: None,
+        C_DecryptDigestUpdate: None,
+        C_SignEncryptUpdate: None,
+        C_DecryptVerifyUpdate: None,
+        C_GenerateKey: None,
+        C_GenerateKeyPair: Some(C_GenerateKeyPair),
+        C_WrapKey: Some(C_WrapKey),
+        C_UnwrapKey: Some(C_UnwrapKey),
+        C_DeriveKey: None,
+        C_SeedRandom: None,
+        C_GenerateRandom: None,
+        C_GetFunctionStatus: None,
+        C_CancelFunction: None,
+        C_WaitForSlotEvent: None,
+    };
+
+    unsafe {
+        *ppFunctionList = libc::malloc(mem::size_of::<CK_FUNCTION_LIST>() as libc::size_t)
+            as *mut CK_FUNCTION_LIST;
+        if (*ppFunctionList).is_null() {
+            return CKR_HOST_MEMORY as u64;
+        }
+        **ppFunctionList = function_list;
+    }
+    CKR_OK as u64
 }
 
 #[no_mangle]
@@ -43,12 +134,22 @@ pub extern "C" fn C_OpenSession(
 }
 
 #[no_mangle]
+pub extern "C" fn C_CloseSession(hSession: CK_SESSION_HANDLE) -> CK_RV {
+    unimplemented!()
+}
+
+#[no_mangle]
 pub extern "C" fn C_Login(
     hSession: CK_SESSION_HANDLE,
     userType: CK_USER_TYPE,
     pPin: CK_UTF8CHAR_PTR,
     ulPinLen: CK_ULONG,
 ) -> CK_RV {
+    unimplemented!()
+}
+
+#[no_mangle]
+pub extern "C" fn C_Logout(hSession: CK_SESSION_HANDLE) -> CK_RV {
     unimplemented!()
 }
 
