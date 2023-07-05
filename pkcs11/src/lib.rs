@@ -1,11 +1,11 @@
 extern crate libc;
 
 use bindings::{
-    C_Finalize, CKR_HOST_MEMORY, CKR_OK, CK_ATTRIBUTE_PTR, CK_BBOOL, CK_BYTE_PTR, CK_FLAGS,
-    CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR, CK_NOTIFY, CK_OBJECT_HANDLE,
-    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR, CK_SLOT_ID,
-    CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR, CK_USER_TYPE, CK_UTF8CHAR_PTR,
-    CK_VERSION, CK_VOID_PTR,
+    C_Finalize, CKR_ARGUMENTS_BAD, CKR_HOST_MEMORY, CKR_OK, CK_ATTRIBUTE_PTR, CK_BBOOL,
+    CK_BYTE_PTR, CK_FLAGS, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR, CK_NOTIFY,
+    CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR,
+    CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR, CK_USER_TYPE,
+    CK_UTF8CHAR_PTR, CK_VERSION, CK_VOID_PTR,
 };
 
 use std::mem;
@@ -19,6 +19,9 @@ mod bindings;
 #[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) -> CK_RV {
+    if ppFunctionList.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
     let version = CK_VERSION { major: 0, minor: 1 };
     // TODO: add functions when implemented
     let function_list = CK_FUNCTION_LIST {
@@ -322,7 +325,7 @@ pub extern "C" fn C_UnwrapKey(
 #[cfg(test)]
 mod test {
     use crate::{
-        bindings::{CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR, CK_RV},
+        bindings::{CKR_ARGUMENTS_BAD, CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR, CK_RV},
         C_GetFunctionList,
     };
 
@@ -339,5 +342,14 @@ mod test {
             "C_GetFunctionList set null pointer"
         );
         unsafe { libc::free(funct_list_ptr as *mut libc::c_void) }
+    }
+
+    #[test]
+    fn given_nullptr_c_get_function_list_returns_ckr_arguments_bad() {
+        let return_value = C_GetFunctionList(0 as *mut *mut CK_FUNCTION_LIST);
+        assert_eq!(
+            return_value, CKR_ARGUMENTS_BAD as CK_RV,
+            "C_GetFunctionList didn't return CKR_ARGUMENTS_BAD",
+        );
     }
 }
