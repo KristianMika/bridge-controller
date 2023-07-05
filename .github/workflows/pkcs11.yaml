@@ -21,7 +21,7 @@ jobs:
           override: true
           components: rustfmt, clippy
       - name: Install valgrind and requirements
-        run: apt-get update && apt-get install --assume-yes valgrind clang libc6-dbg
+        run: sudo apt-get update && sudo apt-get install --assume-yes valgrind clang libc6-dbg
       - name: Build
         run: cargo build --verbose
       - name: Install cargo-valgrind
