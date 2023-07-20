@@ -4,11 +4,11 @@ extern crate libc;
 mod test;
 
 use bindings::{
-    C_Finalize, CKR_ARGUMENTS_BAD, CKR_HOST_MEMORY, CKR_OK, CK_ATTRIBUTE_PTR, CK_BBOOL,
-    CK_BYTE_PTR, CK_FLAGS, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR, CK_NOTIFY,
-    CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR,
-    CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR, CK_USER_TYPE,
-    CK_UTF8CHAR_PTR, CK_VERSION, CK_VOID_PTR,
+    CKR_ARGUMENTS_BAD, CKR_HOST_MEMORY, CKR_OK, CK_ATTRIBUTE_PTR, CK_BBOOL, CK_BYTE_PTR, CK_FLAGS,
+    CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR, CK_NOTIFY, CK_OBJECT_HANDLE,
+    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR, CK_SLOT_ID,
+    CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR, CK_USER_TYPE, CK_UTF8CHAR_PTR,
+    CK_VERSION, CK_VOID_PTR,
 };
 
 use std::mem;
@@ -153,11 +153,25 @@ pub extern "C" fn C_GetSlotList(
     CKR_OK as CK_RV
 }
 
+/// Obtains information about a particular token in the system
+///
+/// # Arguments
+///
+/// * `slotID` - the ID of the token’s slot
+/// * `pInfo` - points to the location that receives the token information
 #[no_mangle]
 pub extern "C" fn C_GetTokenInfo(slotID: CK_SLOT_ID, pInfo: CK_TOKEN_INFO_PTR) -> CK_RV {
     unimplemented!()
 }
 
+/// Opens a session between an application and a token in a particular slot
+///
+/// # Arguments
+///
+/// * `slotID` - the slot’s ID
+/// * `flags` - indicates the type of session
+/// * `pApplication` - an application-defined pointer to be passed to the notification callback
+/// * `phSession` - points to the location that receives the handle for the new session
 #[no_mangle]
 pub extern "C" fn C_OpenSession(
     slotID: CK_SLOT_ID,
@@ -169,11 +183,24 @@ pub extern "C" fn C_OpenSession(
     unimplemented!()
 }
 
+/// Closes a session between an application and a token
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
 #[no_mangle]
 pub extern "C" fn C_CloseSession(hSession: CK_SESSION_HANDLE) -> CK_RV {
     unimplemented!()
 }
 
+/// Logs a user into a token
+///
+/// # Arguments
+///
+/// `hSession` - a session handle
+/// `userType` - the user type
+/// `pPin` - points to the user’s PIN
+/// `ulPinLen` - the length of the PIN
 #[no_mangle]
 pub extern "C" fn C_Login(
     hSession: CK_SESSION_HANDLE,
@@ -184,11 +211,23 @@ pub extern "C" fn C_Login(
     unimplemented!()
 }
 
+/// Logs a user out from a token
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
 #[no_mangle]
 pub extern "C" fn C_Logout(hSession: CK_SESSION_HANDLE) -> CK_RV {
     unimplemented!()
 }
 
+/// Initializes a search for token and session objects that match a template
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pTemplate` - points to a search template that specifies the attribute values to match
+/// * `ulCount` - the number of attributes in the search template
 #[no_mangle]
 pub extern "C" fn C_FindObjectsInit(
     hSession: CK_SESSION_HANDLE,
@@ -223,11 +262,14 @@ pub extern "C" fn C_GetAttributeValue(
     unimplemented!()
 }
 
-#[no_mangle]
-pub extern "C" fn C_DestroyObject(hSession: CK_SESSION_HANDLE, hObject: CK_OBJECT_HANDLE) -> CK_RV {
-    unimplemented!()
-}
-
+/// Creates an object
+///
+/// # Arguments
+///
+/// * `hSession` - session's handle
+/// * `pTemplate` - points to the object’s template
+/// * `ulCount` - the number of attributes in the template
+/// * `phObject` - points to the location that receives the new object’s handle
 #[no_mangle]
 pub extern "C" fn C_CreateObject(
     hSession: CK_SESSION_HANDLE,
@@ -238,6 +280,29 @@ pub extern "C" fn C_CreateObject(
     unimplemented!()
 }
 
+/// Destroys an object
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `hObject` - the object’s handle
+#[no_mangle]
+pub extern "C" fn C_DestroyObject(hSession: CK_SESSION_HANDLE, hObject: CK_OBJECT_HANDLE) -> CK_RV {
+    unimplemented!()
+}
+
+/// Generates a public/private key pair, creating new key objects
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pMechanism` - points to the key generation mechanism
+/// * `pPublicKeyTemplate` - points to the template for the public key
+/// * `ulPublicKeyAttributeCount` - the number of attributes in the public-key template
+/// * `pPrivateKeyTemplate` - points to the template for the private key
+/// * `ulPrivateKeyAttributeCount` - the number of attributes in the private-key template
+/// * `phPublicKey` - points to the location that receives the handle of the new public key
+/// * `phPrivateKey` - points to the location that receives the handle of the new private key
 #[no_mangle]
 pub extern "C" fn C_GenerateKeyPair(
     hSession: CK_SESSION_HANDLE,
@@ -252,18 +317,13 @@ pub extern "C" fn C_GenerateKeyPair(
     unimplemented!()
 }
 
-#[no_mangle]
-pub extern "C" fn C_WrapKey(
-    hSession: CK_SESSION_HANDLE,
-    pMechanism: CK_MECHANISM_PTR,
-    hWrappingKey: CK_OBJECT_HANDLE,
-    hKey: CK_OBJECT_HANDLE,
-    pWrappedKey: CK_BYTE_PTR,
-    pulWrappedKeyLen: CK_ULONG_PTR,
-) -> CK_RV {
-    unimplemented!()
-}
-
+/// Initializes an encryption operation
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pMechanism` - points to the encryption mechanism
+/// * ` hKey` - the handle of the encryption key
 #[no_mangle]
 pub extern "C" fn C_EncryptInit(
     hSession: CK_SESSION_HANDLE,
@@ -273,6 +333,15 @@ pub extern "C" fn C_EncryptInit(
     unimplemented!()
 }
 
+/// Encrypts single-part data
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pData` - points to the data
+/// * `ulDataLen` - the length in bytes of the data
+/// * `pEncryptedData` - points to the location that receives the encrypted data
+/// * `pulEncryptedDataLen` - points to the location that holds the length in bytes of the encrypted data
 #[no_mangle]
 pub extern "C" fn C_Encrypt(
     hSession: CK_SESSION_HANDLE,
@@ -284,6 +353,15 @@ pub extern "C" fn C_Encrypt(
     unimplemented!()
 }
 
+/// Continues a multiple-part encryption operation, processing another data part
+///
+/// # Arguments
+///
+/// * `hSession` - is the session’s handle
+/// * `pPart` - points to the data part
+/// * `ulPartLen` - the length of the data part
+/// * `pEncryptedPart` - points to the location that receives the encrypted data part
+/// * `pulEncryptedPartLen` - points to the location that holds the length in bytes of the encrypted data part
 #[no_mangle]
 pub extern "C" fn C_EncryptUpdate(
     hSession: CK_SESSION_HANDLE,
@@ -295,6 +373,13 @@ pub extern "C" fn C_EncryptUpdate(
     unimplemented!()
 }
 
+/// Finishes a multiple-part encryption operation
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pLastEncryptedPart` - points to the location that receives the last encrypted data part, if any
+/// * `pulLastEncryptedPartLen` - points to the location that holds the length of the last encrypted data part
 #[no_mangle]
 pub extern "C" fn C_EncryptFinal(
     hSession: CK_SESSION_HANDLE,
@@ -304,11 +389,26 @@ pub extern "C" fn C_EncryptFinal(
     unimplemented!()
 }
 
+/// Initializes a message-digesting operation
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pMechanism` - points to the digesting mechanism
 #[no_mangle]
 pub extern "C" fn C_DigestInit(hSession: CK_SESSION_HANDLE, pMechanism: CK_MECHANISM_PTR) -> CK_RV {
     unimplemented!()
 }
 
+/// Digests data in a single part
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pData` - points to the data
+/// * `ulDataLen` - the length of the data
+/// * `pDigest` - points to the location that receives the message digest
+/// * `pulDigestLen` - points to the location that holds the length of the message digest
 #[no_mangle]
 pub extern "C" fn C_Digest(
     hSession: CK_SESSION_HANDLE,
@@ -320,6 +420,13 @@ pub extern "C" fn C_Digest(
     unimplemented!()
 }
 
+/// Initializes a decryption operation
+///
+/// # Arguments
+///
+/// `hSession` - the session’s handle
+/// `pMechanism` - points to the decryption mechanism
+/// `hKey` - the handle of the decryption key
 #[no_mangle]
 pub extern "C" fn C_DecryptInit(
     hSession: CK_SESSION_HANDLE,
@@ -328,6 +435,16 @@ pub extern "C" fn C_DecryptInit(
 ) -> CK_RV {
     unimplemented!()
 }
+
+/// Decrypts encrypted data in a single part
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pEncryptedData` - points to the encrypted data
+/// * `ulEncryptedDataLen` - the length of the encrypted data
+/// * `pData` - points to the location that receives the recovered data
+/// * `pulDataLen` - points to the location that holds the length of the recovered data
 
 #[no_mangle]
 pub extern "C" fn C_Decrypt(
@@ -340,6 +457,40 @@ pub extern "C" fn C_Decrypt(
     unimplemented!()
 }
 
+/// Wraps (i.e., encrypts) a private or secret key
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pMechanism` - points to the wrapping mechanism
+/// * `hWrappingKey` - the handle of the wrapping key
+/// * `hKey` - the handle of the key to be wrapped
+/// * `pWrappedKey` - points to the location that receives the wrapped key
+/// * `pulWrappedKeyLen` - points to the location that receives the length of the wrapped key
+#[no_mangle]
+pub extern "C" fn C_WrapKey(
+    hSession: CK_SESSION_HANDLE,
+    pMechanism: CK_MECHANISM_PTR,
+    hWrappingKey: CK_OBJECT_HANDLE,
+    hKey: CK_OBJECT_HANDLE,
+    pWrappedKey: CK_BYTE_PTR,
+    pulWrappedKeyLen: CK_ULONG_PTR,
+) -> CK_RV {
+    unimplemented!()
+}
+
+/// Unwraps (i.e. decrypts) a wrapped key, creating a new private key or secret key object
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pMechanism` - points to the unwrapping mechanism
+/// * `hUnwrappingKey` - the handle of the unwrapping key
+/// * `pWrappedKey` - points to the wrapped key
+/// * `ulWrappedKeyLen` - the length of the wrapped key
+/// * `pTemplate` - points to the template for the new key
+/// * `ulAttributeCount` - the number of attributes in the template
+/// * `phKey` - points to the location that receives the handle of the recovered key
 #[no_mangle]
 pub extern "C" fn C_UnwrapKey(
     hSession: CK_SESSION_HANDLE,
