@@ -12,6 +12,8 @@ use bindings::{
 };
 
 use std::mem;
+
+use crate::bindings::CKR_BUFFER_TOO_SMALL;
 mod bindings;
 
 /// Obtains a pointer to the Cryptoki library’s list of function pointers
@@ -121,13 +123,34 @@ pub extern "C" fn C_Initialize(pInitArgs: CK_VOID_PTR) -> CK_RV {
     CKR_OK as CK_RV
 }
 
+/// Used to obtain a list of slots in the system
+///
+/// # Arguments
+///
+/// * `tokenPresent` - indicates whether the list obtained includes only those slots with a token present, or all slots
+/// * `pSlotList` - points to the buffer for the slot list
+/// * `pulCount` -  points to the location that receives the number of slots
 #[no_mangle]
 pub extern "C" fn C_GetSlotList(
     tokenPresent: CK_BBOOL,
     pSlotList: CK_SLOT_ID_PTR,
     pulCount: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    if pulCount.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+    let slot_length = 0; // TODO
+    if pSlotList.is_null() {
+        unsafe {
+            *pulCount = slot_length;
+        }
+        return CKR_OK as CK_RV;
+    }
+    if unsafe { *pulCount } < slot_length {
+        return CKR_BUFFER_TOO_SMALL as CK_RV;
+    }
+    // TODO: set the slot list based on `tokenPresent`
+    CKR_OK as CK_RV
 }
 
 #[no_mangle]
