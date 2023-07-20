@@ -110,9 +110,15 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
     CKR_OK as CK_RV
 }
 
+/// Initializes the Cryptoki library
+///
+/// # Arguments
+///
+/// * `pInitArgs` - either has the value NULL_PTR or points to a CK_C_INITIALIZE_ARGS structure containing information on how the library should deal with multi-threaded access
 #[no_mangle]
 pub extern "C" fn C_Initialize(pInitArgs: CK_VOID_PTR) -> CK_RV {
-    unimplemented!()
+    // TODO: check later if some actions are required
+    CKR_OK as CK_RV
 }
 
 #[no_mangle]
