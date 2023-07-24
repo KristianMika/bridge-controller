@@ -230,6 +230,7 @@ pub extern "C" fn C_CloseSession(hSession: CK_SESSION_HANDLE) -> CK_RV {
     }
 
     state.remove(&hSession);
+    state.shrink_to_fit();
     CKR_OK as CK_RV
 }
 
