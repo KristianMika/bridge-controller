@@ -1,20 +1,27 @@
 extern crate libc;
 
+mod state;
 #[cfg(test)]
 mod test;
 
+use crate::{bindings::CKR_BUFFER_TOO_SMALL, state::Pkcs11State};
 use bindings::{
-    CKR_ARGUMENTS_BAD, CKR_HOST_MEMORY, CKR_OK, CK_ATTRIBUTE_PTR, CK_BBOOL, CK_BYTE_PTR, CK_FLAGS,
-    CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR, CK_NOTIFY, CK_OBJECT_HANDLE,
-    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR, CK_SLOT_ID,
-    CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR, CK_USER_TYPE, CK_UTF8CHAR_PTR,
-    CK_VERSION, CK_VOID_PTR,
+    CKM_SHA256, CKM_SHA384, CKM_SHA512, CKM_SHA_1, CKR_ARGUMENTS_BAD, CKR_FUNCTION_FAILED,
+    CKR_GENERAL_ERROR, CKR_HOST_MEMORY, CKR_OK, CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE_PTR,
+    CK_BBOOL, CK_BYTE_PTR, CK_FLAGS, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR,
+    CK_NOTIFY, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE,
+    CK_SESSION_HANDLE_PTR, CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR,
+    CK_USER_TYPE, CK_UTF8CHAR_PTR, CK_VERSION, CK_VOID_PTR,
 };
+use lazy_static::lazy_static;
+use openssl::hash::{Hasher, MessageDigest};
+use std::{collections::HashMap, mem, sync::Mutex};
 
-use std::mem;
-
-use crate::bindings::CKR_BUFFER_TOO_SMALL;
 mod bindings;
+
+lazy_static! {
+    static ref STATE: Mutex<HashMap::<CK_SESSION_HANDLE, Pkcs11State>> = Mutex::new(HashMap::new());
+}
 
 /// Obtains a pointer to the Cryptoki library’s list of function pointers
 ///
@@ -68,7 +75,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_Decrypt: None,
         C_DecryptUpdate: None,
         C_DecryptFinal: None,
-        C_DigestInit: None,
+        C_DigestInit: Some(C_DigestInit),
         C_Digest: None,
         C_DigestUpdate: None,
         C_DigestKey: None,
@@ -396,8 +403,33 @@ pub extern "C" fn C_EncryptFinal(
 /// * `hSession` - the session’s handle
 /// * `pMechanism` - points to the digesting mechanism
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_DigestInit(hSession: CK_SESSION_HANDLE, pMechanism: CK_MECHANISM_PTR) -> CK_RV {
-    unimplemented!()
+    if pMechanism.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+
+    let digest = match unsafe { (*pMechanism).mechanism as u32 } {
+        CKM_SHA_1 => MessageDigest::sha1(),
+        CKM_SHA256 => MessageDigest::sha256(),
+        CKM_SHA384 => MessageDigest::sha384(),
+        CKM_SHA512 => MessageDigest::sha512(),
+        _ => {
+            return CKR_ARGUMENTS_BAD as CK_RV;
+        }
+    };
+    let Ok(hasher) = Hasher::new(digest) else {
+        return CKR_FUNCTION_FAILED as CK_RV;
+    };
+    let Ok(mut state) = STATE.lock() else  {
+         return CKR_GENERAL_ERROR as CK_RV;
+    };
+
+    match state.get_mut(&hSession) {
+        Some(session_state) => session_state.set_hasher(hasher),
+        None => return CKR_SESSION_HANDLE_INVALID as CK_RV,
+    }
+    CKR_OK as CK_RV
 }
 
 /// Digests data in a single part
