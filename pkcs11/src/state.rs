@@ -75,4 +75,9 @@ impl CryptokiState {
             Some(session) => Some(session.write().unwrap()),
         }
     }
+
+    pub fn finalize(&mut self) {
+        self.sessions.clear();
+        self.sessions.shrink_to_fit();
+    }
 }

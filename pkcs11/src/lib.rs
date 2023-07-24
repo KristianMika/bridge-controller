@@ -43,9 +43,9 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
     let function_list = CK_FUNCTION_LIST {
         version,
         C_Initialize: Some(C_Initialize),
-        C_Finalize: None,
+        C_Finalize: Some(C_Finalize),
         C_GetInfo: None,
-        C_GetFunctionList: None,
+        C_GetFunctionList: Some(C_GetFunctionList),
         C_GetSlotList: None,
         C_GetSlotInfo: None,
         C_GetTokenInfo: None,
@@ -54,7 +54,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_InitToken: None,
         C_InitPIN: None,
         C_SetPIN: None,
-        C_OpenSession: None,
+        C_OpenSession: Some(C_OpenSession),
         C_CloseSession: Some(C_CloseSession),
         C_CloseAllSessions: None,
         C_GetSessionInfo: None,
@@ -595,4 +595,26 @@ pub extern "C" fn C_UnwrapKey(
     phKey: CK_OBJECT_HANDLE_PTR,
 ) -> CK_RV {
     unimplemented!()
+}
+
+/// The function is called to indicate that an application is finished with the Cryptoki library.
+/// It should be the last Cryptoki call made by an application
+///
+/// # Arguments
+///
+/// * `pReserved` - reserved for future versions; for this version, it should be set to NULL_PTR
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern "C" fn C_Finalize(pReserved: CK_VOID_PTR) -> CK_RV {
+    if !pReserved.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+
+    let Ok(mut state) = STATE.write() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+   };
+
+    state.finalize();
+
+    CKR_OK as CK_RV
 }
