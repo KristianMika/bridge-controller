@@ -1,11 +1,11 @@
 use crate::{
-    bindings::{CKR_ARGUMENTS_BAD, CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR, CK_RV},
+    bindings::{CKR_ARGUMENTS_BAD, CKR_OK, CK_FUNCTION_LIST_PTR, CK_FUNCTION_LIST_PTR_PTR, CK_RV},
     C_GetFunctionList,
 };
 
 #[test]
 fn c_get_function_list_returns_ckr_ok() {
-    let mut funct_list_ptr: CK_FUNCTION_LIST_PTR = 0 as *mut CK_FUNCTION_LIST;
+    let mut funct_list_ptr: CK_FUNCTION_LIST_PTR = 0 as CK_FUNCTION_LIST_PTR;
     let return_value = C_GetFunctionList(&mut funct_list_ptr);
     assert_eq!(
         return_value, CKR_OK as CK_RV,
@@ -20,7 +20,7 @@ fn c_get_function_list_returns_ckr_ok() {
 
 #[test]
 fn given_nullptr_c_get_function_list_returns_ckr_arguments_bad() {
-    let return_value = C_GetFunctionList(0 as *mut *mut CK_FUNCTION_LIST);
+    let return_value = C_GetFunctionList(0 as CK_FUNCTION_LIST_PTR_PTR);
     assert_eq!(
         return_value, CKR_ARGUMENTS_BAD as CK_RV,
         "C_GetFunctionList didn't return CKR_ARGUMENTS_BAD",
