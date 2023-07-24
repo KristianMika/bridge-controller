@@ -8,8 +8,11 @@ pub struct Pkcs11State {
 }
 
 impl Pkcs11State {
-    pub fn get_hasher(&mut self) -> &Option<Hasher> {
-        &self.hasher
+    pub fn get_hasher(&self) -> Option<&Hasher> {
+        self.hasher.as_ref()
+    }
+    pub fn get_hasher_mut(&mut self) -> Option<&mut Hasher> {
+        self.hasher.as_mut()
     }
 
     pub fn set_hasher(&mut self, hasher: Hasher) {

@@ -7,16 +7,17 @@ mod test;
 use crate::{bindings::CKR_BUFFER_TOO_SMALL, state::Pkcs11State};
 use bindings::{
     CKM_SHA256, CKM_SHA384, CKM_SHA512, CKM_SHA_1, CKR_ARGUMENTS_BAD, CKR_FUNCTION_FAILED,
-    CKR_GENERAL_ERROR, CKR_HOST_MEMORY, CKR_OK, CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE_PTR,
-    CK_BBOOL, CK_BYTE_PTR, CK_FLAGS, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR,
-    CK_NOTIFY, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE,
-    CK_SESSION_HANDLE_PTR, CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR,
-    CK_USER_TYPE, CK_UTF8CHAR_PTR, CK_VERSION, CK_VOID_PTR,
+    CKR_GENERAL_ERROR, CKR_HOST_MEMORY, CKR_OK, CKR_OPERATION_NOT_INITIALIZED,
+    CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE_PTR, CK_BBOOL, CK_BYTE_PTR, CK_FLAGS,
+    CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM_PTR, CK_NOTIFY, CK_OBJECT_HANDLE,
+    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR, CK_SLOT_ID,
+    CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR, CK_USER_TYPE, CK_UTF8CHAR_PTR,
+    CK_VERSION, CK_VOID_PTR,
 };
 use lazy_static::lazy_static;
 use openssl::hash::{Hasher, MessageDigest};
 use rand::Rng;
-use std::{collections::HashMap, mem, sync::Mutex};
+use std::{collections::HashMap, mem, ptr, sync::Mutex};
 
 mod bindings;
 
@@ -77,7 +78,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_DecryptUpdate: None,
         C_DecryptFinal: None,
         C_DigestInit: Some(C_DigestInit),
-        C_Digest: None,
+        C_Digest: Some(C_Digest),
         C_DigestUpdate: None,
         C_DigestKey: None,
         C_DigestFinal: None,
@@ -464,6 +465,7 @@ pub extern "C" fn C_DigestInit(hSession: CK_SESSION_HANDLE, pMechanism: CK_MECHA
 /// * `pDigest` - points to the location that receives the message digest
 /// * `pulDigestLen` - points to the location that holds the length of the message digest
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_Digest(
     hSession: CK_SESSION_HANDLE,
     pData: CK_BYTE_PTR,
@@ -471,7 +473,36 @@ pub extern "C" fn C_Digest(
     pDigest: CK_BYTE_PTR,
     pulDigestLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    let Ok( mut state) = STATE.lock() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+   };
+
+    let hasher = match state.get_mut(&hSession) {
+        Some(session_state) => session_state.get_hasher_mut(),
+        None => return CKR_SESSION_HANDLE_INVALID as CK_RV,
+    };
+    if hasher.is_none() {
+        return CKR_OPERATION_NOT_INITIALIZED as CK_RV;
+    }
+    let hasher = hasher.unwrap();
+
+    let data_buffer: &[u8] = unsafe { std::slice::from_raw_parts(pData, ulDataLen as usize) };
+
+    if hasher.update(data_buffer).is_err() {
+        // TODO: reset hasher state
+        return CKR_FUNCTION_FAILED as CK_RV;
+    }
+
+    let Ok(digest) = hasher.finish() else {
+        return CKR_FUNCTION_FAILED as CK_RV;
+    };
+
+    let digest = digest.to_vec();
+    unsafe {
+        ptr::copy(digest.as_ptr(), pDigest, digest.len());
+        *pulDigestLen = digest.len() as u64;
+    }
+    CKR_OK as CK_RV
 }
 
 /// Initializes a decryption operation
