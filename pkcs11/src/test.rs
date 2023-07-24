@@ -1,6 +1,18 @@
+use std::array;
+
+use openssl::{
+    error::ErrorStack,
+    hash::{Hasher, MessageDigest},
+    sha::Sha256,
+};
+
 use crate::{
-    bindings::{CKR_ARGUMENTS_BAD, CKR_OK, CK_FUNCTION_LIST_PTR, CK_FUNCTION_LIST_PTR_PTR, CK_RV},
-    C_GetFunctionList,
+    bindings::{
+        CKM_SHA256, CKR_ARGUMENTS_BAD, CKR_OK, CK_BYTE_PTR, CK_FUNCTION_LIST_PTR,
+        CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM, CK_MECHANISM_PTR, CK_RV, CK_ULONG, CK_ULONG_PTR,
+        CK_VOID_PTR, NULL_PTR,
+    },
+    C_Digest, C_DigestInit, C_GetFunctionList,
 };
 
 #[test]
@@ -25,4 +37,41 @@ fn given_nullptr_c_get_function_list_returns_ckr_arguments_bad() {
         return_value, CKR_ARGUMENTS_BAD as CK_RV,
         "C_GetFunctionList didn't return CKR_ARGUMENTS_BAD",
     );
+}
+
+#[test]
+fn given_valid_data_c_digest_produces_valid_hash() -> Result<(), ErrorStack> {
+    let session_handle = 10; // TODO
+    let mut digest_mechanism = CK_MECHANISM {
+        mechanism: CKM_SHA256 as u64,
+        pParameter: NULL_PTR as CK_VOID_PTR,
+        ulParameterLen: 0,
+    };
+
+    assert_eq!(
+        C_DigestInit(session_handle, &mut digest_mechanism as CK_MECHANISM_PTR),
+        CKR_OK as CK_RV
+    );
+
+    let mut data: Vec<u8> = vec![1, 2, 3, 4, 5];
+    let mut digest = vec![];
+    let mut digest_len: CK_ULONG = 0;
+    assert_eq!(
+        C_Digest(
+            session_handle,
+            data.as_mut_ptr() as CK_BYTE_PTR,
+            data.len() as u64,
+            digest.as_mut_ptr() as CK_BYTE_PTR,
+            &mut digest_len as CK_ULONG_PTR
+        ),
+        CKR_OK as CK_RV
+    );
+
+    let mut hasher = Hasher::new(MessageDigest::sha256())?;
+    hasher.update(&data)?;
+    let target_digest = hasher.finish()?.to_vec();
+
+    assert_eq!(target_digest, digest);
+
+    Ok(())
 }
