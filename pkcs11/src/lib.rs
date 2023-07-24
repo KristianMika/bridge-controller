@@ -4,7 +4,10 @@ mod state;
 #[cfg(test)]
 mod test;
 
-use crate::{bindings::CKR_BUFFER_TOO_SMALL, state::Pkcs11State};
+use crate::{
+    bindings::CKR_BUFFER_TOO_SMALL,
+    state::{CryptokiState, SessionState},
+};
 use bindings::{
     CKM_SHA256, CKM_SHA384, CKM_SHA512, CKM_SHA_1, CKR_ARGUMENTS_BAD, CKR_FUNCTION_FAILED,
     CKR_GENERAL_ERROR, CKR_HOST_MEMORY, CKR_OK, CKR_OPERATION_NOT_INITIALIZED,
@@ -16,13 +19,12 @@ use bindings::{
 };
 use lazy_static::lazy_static;
 use openssl::hash::{Hasher, MessageDigest};
-use rand::Rng;
-use std::{collections::HashMap, mem, ptr, sync::Mutex};
+use std::{mem, ptr, sync::RwLock};
 
 mod bindings;
 
 lazy_static! {
-    static ref STATE: Mutex<HashMap::<CK_SESSION_HANDLE, Pkcs11State>> = Mutex::new(HashMap::new());
+    static ref STATE: RwLock<CryptokiState> = RwLock::new(CryptokiState::default());
 }
 
 /// Obtains a pointer to the Cryptoki library’s list of function pointers
@@ -196,17 +198,11 @@ pub extern "C" fn C_OpenSession(
         return CKR_ARGUMENTS_BAD as CK_RV;
     }
 
-    let mut rng = rand::thread_rng();
-    let mut session_handle = rng.gen_range(0..CK_SESSION_HANDLE::MAX);
-
-    let Ok(mut state) = STATE.lock() else  {
+    let Ok(mut state) = STATE.write() else  {
         return CKR_GENERAL_ERROR as CK_RV;
    };
-    while state.contains_key(&session_handle) {
-        session_handle = rng.gen_range(0..CK_SESSION_HANDLE::MAX);
-    }
 
-    state.insert(session_handle, Pkcs11State::default());
+    let session_handle = state.create_session();
     unsafe {
         *phSession = session_handle;
     }
@@ -221,16 +217,16 @@ pub extern "C" fn C_OpenSession(
 #[no_mangle]
 #[allow(non_snake_case)]
 pub extern "C" fn C_CloseSession(hSession: CK_SESSION_HANDLE) -> CK_RV {
-    let Ok(mut state) = STATE.lock() else  {
+    let Ok(mut state) = STATE.write() else  {
         return CKR_GENERAL_ERROR as CK_RV;
     };
 
-    if !state.contains_key(&hSession) {
-        return CKR_SESSION_HANDLE_INVALID as CK_RV;
-    }
+    // TODO: check if session exists
+    // if !state.contains_key(&hSession) {
+    //     return CKR_SESSION_HANDLE_INVALID as CK_RV;
+    // }
+    state.close_session(&hSession);
 
-    state.remove(&hSession);
-    state.shrink_to_fit();
     CKR_OK as CK_RV
 }
 
@@ -455,12 +451,12 @@ pub extern "C" fn C_DigestInit(hSession: CK_SESSION_HANDLE, pMechanism: CK_MECHA
     let Ok(hasher) = Hasher::new(digest) else {
         return CKR_FUNCTION_FAILED as CK_RV;
     };
-    let Ok(mut state) = STATE.lock() else  {
+    let Ok(mut state) = STATE.write() else  {
          return CKR_GENERAL_ERROR as CK_RV;
     };
 
-    match state.get_mut(&hSession) {
-        Some(session_state) => session_state.set_hasher(hasher),
+    match state.get_session_mut(&hSession) {
+        Some(mut session_state) => session_state.set_hasher(hasher),
         None => return CKR_SESSION_HANDLE_INVALID as CK_RV,
     }
     CKR_OK as CK_RV
@@ -484,14 +480,14 @@ pub extern "C" fn C_Digest(
     pDigest: CK_BYTE_PTR,
     pulDigestLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    let Ok( mut state) = STATE.lock() else  {
+    let Ok( mut state) = STATE.write() else  {
         return CKR_GENERAL_ERROR as CK_RV;
    };
 
-    let hasher = match state.get_mut(&hSession) {
-        Some(session_state) => session_state.get_hasher_mut(),
-        None => return CKR_SESSION_HANDLE_INVALID as CK_RV,
+    let Some(mut session) =  state.get_session_mut(&hSession) else {
+         return CKR_SESSION_HANDLE_INVALID as CK_RV;
     };
+    let hasher = session.get_hasher_mut();
     if hasher.is_none() {
         return CKR_OPERATION_NOT_INITIALIZED as CK_RV;
     }
