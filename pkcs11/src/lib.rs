@@ -53,7 +53,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_InitPIN: None,
         C_SetPIN: None,
         C_OpenSession: None,
-        C_CloseSession: None,
+        C_CloseSession: Some(C_CloseSession),
         C_CloseAllSessions: None,
         C_GetSessionInfo: None,
         C_GetOperationState: None,
@@ -219,8 +219,18 @@ pub extern "C" fn C_OpenSession(
 ///
 /// * `hSession` - the session’s handle
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_CloseSession(hSession: CK_SESSION_HANDLE) -> CK_RV {
-    unimplemented!()
+    let Ok(mut state) = STATE.lock() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+
+    if !state.contains_key(&hSession) {
+        return CKR_SESSION_HANDLE_INVALID as CK_RV;
+    }
+
+    state.remove(&hSession);
+    CKR_OK as CK_RV
 }
 
 /// Logs a user into a token

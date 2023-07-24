@@ -12,7 +12,7 @@ use crate::{
         CK_FUNCTION_LIST_PTR_PTR, CK_MECHANISM, CK_MECHANISM_PTR, CK_RV, CK_SESSION_HANDLE_PTR,
         CK_ULONG, CK_ULONG_PTR, CK_VOID_PTR, NULL_PTR,
     },
-    C_Digest, C_DigestInit, C_GetFunctionList, C_OpenSession,
+    C_CloseSession, C_Digest, C_DigestInit, C_GetFunctionList, C_OpenSession,
 };
 
 #[test]
@@ -83,5 +83,6 @@ fn given_valid_data_c_digest_produces_valid_hash() -> Result<(), ErrorStack> {
 
     assert_eq!(target_digest, digest);
 
+    assert_eq!(CKR_OK as CK_RV, C_CloseSession(session_handle));
     Ok(())
 }
