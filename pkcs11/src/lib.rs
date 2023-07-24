@@ -15,6 +15,7 @@ use bindings::{
 };
 use lazy_static::lazy_static;
 use openssl::hash::{Hasher, MessageDigest};
+use rand::Rng;
 use std::{collections::HashMap, mem, sync::Mutex};
 
 mod bindings;
@@ -178,8 +179,10 @@ pub extern "C" fn C_GetTokenInfo(slotID: CK_SLOT_ID, pInfo: CK_TOKEN_INFO_PTR) -
 /// * `slotID` - the slot’s ID
 /// * `flags` - indicates the type of session
 /// * `pApplication` - an application-defined pointer to be passed to the notification callback
+/// * `Notify` - the address of the notification callback function
 /// * `phSession` - points to the location that receives the handle for the new session
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_OpenSession(
     slotID: CK_SLOT_ID,
     flags: CK_FLAGS,
@@ -187,7 +190,26 @@ pub extern "C" fn C_OpenSession(
     Notify: CK_NOTIFY,
     phSession: CK_SESSION_HANDLE_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    // TODO: finish implementation
+    if phSession.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+
+    let mut rng = rand::thread_rng();
+    let mut session_handle = rng.gen_range(0..CK_SESSION_HANDLE::MAX);
+
+    let Ok(mut state) = STATE.lock() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+   };
+    while state.contains_key(&session_handle) {
+        session_handle = rng.gen_range(0..CK_SESSION_HANDLE::MAX);
+    }
+
+    state.insert(session_handle, Pkcs11State::default());
+    unsafe {
+        *phSession = session_handle;
+    }
+    CKR_OK as CK_RV
 }
 
 /// Closes a session between an application and a token
