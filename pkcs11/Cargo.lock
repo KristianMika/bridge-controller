@@ -654,6 +654,7 @@ dependencies = [
  "openssl",
  "prost",
  "rand",
+ "tokio",
  "tonic",
  "tonic-build",
 ]
