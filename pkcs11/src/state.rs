@@ -5,7 +5,7 @@ use std::{
     sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
 };
 
-use crate::bindings::CK_SESSION_HANDLE;
+use crate::cryptoki::bindings::CK_SESSION_HANDLE;
 
 /// Holds the current state of PKCS#11 lib
 #[derive(Default)]
