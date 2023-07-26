@@ -1,30 +1,48 @@
 use tokio::time;
-use tonic::transport::Channel;
+use tonic::{
+    async_trait,
+    transport::{Certificate, Channel, ClientTlsConfig, Uri},
+};
 
-use crate::meesign::proto::{mpc_client::MpcClient, GroupsRequest, KeyType};
-use std::{error::Error, time::Duration};
+use crate::communicator::meesign::proto::{mpc_client::MpcClient, GroupsRequest, KeyType};
+use std::{error::Error, str::FromStr, time::Duration};
 
 use self::proto::{task::TaskState, SignRequest, TaskRequest};
+use super::Communicator;
+use crate::communicator::AuthResponse;
 
 mod proto {
     tonic::include_proto!("meesign");
 }
-struct Meesign {
+pub(crate) struct Meesign {
     client: MpcClient<Channel>,
 }
 
 static MAX_ATTEMPT_COUNT: usize = 10;
 static ATTEMPT_SLEEP_SEC: u64 = 5;
-type AuthResponse = Vec<u8>;
+
 impl Meesign {
     // TODO: custom error handling
-    pub async fn new(server_url: String) -> Result<Self, Box<dyn Error>> {
-        let client = MpcClient::connect(server_url).await?;
-
+    pub async fn new(
+        hostname: String,
+        port: u32,
+        certificate: Certificate,
+    ) -> Result<Self, Box<dyn Error>> {
+        let server_uri = Uri::from_str(&format!("https://{}:{}", &hostname, port.to_string()))?;
+        let client_tls_config = ClientTlsConfig::new()
+            .domain_name(hostname)
+            .ca_certificate(certificate);
+        let channel = Channel::builder(server_uri)
+            .tls_config(client_tls_config)?
+            .connect()
+            .await?;
+        let client = MpcClient::new(channel);
         Ok(Self { client })
     }
-
-    pub async fn get_groups(&mut self) -> Result<Vec<String>, Box<dyn Error>> {
+}
+#[async_trait]
+impl Communicator for Meesign {
+    async fn get_groups(&mut self) -> Result<Vec<String>, Box<dyn Error>> {
         let request = tonic::Request::new(GroupsRequest { device_id: None });
 
         let response = self.client.get_groups(request).await?;
@@ -37,7 +55,7 @@ impl Meesign {
         Ok(groups)
     }
 
-    pub async fn send_auth_request(
+    async fn send_auth_request(
         &mut self,
         group_id: Vec<u8>,
         data: Vec<u8>,
@@ -52,7 +70,7 @@ impl Meesign {
         Ok(response.get_ref().id.clone())
     }
 
-    pub async fn get_auth_response(
+    async fn get_auth_response(
         &mut self,
         task_id: Vec<u8>,
     ) -> Result<Option<AuthResponse>, Box<dyn Error>> {

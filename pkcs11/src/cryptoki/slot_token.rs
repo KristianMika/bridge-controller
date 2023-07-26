@@ -1,6 +1,12 @@
+use std::ptr;
+
+use tokio::runtime::Runtime;
+
+use crate::STATE;
+
 use super::bindings::{
-    CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_OK, CK_BBOOL, CK_RV, CK_SLOT_ID, CK_SLOT_ID_PTR,
-    CK_TOKEN_INFO_PTR, CK_ULONG_PTR,
+    CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_GENERAL_ERROR, CKR_OK, CK_BBOOL, CK_RV,
+    CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Used to obtain a list of slots in the system
@@ -11,25 +17,37 @@ use super::bindings::{
 /// * `pSlotList` - points to the buffer for the slot list
 /// * `pulCount` -  points to the location that receives the number of slots
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_GetSlotList(
-    tokenPresent: CK_BBOOL,
+    _tokenPresent: CK_BBOOL,
     pSlotList: CK_SLOT_ID_PTR,
     pulCount: CK_ULONG_PTR,
 ) -> CK_RV {
     if pulCount.is_null() {
         return CKR_ARGUMENTS_BAD as CK_RV;
     }
-    let slot_length = 0; // TODO
+
+    let Ok(mut state) = STATE.write() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+   };
+
+    let groups = state.get_groups_blocking().unwrap();
+    let slot_length = groups.len();
+
     if pSlotList.is_null() {
         unsafe {
-            *pulCount = slot_length;
+            *pulCount = slot_length as CK_ULONG;
         }
         return CKR_OK as CK_RV;
     }
-    if unsafe { *pulCount } < slot_length {
+
+    if unsafe { *pulCount } < slot_length as CK_ULONG {
         return CKR_BUFFER_TOO_SMALL as CK_RV;
     }
-    // TODO: set the slot list based on `tokenPresent`
+    let slot_list: Vec<CK_ULONG> = ((1 as CK_ULONG)..=(slot_length as CK_ULONG)).collect();
+    unsafe {
+        ptr::copy(slot_list.as_ptr(), pSlotList, slot_length);
+    }
     CKR_OK as CK_RV
 }
 
