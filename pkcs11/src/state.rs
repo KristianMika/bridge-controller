@@ -1,9 +1,6 @@
-use openssl::hash::Hasher;
-use rand::{rngs::OsRng, Rng};
 use std::{
-    collections::HashMap,
     error::Error,
-    sync::{RwLock, RwLockReadGuard, RwLockWriteGuard},
+    sync::{RwLockReadGuard, RwLockWriteGuard},
 };
 use tokio::runtime::Runtime;
 use tonic::transport::Certificate;
@@ -11,33 +8,14 @@ use tonic::transport::Certificate;
 use crate::{
     communicator::{meesign::Meesign, Communicator},
     cryptoki::bindings::CK_SESSION_HANDLE,
+    session::{session::Session, sessions::Sessions},
 };
-
-/// Holds the current state of PKCS#11 lib
-#[derive(Default)]
-pub struct SessionState {
-    /// Holds the object managed by functions C_Digest*
-    hasher: Option<Hasher>,
-}
-
-impl SessionState {
-    pub fn get_hasher(&self) -> Option<&Hasher> {
-        self.hasher.as_ref()
-    }
-    pub fn get_hasher_mut(&mut self) -> Option<&mut Hasher> {
-        self.hasher.as_mut()
-    }
-
-    pub fn set_hasher(&mut self, hasher: Hasher) {
-        self.hasher = Some(hasher)
-    }
-}
 
 pub(crate) struct CryptokiState<T>
 where
     T: Communicator,
 {
-    sessions: HashMap<CK_SESSION_HANDLE, RwLock<SessionState>>,
+    sessions: Sessions,
     communicator: T,
     runtime: Runtime,
 }
@@ -46,52 +24,30 @@ impl<T> CryptokiState<T>
 where
     T: Communicator,
 {
-    fn generate_session_handle(&self) -> CK_SESSION_HANDLE {
-        OsRng.gen_range(0..CK_SESSION_HANDLE::MAX)
-    }
-
     pub(crate) fn create_session(&mut self) -> CK_SESSION_HANDLE {
-        let new_session_state = RwLock::new(SessionState::default());
-
-        let mut session_handle = self.generate_session_handle();
-        while self.sessions.contains_key(&session_handle) {
-            session_handle = self.generate_session_handle();
-        }
-        self.sessions.insert(session_handle, new_session_state);
-
-        session_handle
+        self.sessions.create_session()
     }
 
     pub(crate) fn close_session(&mut self, session_handle: &CK_SESSION_HANDLE) {
-        self.sessions.remove(session_handle);
-        self.sessions.shrink_to_fit();
+        self.sessions.close_session(session_handle)
     }
 
     pub(crate) fn get_session(
         &self,
         session_handle: &CK_SESSION_HANDLE,
-    ) -> Option<RwLockReadGuard<SessionState>> {
-        match self.sessions.get(session_handle) {
-            None => None,
-            // TODO: unrap
-            Some(session) => Some(session.read().unwrap()),
-        }
+    ) -> Option<RwLockReadGuard<Session>> {
+        self.sessions.get_session(session_handle)
     }
 
     pub(crate) fn get_session_mut(
         &mut self,
         session_handle: &CK_SESSION_HANDLE,
-    ) -> Option<RwLockWriteGuard<SessionState>> {
-        match self.sessions.get_mut(session_handle) {
-            None => None,
-            // TODO: unrap
-            Some(session) => Some(session.write().unwrap()),
-        }
+    ) -> Option<RwLockWriteGuard<Session>> {
+        self.sessions.get_session_mut(session_handle)
     }
 
     pub(crate) fn finalize(&mut self) {
-        self.sessions.clear();
-        self.sessions.shrink_to_fit();
+        self.sessions.close_sessions()
     }
 
     pub(crate) async fn get_groups(&mut self) -> Result<Vec<String>, Box<dyn Error>> {
@@ -112,10 +68,6 @@ where
             communicator,
             runtime,
         }
-    }
-
-    pub fn get_runtime(&self) -> &Runtime {
-        &self.runtime
     }
 }
 

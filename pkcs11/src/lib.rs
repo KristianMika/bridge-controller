@@ -2,6 +2,7 @@ extern crate libc;
 
 pub(crate) mod communicator;
 pub mod cryptoki;
+pub(crate) mod session;
 mod state;
 
 use crate::{communicator::meesign::Meesign, state::CryptokiState};
