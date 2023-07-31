@@ -116,12 +116,14 @@ mod test {
             CKM_SHA256, CKR_OK, CK_BYTE_PTR, CK_MECHANISM, CK_MECHANISM_PTR, CK_RV,
             CK_SESSION_HANDLE_PTR, CK_ULONG, CK_ULONG_PTR, CK_VOID_PTR, NULL_PTR,
         },
+        general_purpose::C_Initialize,
         message_digesting::{C_Digest, C_DigestInit},
         session_management::{C_CloseSession, C_OpenSession},
     };
 
     #[test]
     fn given_valid_data_c_digest_produces_valid_hash() -> Result<(), ErrorStack> {
+        assert_eq!(CKR_OK as CK_RV, C_Initialize(NULL_PTR as CK_VOID_PTR));
         let mut session_handle = 0;
         assert_eq!(
             CKR_OK as CK_RV,
