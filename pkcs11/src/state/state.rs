@@ -8,21 +8,29 @@ use tonic::transport::Certificate;
 use crate::{
     communicator::{meesign::Meesign, Communicator},
     cryptoki::bindings::CK_SESSION_HANDLE,
-    session::{session::Session, sessions::Sessions},
 };
 
-pub(crate) struct CryptokiState<T>
+use super::{
+    session::{session::Session, sessions::Sessions},
+    slots::Slots,
+    token::{MeesignToken, Token},
+};
+
+pub(crate) struct CryptokiState<T, C>
 where
-    T: Communicator,
+    T: Token,
+    C: Communicator,
 {
     sessions: Sessions,
-    communicator: T,
+    communicator: C,
     runtime: Runtime,
+    slots: Slots<T>,
 }
 
-impl<T> CryptokiState<T>
+impl<T, C> CryptokiState<T, C>
 where
-    T: Communicator,
+    T: Token,
+    C: Communicator,
 {
     pub(crate) fn create_session(&mut self) -> CK_SESSION_HANDLE {
         self.sessions.create_session()
@@ -59,19 +67,20 @@ where
             .block_on(async { self.communicator.get_groups().await })
     }
 
-    pub(crate) fn new(communicator: T, runtime: Runtime) -> Self
+    pub(crate) fn new(communicator: C, runtime: Runtime) -> Self
     where
-        T: Communicator,
+        C: Communicator,
     {
         Self {
             sessions: Default::default(),
             communicator,
             runtime,
+            slots: Slots::<T>::new(),
         }
     }
 }
 
-impl Default for CryptokiState<Meesign> {
+impl Default for CryptokiState<MeesignToken, Meesign> {
     // TODO: just tmp, remove later, pls don't look
     fn default() -> Self {
         let cert = Certificate::from_pem(
