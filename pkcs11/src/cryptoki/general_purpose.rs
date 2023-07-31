@@ -7,7 +7,7 @@ use super::{
     },
     message_digesting::{C_Digest, C_DigestInit},
     session_management::{C_CloseSession, C_OpenSession},
-    slot_token::C_GetSlotList,
+    slot_token::{C_GetSlotList, C_GetTokenInfo},
 };
 use crate::STATE;
 
@@ -65,7 +65,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_GetFunctionList: Some(C_GetFunctionList),
         C_GetSlotList: Some(C_GetSlotList),
         C_GetSlotInfo: None,
-        C_GetTokenInfo: None,
+        C_GetTokenInfo: Some(C_GetTokenInfo),
         C_GetMechanismList: None,
         C_GetMechanismInfo: None,
         C_InitToken: None,

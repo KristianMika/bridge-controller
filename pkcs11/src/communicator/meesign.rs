@@ -8,8 +8,8 @@ use crate::communicator::meesign::proto::{mpc_client::MpcClient, GroupsRequest, 
 use std::{error::Error, str::FromStr, time::Duration};
 
 use self::proto::{task::TaskState, SignRequest, TaskRequest};
-use super::Communicator;
-use crate::communicator::{AuthResponse, GroupId};
+use super::{Communicator, Group};
+use crate::communicator::AuthResponse;
 
 mod proto {
     tonic::include_proto!("meesign");
@@ -42,7 +42,7 @@ impl Meesign {
 }
 #[async_trait]
 impl Communicator for Meesign {
-    async fn get_groups(&mut self) -> Result<Vec<GroupId>, Box<dyn Error>> {
+    async fn get_groups(&mut self) -> Result<Vec<Group>, Box<dyn Error>> {
         let request = tonic::Request::new(GroupsRequest { device_id: None });
 
         let response = self.client.get_groups(request).await?;
@@ -50,7 +50,7 @@ impl Communicator for Meesign {
         let groups = groups
             .iter()
             .filter(|group| group.key_type == KeyType::SignChallenge.into())
-            .map(|group| group.identifier.clone())
+            .map(|group| Group::new(group.identifier.clone().into(), group.name.clone().into()))
             .collect();
         Ok(groups)
     }

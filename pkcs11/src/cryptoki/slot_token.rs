@@ -1,12 +1,14 @@
 use std::ptr;
 
-use tokio::runtime::Runtime;
-
-use crate::{communicator::GroupId, state::token::MeesignToken, STATE};
+use crate::{
+    communicator::{Group, GroupId},
+    state::token::MeesignToken,
+    STATE,
+};
 
 use super::bindings::{
-    CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_GENERAL_ERROR, CKR_OK, CK_BBOOL, CK_RV,
-    CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR,
+    CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_GENERAL_ERROR, CKR_OK, CKR_TOKEN_NOT_PRESENT,
+    CK_BBOOL, CK_RV, CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Used to obtain a list of slots in the system
@@ -46,7 +48,7 @@ pub extern "C" fn C_GetSlotList(
 
     let slot_list: Vec<CK_SLOT_ID> = groups
         .into_iter()
-        .map(|groupId: GroupId| MeesignToken::new(groupId))
+        .map(|group: Group| group.into())
         .map(|token: MeesignToken| state.insert_token(token))
         .collect();
 
@@ -63,6 +65,19 @@ pub extern "C" fn C_GetSlotList(
 /// * `slotID` - the ID of the token’s slot
 /// * `pInfo` - points to the location that receives the token information
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_GetTokenInfo(slotID: CK_SLOT_ID, pInfo: CK_TOKEN_INFO_PTR) -> CK_RV {
-    unimplemented!()
+    if pInfo.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+
+    let Ok(state) = STATE.read() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+   };
+
+    match state.get_token_info(&slotID) {
+        Some(token_info) => unsafe { *pInfo = token_info },
+        None => return CKR_TOKEN_NOT_PRESENT as CK_RV,
+    }
+    CKR_OK as CK_RV
 }

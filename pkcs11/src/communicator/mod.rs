@@ -10,7 +10,7 @@ pub(crate) type GroupId = Vec<u8>;
 // TODO: remove once rust 1.74 is released
 #[async_trait]
 pub(crate) trait Communicator {
-    async fn get_groups(&mut self) -> Result<Vec<GroupId>, Box<dyn Error>>;
+    async fn get_groups(&mut self) -> Result<Vec<Group>, Box<dyn Error>>;
 
     async fn send_auth_request(
         &mut self,
@@ -22,4 +22,22 @@ pub(crate) trait Communicator {
         &mut self,
         task_id: Vec<u8>,
     ) -> Result<Option<AuthResponse>, Box<dyn Error>>;
+}
+
+pub(crate) struct Group {
+    group_id: GroupId,
+    name: String,
+}
+impl Group {
+    pub(crate) fn new(group_id: GroupId, name: String) -> Self {
+        Self { group_id, name }
+    }
+
+    pub(crate) fn get_group_id(&self) -> &GroupId {
+        &self.group_id
+    }
+
+    pub(crate) fn get_name(&self) -> &str {
+        &self.name
+    }
 }
