@@ -1,8 +1,11 @@
+use lazy_static::__Deref;
+
 use crate::STATE;
 
 use super::bindings::{
-    CKR_ARGUMENTS_BAD, CKR_GENERAL_ERROR, CKR_OK, CK_FLAGS, CK_NOTIFY, CK_RV, CK_SESSION_HANDLE,
-    CK_SESSION_HANDLE_PTR, CK_SLOT_ID, CK_ULONG, CK_USER_TYPE, CK_UTF8CHAR_PTR, CK_VOID_PTR,
+    CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_OK, CK_FLAGS,
+    CK_NOTIFY, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR, CK_SLOT_ID, CK_ULONG, CK_USER_TYPE,
+    CK_UTF8CHAR_PTR, CK_VOID_PTR,
 };
 
 /// Opens a session between an application and a token in a particular slot
@@ -31,6 +34,9 @@ pub extern "C" fn C_OpenSession(
     let Ok(mut state) = STATE.write() else  {
         return CKR_GENERAL_ERROR as CK_RV;
    };
+    let Some( state) = state.as_mut() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
 
     let session_handle = state.create_session();
     unsafe {
@@ -49,6 +55,9 @@ pub extern "C" fn C_OpenSession(
 pub extern "C" fn C_CloseSession(hSession: CK_SESSION_HANDLE) -> CK_RV {
     let Ok(mut state) = STATE.write() else  {
         return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some( state) = state.as_mut() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
     };
 
     // TODO: check if session exists
