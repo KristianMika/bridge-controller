@@ -6,8 +6,8 @@ use tokio::runtime::Runtime;
 use tonic::transport::Certificate;
 
 use crate::{
-    communicator::{meesign::Meesign, Communicator},
-    cryptoki::bindings::CK_SESSION_HANDLE,
+    communicator::{meesign::Meesign, Communicator, GroupId},
+    cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID},
 };
 
 use super::{
@@ -58,13 +58,17 @@ where
         self.sessions.close_sessions()
     }
 
-    pub(crate) async fn get_groups(&mut self) -> Result<Vec<String>, Box<dyn Error>> {
+    pub(crate) async fn get_groups(&mut self) -> Result<Vec<GroupId>, Box<dyn Error>> {
         self.communicator.get_groups().await
     }
 
-    pub(crate) fn get_groups_blocking(&mut self) -> Result<Vec<String>, Box<dyn Error>> {
+    pub(crate) fn get_groups_blocking(&mut self) -> Result<Vec<GroupId>, Box<dyn Error>> {
         self.runtime
             .block_on(async { self.communicator.get_groups().await })
+    }
+
+    pub(crate) fn insert_token(&mut self, token: T) -> CK_SLOT_ID {
+        self.slots.insert_token(token)
     }
 
     pub(crate) fn new(communicator: C, runtime: Runtime) -> Self

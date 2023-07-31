@@ -2,7 +2,7 @@ use std::ptr;
 
 use tokio::runtime::Runtime;
 
-use crate::STATE;
+use crate::{communicator::GroupId, state::token::MeesignToken, STATE};
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_GENERAL_ERROR, CKR_OK, CK_BBOOL, CK_RV,
@@ -40,11 +40,16 @@ pub extern "C" fn C_GetSlotList(
         }
         return CKR_OK as CK_RV;
     }
-
     if unsafe { *pulCount } < slot_length as CK_ULONG {
         return CKR_BUFFER_TOO_SMALL as CK_RV;
     }
-    let slot_list: Vec<CK_ULONG> = ((1 as CK_ULONG)..=(slot_length as CK_ULONG)).collect();
+
+    let slot_list: Vec<CK_SLOT_ID> = groups
+        .into_iter()
+        .map(|groupId: GroupId| MeesignToken::new(groupId))
+        .map(|token: MeesignToken| state.insert_token(token))
+        .collect();
+
     unsafe {
         ptr::copy(slot_list.as_ptr(), pSlotList, slot_length);
     }

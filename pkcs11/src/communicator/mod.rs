@@ -4,12 +4,13 @@ use tonic::async_trait;
 
 pub(crate) mod meesign;
 
-type AuthResponse = Vec<u8>;
+pub(crate) type AuthResponse = Vec<u8>;
+pub(crate) type GroupId = Vec<u8>;
 
 // TODO: remove once rust 1.74 is released
 #[async_trait]
 pub(crate) trait Communicator {
-    async fn get_groups(&mut self) -> Result<Vec<String>, Box<dyn Error>>;
+    async fn get_groups(&mut self) -> Result<Vec<GroupId>, Box<dyn Error>>;
 
     async fn send_auth_request(
         &mut self,
