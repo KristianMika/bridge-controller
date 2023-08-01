@@ -84,7 +84,9 @@ pub extern "C" fn C_Login(
     pPin: CK_UTF8CHAR_PTR,
     ulPinLen: CK_ULONG,
 ) -> CK_RV {
-    unimplemented!()
+    // TODO: do we need this kind of auth?
+    // for now just allow all logins
+    CKR_OK as CK_RV
 }
 
 /// Logs a user out from a token
@@ -94,5 +96,7 @@ pub extern "C" fn C_Login(
 /// * `hSession` - the session’s handle
 #[no_mangle]
 pub extern "C" fn C_Logout(hSession: CK_SESSION_HANDLE) -> CK_RV {
-    unimplemented!()
+    // for now do nothing
+    // TODO
+    CKR_OK as CK_RV
 }

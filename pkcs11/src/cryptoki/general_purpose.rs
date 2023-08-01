@@ -1,6 +1,4 @@
-use std::{mem, ops::DerefMut};
-
-use lazy_static::__Deref;
+use std::mem;
 
 use super::{
     bindings::{
@@ -8,7 +6,7 @@ use super::{
         CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_RV, CK_VERSION, CK_VOID_PTR,
     },
     message_digesting::{C_Digest, C_DigestInit},
-    session_management::{C_CloseSession, C_OpenSession},
+    session_management::{C_CloseSession, C_Login, C_Logout, C_OpenSession},
     slot_token::{C_GetSlotList, C_GetTokenInfo},
 };
 use crate::{state::state::CryptokiState, STATE};
@@ -85,8 +83,8 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_GetSessionInfo: None,
         C_GetOperationState: None,
         C_SetOperationState: None,
-        C_Login: None,
-        C_Logout: None,
+        C_Login: Some(C_Login),
+        C_Logout: Some(C_Logout),
         C_CreateObject: None,
         C_CopyObject: None,
         C_DestroyObject: None,
