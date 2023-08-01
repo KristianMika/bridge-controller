@@ -52,14 +52,12 @@ impl MeesignToken {
     }
 
     fn create_token_label(&self) -> [u8; LABEL_BUFFER_LENGTH] {
-        let mut label: Vec<u8> = (String::from(LABEL_PREFIX) + &self.name)
+        let label: Vec<u8> = (String::from(LABEL_PREFIX) + &self.name)
             .chars()
             .map(|character: char| character as u8)
             .chain(repeat(b' '))
-            .take(LABEL_BUFFER_LENGTH - 1)
+            .take(LABEL_BUFFER_LENGTH)
             .collect();
-
-        label.push(NULL_TERMINATOR);
 
         match label.try_into() {
             Ok(val) => val,
