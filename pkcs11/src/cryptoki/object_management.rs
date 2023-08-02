@@ -96,6 +96,7 @@ pub extern "C" fn C_FindObjectsInit(
                 value.as_mut_ptr(),
                 template.ulValueLen as usize,
             );
+            value.set_len(template.ulValueLen as usize);
         }
         template_value = Some(value.into_iter().map(|b: c_void| b as u8).collect());
     }
