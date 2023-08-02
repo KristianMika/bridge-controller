@@ -9,8 +9,8 @@ use crate::{
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_OK,
-    CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE_PTR, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV,
-    CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
+    CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE, CK_ATTRIBUTE_PTR, CK_OBJECT_HANDLE,
+    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Creates an object
@@ -22,13 +22,42 @@ use super::bindings::{
 /// * `ulCount` - the number of attributes in the template
 /// * `phObject` - points to the location that receives the new object’s handle
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_CreateObject(
     hSession: CK_SESSION_HANDLE,
     pTemplate: CK_ATTRIBUTE_PTR,
     ulCount: CK_ULONG,
     phObject: CK_OBJECT_HANDLE_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    if pTemplate.is_null() || phObject.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+
+    let Ok(mut state) = STATE.write() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some( state) = state.as_mut() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
+
+    let mut template: Vec<CK_ATTRIBUTE> = Vec::with_capacity(ulCount as usize);
+    unsafe {
+        ptr::copy(pTemplate, template.as_mut_ptr(), ulCount as usize);
+        template.set_len(ulCount as usize);
+    }
+
+    let return_code = match state.get_session_mut(&hSession) {
+        Some(mut session) => {
+            template
+                .into_iter()
+                .map(|t| t.into())
+                .for_each(|object| session.create_object(object));
+            CKR_OK as CK_RV
+        }
+        None => CKR_SESSION_HANDLE_INVALID as CK_RV,
+    };
+
+    return_code
 }
 
 /// Destroys an object
@@ -87,21 +116,8 @@ pub extern "C" fn C_FindObjectsInit(
     };
 
     let template = unsafe { *pTemplate };
-    let mut template_value = None;
-    if template.ulValueLen > 0 {
-        let mut value = Vec::with_capacity(template.ulValueLen as usize);
-        unsafe {
-            ptr::copy(
-                template.pValue,
-                value.as_mut_ptr(),
-                template.ulValueLen as usize,
-            );
-            value.set_len(template.ulValueLen as usize);
-        }
-        template_value = Some(value.into_iter().map(|b: c_void| b as u8).collect());
-    }
-    let template = Attribute::new(template.type_, template_value);
-    let object_search = ObjectSearch::new(template, ulCount);
+
+    let object_search = ObjectSearch::new(template.into(), ulCount);
 
     let return_code = match state.get_session_mut(&hSession) {
         Some(mut session) => {

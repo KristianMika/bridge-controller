@@ -7,7 +7,6 @@ use crate::{
 
 static LABEL_PREFIX: &str = "Meesign: ";
 const LABEL_BUFFER_LENGTH: usize = 32;
-static NULL_TERMINATOR: u8 = 0;
 
 pub(crate) trait Token {
     fn get_token_info(&self) -> CK_TOKEN_INFO;
