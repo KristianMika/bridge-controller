@@ -166,7 +166,24 @@ pub extern "C" fn C_FindObjects(
     CKR_OK as CK_RV
 }
 
+/// Terminates a search for token and session objects
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_FindObjectsFinal(hSession: CK_SESSION_HANDLE) -> CK_RV {
-    unimplemented!()
+    let Ok(mut state) = STATE.write() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some(state) = state.as_mut() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
+
+    match state.get_session_mut(&hSession) {
+        Some(mut session) => session.reset_object_search(),
+        None => return CKR_SESSION_HANDLE_INVALID as CK_RV,
+    };
+    CKR_OK as CK_RV
 }

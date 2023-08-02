@@ -41,6 +41,10 @@ impl Session {
         self.object_search = Some(object_search);
     }
 
+    pub fn reset_object_search(&mut self) {
+        self.object_search = None;
+    }
+
     pub fn create_object(&mut self, object: DataObject) {
         let object_handle = self.generate_object_handle();
 

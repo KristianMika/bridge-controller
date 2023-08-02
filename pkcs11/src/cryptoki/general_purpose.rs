@@ -2,12 +2,11 @@ use std::mem;
 
 use super::{
     bindings::{
-        C_FindObjects, CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR,
-        CKR_HOST_MEMORY, CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_RV, CK_VERSION,
-        CK_VOID_PTR,
+        CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_HOST_MEMORY,
+        CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_RV, CK_VERSION, CK_VOID_PTR,
     },
     message_digesting::{C_Digest, C_DigestInit},
-    object_management::C_FindObjectsInit,
+    object_management::{C_FindObjects, C_FindObjectsFinal, C_FindObjectsInit},
     session_management::{C_CloseSession, C_Login, C_Logout, C_OpenSession},
     slot_token::{C_GetSlotList, C_GetTokenInfo},
 };
@@ -95,7 +94,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_SetAttributeValue: None,
         C_FindObjectsInit: Some(C_FindObjectsInit),
         C_FindObjects: Some(C_FindObjects),
-        C_FindObjectsFinal: None,
+        C_FindObjectsFinal: Some(C_FindObjectsFinal),
         C_EncryptInit: None,
         C_Encrypt: None,
         C_EncryptUpdate: None,
