@@ -2,7 +2,11 @@ use std::ptr;
 
 use libc::c_void;
 
-use crate::cryptoki::bindings::{CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE, CK_ULONG};
+use crate::cryptoki::bindings::{
+    CKO_CERTIFICATE, CKO_DATA, CKO_DOMAIN_PARAMETERS, CKO_HW_FEATURE, CKO_MECHANISM, CKO_OTP_KEY,
+    CKO_PRIVATE_KEY, CKO_PROFILE, CKO_PUBLIC_KEY, CKO_SECRET_KEY, CKO_VENDOR_DEFINED, CK_ATTRIBUTE,
+    CK_ATTRIBUTE_TYPE, CK_ULONG,
+};
 
 pub(crate) struct ObjectSearch {
     template: Attribute,
@@ -49,11 +53,29 @@ impl Attribute {
 }
 
 #[derive(PartialEq, Eq, Hash)]
-pub(crate) struct Object {}
+pub(crate) struct Object {
+    value: Vec<u8>,
+}
 
 impl Object {
     pub(crate) fn from_template(template: Attribute) -> Self {
-        unimplemented!()
+        match template.attribute_type as u32 {
+            // holds information defined by an application
+            CKO_DATA => Self {
+                value: template.value.unwrap(),
+            },
+            CKO_CERTIFICATE => unimplemented!(),
+            CKO_PUBLIC_KEY => unimplemented!(),
+            CKO_PRIVATE_KEY => unimplemented!(),
+            CKO_SECRET_KEY => unimplemented!(),
+            CKO_HW_FEATURE => unimplemented!(),
+            CKO_DOMAIN_PARAMETERS => unimplemented!(),
+            CKO_MECHANISM => unimplemented!(),
+            CKO_OTP_KEY => unimplemented!(),
+            CKO_PROFILE => unimplemented!(),
+            CKO_VENDOR_DEFINED => unimplemented!(),
+            _ => panic!(), //TODO
+        }
     }
 }
 
