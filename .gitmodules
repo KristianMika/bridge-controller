@@ -1,0 +1,3 @@
+[submodule "pkcs11/PKCS11-SPECS"]
+	path = pkcs11/PKCS11-SPECS
+	url = https://github.com/Pkcs11Interop/PKCS11-SPECS.git
