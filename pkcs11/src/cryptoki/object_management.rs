@@ -1,11 +1,8 @@
-use std::ptr;
+use std::{cmp::min, ptr};
 
-use libc::c_void;
+use lazy_static::__Deref;
 
-use crate::{
-    state::object::{Attribute, ObjectSearch},
-    STATE,
-};
+use crate::{state::object::ObjectSearch, STATE};
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_OK,
@@ -48,10 +45,7 @@ pub extern "C" fn C_CreateObject(
 
     let return_code = match state.get_session_mut(&hSession) {
         Some(mut session) => {
-            template
-                .into_iter()
-                .map(|t| t.into())
-                .for_each(|object| session.create_object(object));
+            session.create_object(template.into());
             CKR_OK as CK_RV
         }
         None => CKR_SESSION_HANDLE_INVALID as CK_RV,
@@ -115,9 +109,13 @@ pub extern "C" fn C_FindObjectsInit(
         return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
     };
 
-    let template = unsafe { *pTemplate };
+    let mut template: Vec<CK_ATTRIBUTE> = Vec::with_capacity(ulCount as usize);
+    unsafe {
+        ptr::copy(pTemplate, template.as_mut_ptr(), ulCount as usize);
+        template.set_len(ulCount as usize);
+    }
 
-    let object_search = ObjectSearch::new(template.into(), ulCount);
+    let object_search = ObjectSearch::new(template.into());
 
     let return_code = match state.get_session_mut(&hSession) {
         Some(mut session) => {
@@ -129,14 +127,43 @@ pub extern "C" fn C_FindObjectsInit(
     return_code
 }
 
+/// Continues a search for token and session objects that match a template, obtaining additional object handles
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `phObject` - points to the location that receives the list (array) of additional object handles
+/// * `ulMaxObjectCount` - the maximum number of object handles to be returned
+/// * `pulObjectCount` - points to the location that receives the actual number of object handles returned
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_FindObjects(
     hSession: CK_SESSION_HANDLE,
     phObject: CK_OBJECT_HANDLE_PTR,
     ulMaxObjectCount: CK_ULONG,
     pulObjectCount: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    if phObject.is_null() || pulObjectCount.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+
+    let Ok(state) = STATE.read() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some( state) = state.deref() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
+    let filtered_handles = match state.get_session(&hSession) {
+        Some(session) => session.get_filtered_handles(),
+        None => return CKR_SESSION_HANDLE_INVALID as CK_RV,
+    };
+
+    let copy_count = min(ulMaxObjectCount as usize, filtered_handles.len());
+    unsafe {
+        ptr::copy(filtered_handles.as_ptr(), phObject, copy_count);
+        *pulObjectCount = copy_count as u64;
+    }
+    CKR_OK as CK_RV
 }
 
 #[no_mangle]
