@@ -5,7 +5,7 @@ use rand::{rngs::OsRng, Rng};
 
 use crate::{
     cryptoki::bindings::CK_OBJECT_HANDLE,
-    state::object::{DataObject, ObjectSearch},
+    state::object::{data_object::DataObject, object_search::ObjectSearch},
 };
 
 /// Holds the current state of PKCS#11 lib

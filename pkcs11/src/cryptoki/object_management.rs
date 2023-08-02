@@ -2,7 +2,7 @@ use std::{cmp::min, ptr};
 
 use lazy_static::__Deref;
 
-use crate::{state::object::ObjectSearch, STATE};
+use crate::{state::object::object_search::ObjectSearch, STATE};
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_OK,
