@@ -6,6 +6,8 @@ use std::path::{Path, PathBuf};
 
 static PROTO_INPUT_DIRECTORY: &str = "proto";
 static PROTO_INPUT_FILE: &str = "mpc.proto";
+static PKCS_11_SPEC_VERSION: &str = "v3.0";
+static PKCS_11_HEADERS_DIRECTORY: &str = "PKCS11-SPECS";
 
 fn main() -> Result<(), Box<dyn Error>> {
     generate_bindings();
@@ -28,10 +30,12 @@ fn compile_protofiles(
 fn generate_bindings() {
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
-
+    let header_location = PathBuf::from(PKCS_11_HEADERS_DIRECTORY)
+        .join(PKCS_11_SPEC_VERSION)
+        .join("headers");
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
-        .clang_arg("-Iheaders")
+        .clang_arg(format!("-I{}", header_location.to_str().unwrap()))
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
