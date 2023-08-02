@@ -1,6 +1,6 @@
 use super::bindings::{
-    CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_RV, CK_SESSION_HANDLE, CK_ULONG,
-    CK_ULONG_PTR,
+    CKR_FUNCTION_NOT_SUPPORTED, CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_RV,
+    CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Initializes an encryption operation
@@ -16,7 +16,7 @@ pub extern "C" fn C_EncryptInit(
     pMechanism: CK_MECHANISM_PTR,
     hKey: CK_OBJECT_HANDLE,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Encrypts single-part data
@@ -36,7 +36,7 @@ pub extern "C" fn C_Encrypt(
     pEncryptedData: CK_BYTE_PTR,
     pulEncryptedDataLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Continues a multiple-part encryption operation, processing another data part
@@ -56,7 +56,7 @@ pub extern "C" fn C_EncryptUpdate(
     pEncryptedPart: CK_BYTE_PTR,
     pulEncryptedPartLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Finishes a multiple-part encryption operation
@@ -72,5 +72,5 @@ pub extern "C" fn C_EncryptFinal(
     pLastEncryptedPart: CK_BYTE_PTR,
     pulLastEncryptedPartLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }

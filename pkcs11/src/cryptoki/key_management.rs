@@ -1,6 +1,6 @@
 use super::bindings::{
-    CKR_OK, CK_ATTRIBUTE_PTR, CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE,
-    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
+    CKR_FUNCTION_NOT_SUPPORTED, CKR_OK, CK_ATTRIBUTE_PTR, CK_BYTE_PTR, CK_MECHANISM_PTR,
+    CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Generates a secret key or set of domain parameters, creating a new object
@@ -46,7 +46,7 @@ pub extern "C" fn C_GenerateKeyPair(
     phPublicKey: CK_OBJECT_HANDLE_PTR,
     phPrivateKey: CK_OBJECT_HANDLE_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Wraps (i.e., encrypts) a private or secret key
@@ -68,7 +68,7 @@ pub extern "C" fn C_WrapKey(
     pWrappedKey: CK_BYTE_PTR,
     pulWrappedKeyLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Unwraps (i.e. decrypts) a wrapped key, creating a new private key or secret key object
@@ -94,5 +94,5 @@ pub extern "C" fn C_UnwrapKey(
     ulAttributeCount: CK_ULONG,
     phKey: CK_OBJECT_HANDLE_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }

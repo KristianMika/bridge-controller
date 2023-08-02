@@ -1,6 +1,6 @@
 use super::bindings::{
-    CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_RV, CK_SESSION_HANDLE, CK_ULONG,
-    CK_ULONG_PTR,
+    CKR_FUNCTION_NOT_SUPPORTED, CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_RV,
+    CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Initializes a decryption operation
@@ -16,7 +16,7 @@ pub extern "C" fn C_DecryptInit(
     pMechanism: CK_MECHANISM_PTR,
     hKey: CK_OBJECT_HANDLE,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Decrypts encrypted data in a single part
@@ -37,5 +37,5 @@ pub extern "C" fn C_Decrypt(
     pData: CK_BYTE_PTR,
     pulDataLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }

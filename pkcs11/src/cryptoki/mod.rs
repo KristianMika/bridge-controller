@@ -7,3 +7,4 @@ pub mod message_digesting;
 pub mod object_management;
 pub mod session_management;
 pub mod slot_token;
+pub mod unsupported;

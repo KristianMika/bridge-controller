@@ -5,8 +5,8 @@ use lazy_static::__Deref;
 use crate::{state::object::object_search::ObjectSearch, STATE};
 
 use super::bindings::{
-    CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_OK,
-    CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE, CK_ATTRIBUTE_PTR, CK_OBJECT_HANDLE,
+    CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_FUNCTION_NOT_SUPPORTED, CKR_GENERAL_ERROR,
+    CKR_OK, CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE, CK_ATTRIBUTE_PTR, CK_OBJECT_HANDLE,
     CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
@@ -62,7 +62,7 @@ pub extern "C" fn C_CreateObject(
 /// * `hObject` - the object’s handle
 #[no_mangle]
 pub extern "C" fn C_DestroyObject(hSession: CK_SESSION_HANDLE, hObject: CK_OBJECT_HANDLE) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Initializes a search for token and session objects that match a template
@@ -79,7 +79,7 @@ pub extern "C" fn C_GetAttributeValue(
     pTemplate: CK_ATTRIBUTE_PTR,
     ulCount: CK_ULONG,
 ) -> CK_RV {
-    unimplemented!()
+    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
 }
 
 /// Initializes a search for token and session objects that match a template.
