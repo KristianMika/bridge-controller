@@ -1,8 +1,28 @@
 use super::bindings::{
-    CK_ATTRIBUTE_PTR, CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV,
-    CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
+    CKR_OK, CK_ATTRIBUTE_PTR, CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE,
+    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
+/// Generates a secret key or set of domain parameters, creating a new object
+///
+/// # Arguments
+///
+/// * `hSession` - the session’s handle
+/// * `pMechanism` - points to the generation mechanism
+/// * `pTemplate` - points to the template for the new key or set of domain parameters
+/// * `ulCount` - the number of attributes in the template
+/// * `phKey` - points to the location that receives the handle of the new key or set of domain parameters
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern "C" fn C_GenerateKey(
+    hSession: CK_SESSION_HANDLE,
+    pMechanism: CK_MECHANISM_PTR,
+    pTemplate: CK_ATTRIBUTE_PTR,
+    ulCount: CK_ULONG,
+    phKey: CK_OBJECT_HANDLE_PTR,
+) -> CK_RV {
+    CKR_OK as CK_RV
+}
 /// Generates a public/private key pair, creating new key objects
 ///
 /// # Arguments
