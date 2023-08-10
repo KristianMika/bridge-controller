@@ -12,6 +12,5 @@ use lazy_static::lazy_static;
 use std::sync::RwLock;
 
 lazy_static! {
-    pub(crate) static ref STATE: RwLock<Option<CryptokiState<MeesignToken, Meesign>>> =
-        RwLock::new(None);
+    pub(crate) static ref STATE: RwLock<Option<CryptokiState<Meesign>>> = RwLock::new(None);
 }

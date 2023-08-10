@@ -71,6 +71,7 @@ pub extern "C" fn C_GenerateKey(
 
     return_code
 }
+
 /// Generates a public/private key pair, creating new key objects
 ///
 /// # Arguments

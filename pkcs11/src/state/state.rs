@@ -1,35 +1,33 @@
 use std::{
     error::Error,
-    sync::{RwLockReadGuard, RwLockWriteGuard},
+    sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
 };
 use tokio::runtime::Runtime;
 use tonic::transport::Certificate;
 
 use crate::{
-    communicator::{meesign::Meesign, Communicator, Group, GroupId},
+    communicator::{meesign::Meesign, Communicator, Group},
     cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID, CK_TOKEN_INFO},
 };
 
 use super::{
     session::{session::Session, sessions::Sessions},
-    slots::Slots,
+    slots::{Slots, TokenStore},
     token::{MeesignToken, Token},
 };
 
-pub(crate) struct CryptokiState<T, C>
+pub(crate) struct CryptokiState<C>
 where
-    T: Token,
     C: Communicator,
 {
     sessions: Sessions,
     communicator: C,
     runtime: Runtime,
-    slots: Slots<T>,
+    slots: Slots,
 }
 
-impl<T, C> CryptokiState<T, C>
+impl<C> CryptokiState<C>
 where
-    T: Token,
     C: Communicator,
 {
     pub(crate) fn create_session(&mut self) -> CK_SESSION_HANDLE {
@@ -67,7 +65,7 @@ where
             .block_on(async { self.communicator.get_groups().await })
     }
 
-    pub(crate) fn insert_token(&mut self, token: T) -> CK_SLOT_ID {
+    pub(crate) fn insert_token(&mut self, token: TokenStore) -> CK_SLOT_ID {
         self.slots.insert_token(token)
     }
 
@@ -83,12 +81,12 @@ where
             sessions: Default::default(),
             communicator,
             runtime,
-            slots: Slots::<T>::new(),
+            slots: Slots::new(),
         }
     }
 }
 
-impl Default for CryptokiState<MeesignToken, Meesign> {
+impl Default for CryptokiState<Meesign> {
     // TODO: just tmp, remove later, pls don't look
     fn default() -> Self {
         let cert = Certificate::from_pem(

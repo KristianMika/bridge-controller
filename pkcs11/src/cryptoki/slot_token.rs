@@ -1,8 +1,15 @@
-use std::ptr;
+use std::{
+    ptr,
+    sync::{Arc, RwLock},
+};
 
 use lazy_static::__Deref;
 
-use crate::{communicator::Group, state::token::MeesignToken, STATE};
+use crate::{
+    communicator::Group,
+    state::{slots::TokenStore, token::MeesignToken},
+    STATE,
+};
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR,
@@ -51,7 +58,8 @@ pub extern "C" fn C_GetSlotList(
     let slot_list: Vec<CK_SLOT_ID> = groups
         .into_iter()
         .map(|group: Group| group.into())
-        .map(|token: MeesignToken| state.insert_token(token))
+        .map(|token: MeesignToken| Arc::new(RwLock::new(token)))
+        .map(|token| state.insert_token(token))
         .collect();
 
     unsafe {

@@ -7,7 +7,6 @@ use super::bindings::{
     CK_ULONG_PTR,
 };
 use crate::STATE;
-use lazy_static::__Deref;
 use openssl::hash::{Hasher, MessageDigest};
 
 /// Initializes a message-digesting operation

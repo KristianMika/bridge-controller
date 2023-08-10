@@ -1,25 +1,23 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
 
 use crate::cryptoki::bindings::{CK_SLOT_ID, CK_TOKEN_INFO};
 
 use super::token::Token;
 
+pub(crate) type TokenStore = Arc<RwLock<dyn Token + Send + Sync>>;
+
 // TODO: hide behind a trait
 #[derive(Default)]
-pub(crate) struct Slots<T>
-where
-    T: Token,
-{
-    // TODO: allow dynamic dispatch to enable polymorphism
-    tokens: HashMap<CK_SLOT_ID, T>,
+pub(crate) struct Slots {
+    tokens: HashMap<CK_SLOT_ID, TokenStore>,
     counter: usize,
 }
 
-impl<T> Slots<T>
-where
-    T: Token,
-{
-    pub(crate) fn insert_token(&mut self, token: T) -> CK_SLOT_ID {
+impl Slots {
+    pub(crate) fn insert_token(&mut self, token: TokenStore) -> CK_SLOT_ID {
         self.counter += 1;
         self.tokens.insert(self.counter as CK_SLOT_ID, token);
         self.counter as CK_SLOT_ID
@@ -38,7 +36,7 @@ where
 
     pub(crate) fn get_token_info(&self, slot_id: &CK_SLOT_ID) -> Option<CK_TOKEN_INFO> {
         match self.tokens.get(slot_id) {
-            Some(token) => Some(token.get_token_info()),
+            Some(token) => Some(token.read().unwrap().get_token_info()),
             None => None,
         }
     }
