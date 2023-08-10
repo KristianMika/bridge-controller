@@ -10,6 +10,8 @@ const LABEL_BUFFER_LENGTH: usize = 32;
 
 pub(crate) trait Token {
     fn get_token_info(&self) -> CK_TOKEN_INFO;
+
+    fn get_public_key(&self) -> &[u8];
 }
 
 // TODO: store other info, like group name?
@@ -42,6 +44,10 @@ impl Token for MeesignToken {
             firmwareVersion: CK_VERSION { major: 0, minor: 1 },
             utcTime: Self::get_utc_time(),
         }
+    }
+
+    fn get_public_key(&self) -> &[u8] {
+        &self.group_id
     }
 }
 

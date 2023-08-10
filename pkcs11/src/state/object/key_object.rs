@@ -22,8 +22,20 @@ pub(crate) struct SecretKeyObject {
     unwrap_template: Option<Template>,
 }
 
-impl SecretKeyObject {
-    pub(crate) fn from_template(template: Template) -> Self {
+impl CryptokiObject for SecretKeyObject {
+    fn does_template_match(&self, template: &Template) -> bool {
+        self.data.does_template_match(template)
+        // TODO: apply other filters
+    }
+
+    fn store_data(&mut self, data: Vec<u8>) {
+        self.data.store_data(data)
+    }
+
+    fn from_template(template: Template) -> Self
+    where
+        Self: Sized,
+    {
         let data = DataObject::from_template(template);
         // todo: create from template
         Self {
@@ -44,16 +56,6 @@ impl SecretKeyObject {
             wrap_template: None,
             unwrap_template: None,
         }
-    }
-}
-impl CryptokiObject for SecretKeyObject {
-    fn does_template_match(&self, template: &Template) -> bool {
-        self.data.does_template_match(template)
-        // TODO: apply other filters
-    }
-
-    fn store_data(&mut self, data: Vec<u8>) {
-        self.data.store_data(data)
     }
 }
 

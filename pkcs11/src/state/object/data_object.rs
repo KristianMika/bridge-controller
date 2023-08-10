@@ -41,10 +41,11 @@ impl CryptokiObject for DataObject {
     fn store_data(&mut self, data: Vec<u8>) {
         self.data = data;
     }
-}
 
-impl DataObject {
-    pub(crate) fn from_template(template: Template) -> Self {
+    fn from_template(template: Template) -> Self
+    where
+        Self: Sized,
+    {
         // TODO: check class
         // if template.get(&(CKA_CLASS as u64)).unwrap() != CKO_DATA {
         //     unimplemented!()

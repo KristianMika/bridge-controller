@@ -1,21 +1,27 @@
-use std::{
-    borrow::BorrowMut,
-    sync::{Arc, Mutex, RwLock},
-};
+use std::sync::{Arc, RwLock};
 
-use self::{data_object::DataObject, key_object::SecretKeyObject, template::Template};
+use self::{
+    data_object::DataObject, key_object::SecretKeyObject, private_key_object::PrivateKeyObject,
+    public_key_object::PublicKeyObject, template::Template,
+};
 use crate::state::object::object_class::ObjectClass;
 pub(crate) mod attribute;
 pub(crate) mod data_object;
 pub(crate) mod key_object;
 pub(crate) mod object_class;
 pub(crate) mod object_search;
+pub(crate) mod private_key_object;
+pub(crate) mod public_key_object;
 pub(crate) mod template;
 
 pub(crate) trait CryptokiObject {
     fn does_template_match(&self, template: &Template) -> bool;
     // TODO: refactor
     fn store_data(&mut self, data: Vec<u8>);
+
+    fn from_template(template: Template) -> Self
+    where
+        Self: Sized;
 }
 
 pub(crate) struct CryptokiArc {
@@ -34,6 +40,7 @@ impl CryptokiArc {
 
 impl From<Template> for Option<CryptokiArc> {
     fn from(template: Template) -> Self {
+        // TODO: refactor!!!!!
         let Some(class) = template.get_class() else {return None;};
         match class {
             ObjectClass::Data => Some(CryptokiArc {
@@ -42,7 +49,12 @@ impl From<Template> for Option<CryptokiArc> {
             ObjectClass::SecretKey => Some(CryptokiArc {
                 value: (Arc::new(RwLock::new(SecretKeyObject::from_template(template)))),
             }),
-            ObjectClass::PrivateKey => None,
+            ObjectClass::PublicKey => Some(CryptokiArc {
+                value: Arc::new(RwLock::new(PublicKeyObject::from_template(template))),
+            }),
+            ObjectClass::PrivateKey => Some(CryptokiArc {
+                value: Arc::new(RwLock::new(PrivateKeyObject::from_template(template))),
+            }),
         }
     }
 }

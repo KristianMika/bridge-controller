@@ -3,15 +3,17 @@ use std::io::Cursor;
 use byteorder::{LittleEndian, ReadBytesExt};
 
 use crate::cryptoki::bindings::{
-    CKA_CLASS, CKO_DATA, CKO_PRIVATE_KEY, CKO_SECRET_KEY, CK_OBJECT_CLASS,
+    CKA_CLASS, CKO_DATA, CKO_PRIVATE_KEY, CKO_PUBLIC_KEY, CKO_SECRET_KEY, CK_OBJECT_CLASS,
 };
 
 use super::attribute::Attribute;
 
+#[derive(Eq, PartialEq)]
 pub(crate) enum ObjectClass {
     Data,
     SecretKey,
     PrivateKey,
+    PublicKey,
 }
 impl ObjectClass {
     pub(crate) fn from_vec(value: &[u8]) -> Option<Self> {
@@ -27,6 +29,7 @@ impl ObjectClass {
             CKO_SECRET_KEY => Some(ObjectClass::SecretKey),
             CKO_DATA => Some(ObjectClass::Data),
             CKO_PRIVATE_KEY => Some(ObjectClass::PrivateKey),
+            CKO_PUBLIC_KEY => Some(ObjectClass::PublicKey),
             _ => None,
         }
     }

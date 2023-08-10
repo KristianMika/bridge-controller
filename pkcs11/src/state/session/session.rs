@@ -73,6 +73,10 @@ impl Session {
         object_handle
     }
 
+    pub(crate) fn get_token(&self) -> TokenStore {
+        self.token.clone()
+    }
+
     // TODO: return an error if search not innited
     pub fn get_filtered_handles(&self) -> Vec<CK_OBJECT_HANDLE> {
         let Some( object_search) = self.object_search.as_ref() else {
