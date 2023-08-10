@@ -1,3 +1,5 @@
+use std::vec;
+
 use crate::cryptoki::bindings::{
     CKA_COPYABLE, CKA_DESTROYABLE, CKA_LABEL, CKA_MODIFIABLE, CKA_PRIVATE, CKA_TOKEN,
     CKA_UNIQUE_ID, CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE, CK_BBOOL, CK_FALSE, CK_TRUE,
@@ -14,6 +16,7 @@ pub(crate) struct DataObject {
     is_copyable: CK_BBOOL,
     is_destroyable: CK_BBOOL,
     unique_id: Vec<u8>,
+    data: Vec<u8>,
 }
 
 impl CryptokiObject for DataObject {
@@ -33,6 +36,10 @@ impl CryptokiObject for DataObject {
         // TODO: apply other filters
 
         true
+    }
+
+    fn store_data(&mut self, data: Vec<u8>) {
+        self.data = data;
     }
 }
 
@@ -64,6 +71,7 @@ impl DataObject {
             unique_id: template
                 .get_value(&(CKA_UNIQUE_ID as CK_ATTRIBUTE_TYPE))
                 .unwrap_or(vec![]),
+            data: vec![],
         }
     }
 }

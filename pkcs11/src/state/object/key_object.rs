@@ -51,6 +51,10 @@ impl CryptokiObject for SecretKeyObject {
         self.data.does_template_match(template)
         // TODO: apply other filters
     }
+
+    fn store_data(&mut self, data: Vec<u8>) {
+        self.data.store_data(data)
+    }
 }
 
 impl From<Vec<CK_ATTRIBUTE>> for SecretKeyObject {

@@ -45,11 +45,13 @@ impl Session {
         self.object_search = None;
     }
 
-    pub fn create_object(&mut self, object: CryptokiArc) {
+    pub fn create_object(&mut self, object: CryptokiArc) -> CK_OBJECT_HANDLE {
         let object_handle = self.generate_object_handle();
 
         let _ = self.objects.insert(object_handle, object);
+        object_handle
     }
+
     fn generate_object_handle(&self) -> CK_OBJECT_HANDLE {
         let mut object_handle = OsRng.gen_range(0..CK_OBJECT_HANDLE::MAX);
         while self.objects.contains_key(&object_handle) {

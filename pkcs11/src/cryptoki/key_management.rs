@@ -1,6 +1,17 @@
+use std::ptr;
+
+use rand::{rngs::OsRng, Rng};
+
+use crate::{
+    state::object::{template::Template, CryptokiArc},
+    STATE,
+};
+
 use super::bindings::{
-    CKR_FUNCTION_NOT_SUPPORTED, CKR_OK, CK_ATTRIBUTE_PTR, CK_BYTE_PTR, CK_MECHANISM_PTR,
-    CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
+    CKM_AES_KEY_GEN, CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_FUNCTION_NOT_SUPPORTED,
+    CKR_GENERAL_ERROR, CKR_OK, CKR_SESSION_HANDLE_INVALID, CKR_TEMPLATE_INCOMPLETE, CK_ATTRIBUTE,
+    CK_ATTRIBUTE_PTR, CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV,
+    CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Generates a secret key or set of domain parameters, creating a new object
@@ -21,7 +32,44 @@ pub extern "C" fn C_GenerateKey(
     ulCount: CK_ULONG,
     phKey: CK_OBJECT_HANDLE_PTR,
 ) -> CK_RV {
-    CKR_OK as CK_RV
+    if pMechanism.is_null() || pTemplate.is_null() || phKey.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+    let Ok(mut state) = STATE.write() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some( state) = state.as_mut() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
+
+    let mechanism = unsafe { *pMechanism };
+    // todo: implement others
+    if mechanism.mechanism as u32 != CKM_AES_KEY_GEN {
+        return CKR_FUNCTION_NOT_SUPPORTED as CK_RV;
+    }
+    let mut template: Vec<CK_ATTRIBUTE> = Vec::with_capacity(ulCount as usize);
+    unsafe {
+        ptr::copy(pTemplate, template.as_mut_ptr(), ulCount as usize);
+        template.set_len(ulCount as usize);
+    }
+    let template = Template::from(template);
+    let Some(mut object):Option<CryptokiArc> = template.into() else {
+        return CKR_TEMPLATE_INCOMPLETE as CK_RV;
+    };
+
+    let key: [u8; 32] = OsRng.gen();
+    object.store_data(key.into());
+
+    let return_code = match state.get_session_mut(&hSession) {
+        Some(mut session) => {
+            let handle = session.create_object(object);
+            unsafe { *phKey = handle };
+            CKR_OK as CK_RV
+        }
+        None => CKR_SESSION_HANDLE_INVALID as CK_RV,
+    };
+
+    return_code
 }
 /// Generates a public/private key pair, creating new key objects
 ///
