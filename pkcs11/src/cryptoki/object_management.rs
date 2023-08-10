@@ -2,12 +2,15 @@ use std::{cmp::min, ptr};
 
 use lazy_static::__Deref;
 
-use crate::{state::object::object_search::ObjectSearch, STATE};
+use crate::{
+    state::object::{object_search::ObjectSearch, template::Template, CryptokiArc, CryptokiObject},
+    STATE,
+};
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_FUNCTION_NOT_SUPPORTED, CKR_GENERAL_ERROR,
-    CKR_OK, CKR_SESSION_HANDLE_INVALID, CK_ATTRIBUTE, CK_ATTRIBUTE_PTR, CK_OBJECT_HANDLE,
-    CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
+    CKR_OK, CKR_SESSION_HANDLE_INVALID, CKR_TEMPLATE_INCOMPLETE, CK_ATTRIBUTE, CK_ATTRIBUTE_PTR,
+    CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Creates an object
@@ -42,10 +45,13 @@ pub extern "C" fn C_CreateObject(
         ptr::copy(pTemplate, template.as_mut_ptr(), ulCount as usize);
         template.set_len(ulCount as usize);
     }
-
+    let template = Template::from(template);
+    let Some(object) = template.into() else {
+        return CKR_TEMPLATE_INCOMPLETE as CK_RV;
+    };
     let return_code = match state.get_session_mut(&hSession) {
         Some(mut session) => {
-            session.create_object(template.into());
+            session.create_object(object);
             CKR_OK as CK_RV
         }
         None => CKR_SESSION_HANDLE_INVALID as CK_RV,

@@ -8,10 +8,28 @@ use crate::cryptoki::bindings::{
 
 use super::attribute::Attribute;
 
-enum ObjectClass {
+pub(crate) enum ObjectClass {
     Data,
     SecretKey,
     PrivateKey,
+}
+impl ObjectClass {
+    pub(crate) fn from_vec(value: &[u8]) -> Option<Self> {
+        if value.len() != (CK_OBJECT_CLASS::BITS / 8) as usize {
+            return None;
+        }
+
+        let mut cursor = Cursor::new(value);
+        let Ok(value) = cursor.read_u64::<LittleEndian>() else{ // TODO: get endianity programatically
+            return None;
+        };
+        match value as u32 {
+            CKO_SECRET_KEY => Some(ObjectClass::SecretKey),
+            CKO_DATA => Some(ObjectClass::Data),
+            CKO_PRIVATE_KEY => Some(ObjectClass::PrivateKey),
+            _ => None,
+        }
+    }
 }
 
 impl From<Attribute> for Option<ObjectClass> {
@@ -21,20 +39,6 @@ impl From<Attribute> for Option<ObjectClass> {
         }
 
         let value = value.get_attribute_value().unwrap();
-        if value.len() != (CK_OBJECT_CLASS::BITS / 8) as usize {
-            return None;
-        }
-
-        let mut cursor = Cursor::new(value);
-        let Ok(value) = cursor.read_u64::<LittleEndian>() else{ // TODO: get endianity programatically
-            return None;
-        };
-
-        match value as u32 {
-            CKO_SECRET_KEY => Some(ObjectClass::SecretKey),
-            CKO_DATA => Some(ObjectClass::Data),
-            CKO_PRIVATE_KEY => Some(ObjectClass::PrivateKey),
-            _ => None,
-        }
+        ObjectClass::from_vec(value)
     }
 }

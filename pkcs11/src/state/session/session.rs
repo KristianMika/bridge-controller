@@ -1,11 +1,11 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use openssl::hash::Hasher;
 use rand::{rngs::OsRng, Rng};
 
 use crate::{
     cryptoki::bindings::CK_OBJECT_HANDLE,
-    state::object::{data_object::DataObject, object_search::ObjectSearch},
+    state::object::{object_search::ObjectSearch, CryptokiArc},
 };
 
 /// Holds the current state of PKCS#11 lib
@@ -17,7 +17,7 @@ pub(crate) struct Session {
     object_search: Option<ObjectSearch>,
 
     // TODO: objects should be held by the token struct
-    objects: HashMap<CK_OBJECT_HANDLE, DataObject>,
+    objects: HashMap<CK_OBJECT_HANDLE, CryptokiArc>,
 }
 
 impl Session {
@@ -45,7 +45,7 @@ impl Session {
         self.object_search = None;
     }
 
-    pub fn create_object(&mut self, object: DataObject) {
+    pub fn create_object(&mut self, object: CryptokiArc) {
         let object_handle = self.generate_object_handle();
 
         let _ = self.objects.insert(object_handle, object);
@@ -66,7 +66,7 @@ impl Session {
         };
         self.objects
             .iter()
-            .filter(|(handle, object)| object.does_template_match(object_search.get_template()))
+            .filter(|(_handle, object)| object.does_template_match(object_search.get_template()))
             .map(|(&handle, _)| handle)
             .collect()
     }

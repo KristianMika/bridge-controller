@@ -3,7 +3,7 @@ use crate::cryptoki::bindings::{
     CKA_UNIQUE_ID, CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE, CK_BBOOL, CK_FALSE, CK_TRUE,
 };
 
-use super::{attribute::Attribute, template::Template};
+use super::{attribute::Attribute, template::Template, CryptokiObject};
 
 #[derive(PartialEq, Eq, Hash, Default)]
 pub(crate) struct DataObject {
@@ -16,9 +16,28 @@ pub(crate) struct DataObject {
     unique_id: Vec<u8>,
 }
 
+impl CryptokiObject for DataObject {
+    fn does_template_match(&self, template: &Template) -> bool {
+        // TODO: class
+        if let Some(label) = template.get_value(&(CKA_LABEL as CK_ATTRIBUTE_TYPE)) {
+            if label != self.label {
+                return false;
+            }
+        };
+
+        if let Some(unique_id) = template.get_value(&(CKA_UNIQUE_ID as CK_ATTRIBUTE_TYPE)) {
+            if unique_id != self.unique_id {
+                return false;
+            }
+        }
+        // TODO: apply other filters
+
+        true
+    }
+}
+
 impl DataObject {
-    pub(crate) fn from_template(template: Vec<Attribute>) -> Self {
-        let template = Template::from_vec(template);
+    pub(crate) fn from_template(template: Template) -> Self {
         // TODO: check class
         // if template.get(&(CKA_CLASS as u64)).unwrap() != CKO_DATA {
         //     unimplemented!()
@@ -47,34 +66,17 @@ impl DataObject {
                 .unwrap_or(vec![]),
         }
     }
-
-    pub(crate) fn does_template_match(&self, template: &Template) -> bool {
-        // TODO: class
-        if let Some(label) = template.get_value(&(CKA_LABEL as CK_ATTRIBUTE_TYPE)) {
-            if label != self.label {
-                return false;
-            }
-        };
-
-        if let Some(unique_id) = template.get_value(&(CKA_UNIQUE_ID as CK_ATTRIBUTE_TYPE)) {
-            if unique_id != self.unique_id {
-                return false;
-            }
-        }
-        // TODO: apply other filters
-
-        true
-    }
 }
 
 impl From<Vec<CK_ATTRIBUTE>> for DataObject {
     fn from(value: Vec<CK_ATTRIBUTE>) -> Self {
-        Self::from_template(value.into_iter().map(|t| t.into()).collect())
+        let template = Template::from_vec(value.into_iter().map(|t| t.into()).collect());
+        Self::from_template(template)
     }
 }
 
-impl From<Vec<Attribute>> for DataObject {
-    fn from(value: Vec<Attribute>) -> Self {
+impl From<Template> for DataObject {
+    fn from(value: Template) -> Self {
         Self::from_template(value)
     }
 }
