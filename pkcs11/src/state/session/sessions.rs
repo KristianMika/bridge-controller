@@ -5,7 +5,10 @@ use std::{
 
 use rand::{rngs::OsRng, Rng};
 
-use crate::cryptoki::bindings::CK_SESSION_HANDLE;
+use crate::{
+    cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID},
+    state::slots::TokenStore,
+};
 
 use super::session::Session;
 
@@ -19,8 +22,8 @@ impl Sessions {
         OsRng.gen_range(0..CK_SESSION_HANDLE::MAX)
     }
 
-    pub(crate) fn create_session(&mut self) -> CK_SESSION_HANDLE {
-        let new_session_state = RwLock::new(Session::default());
+    pub(crate) fn create_session(&mut self, token: TokenStore) -> CK_SESSION_HANDLE {
+        let new_session_state = RwLock::new(Session::new(token));
 
         let mut session_handle = self.generate_session_handle();
         while self.sessions.contains_key(&session_handle) {

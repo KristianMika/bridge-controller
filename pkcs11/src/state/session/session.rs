@@ -5,11 +5,13 @@ use rand::{rngs::OsRng, Rng};
 
 use crate::{
     cryptoki::bindings::CK_OBJECT_HANDLE,
-    state::object::{object_search::ObjectSearch, CryptokiArc},
+    state::{
+        object::{object_search::ObjectSearch, CryptokiArc},
+        slots::TokenStore,
+    },
 };
 
 /// Holds the current state of PKCS#11 lib
-#[derive(Default)]
 pub(crate) struct Session {
     /// Holds the object managed by functions C_Digest*
     hasher: Option<Hasher>,
@@ -18,9 +20,19 @@ pub(crate) struct Session {
 
     // TODO: objects should be held by the token struct
     objects: HashMap<CK_OBJECT_HANDLE, CryptokiArc>,
+
+    token: TokenStore,
 }
 
 impl Session {
+    pub(crate) fn new(token: TokenStore) -> Self {
+        Self {
+            hasher: None,
+            object_search: None,
+            objects: Default::default(),
+            token,
+        }
+    }
     pub fn get_hasher_mut(&mut self) -> Option<&mut Hasher> {
         self.hasher.as_mut()
     }

@@ -37,8 +37,10 @@ pub extern "C" fn C_OpenSession(
     let Some( state) = state.as_mut() else {
         return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
     };
-
-    let session_handle = state.create_session();
+    let Some(token) = state.get_token(&slotID) else {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    };
+    let session_handle = state.create_session(token);
     unsafe {
         *phSession = session_handle;
     }

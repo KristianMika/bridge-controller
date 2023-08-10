@@ -40,4 +40,8 @@ impl Slots {
             None => None,
         }
     }
+
+    pub(crate) fn get_token(&self, slot_id: &CK_SLOT_ID) -> Option<TokenStore> {
+        self.tokens.get(slot_id).cloned()
+    }
 }

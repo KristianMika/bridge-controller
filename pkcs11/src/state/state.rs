@@ -13,7 +13,6 @@ use crate::{
 use super::{
     session::{session::Session, sessions::Sessions},
     slots::{Slots, TokenStore},
-    token::{MeesignToken, Token},
 };
 
 pub(crate) struct CryptokiState<C>
@@ -30,8 +29,8 @@ impl<C> CryptokiState<C>
 where
     C: Communicator,
 {
-    pub(crate) fn create_session(&mut self) -> CK_SESSION_HANDLE {
-        self.sessions.create_session()
+    pub(crate) fn create_session(&mut self, token: TokenStore) -> CK_SESSION_HANDLE {
+        self.sessions.create_session(token)
     }
 
     pub(crate) fn close_session(&mut self, session_handle: &CK_SESSION_HANDLE) {
@@ -83,6 +82,10 @@ where
             runtime,
             slots: Slots::new(),
         }
+    }
+
+    pub(crate) fn get_token(&self, slot_id: &CK_SLOT_ID) -> Option<TokenStore> {
+        self.slots.get_token(slot_id)
     }
 }
 
