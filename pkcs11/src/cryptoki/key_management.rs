@@ -147,7 +147,22 @@ pub extern "C" fn C_WrapKey(
     pWrappedKey: CK_BYTE_PTR,
     pulWrappedKeyLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
+    if pulWrappedKeyLen.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+    unsafe {
+        *pulWrappedKeyLen = 8;
+    }
+
+    if pWrappedKey.is_null() {
+        return CKR_OK as CK_RV;
+    }
+    let key_handle = hKey.to_be_bytes();
+    unsafe {
+        ptr::copy(key_handle.as_ptr(), pWrappedKey, key_handle.len());
+    }
+
+    CKR_OK as CK_RV
 }
 
 /// Unwraps (i.e. decrypts) a wrapped key, creating a new private key or secret key object
