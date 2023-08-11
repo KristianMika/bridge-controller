@@ -62,6 +62,10 @@ impl CryptokiObject for SecretKeyObject {
         // todo
         None
     }
+
+    fn get_data(&self) -> Vec<u8> {
+        self.data.get_data()
+    }
 }
 
 impl From<Vec<CK_ATTRIBUTE>> for SecretKeyObject {

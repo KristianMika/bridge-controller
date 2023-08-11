@@ -82,6 +82,10 @@ impl CryptokiObject for DataObject {
             _ => None,
         }
     }
+
+    fn get_data(&self) -> Vec<u8> {
+        self.data.clone()
+    }
 }
 
 impl From<Vec<CK_ATTRIBUTE>> for DataObject {

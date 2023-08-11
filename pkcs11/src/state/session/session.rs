@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use aes::Aes128;
 use openssl::hash::Hasher;
 use rand::{rngs::OsRng, Rng};
 
@@ -22,6 +23,8 @@ pub(crate) struct Session {
     objects: HashMap<CK_OBJECT_HANDLE, CryptokiArc>,
 
     token: TokenStore,
+
+    encryptor: Option<Aes128>,
 }
 
 impl Session {
@@ -31,6 +34,7 @@ impl Session {
             object_search: None,
             objects: Default::default(),
             token,
+            encryptor: None,
         }
     }
     pub fn get_hasher_mut(&mut self) -> Option<&mut Hasher> {
@@ -97,5 +101,9 @@ impl Session {
             .filter(|(_handle, object)| object.does_template_match(object_search.get_template()))
             .map(|(&handle, _)| handle)
             .collect()
+    }
+
+    pub fn set_encryptor(&mut self, encryptor: Aes128) {
+        self.encryptor = Some(encryptor);
     }
 }

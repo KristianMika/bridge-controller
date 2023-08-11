@@ -18,6 +18,7 @@ pub(crate) trait CryptokiObject {
     fn does_template_match(&self, template: &Template) -> bool;
     // TODO: refactor
     fn store_data(&mut self, data: Vec<u8>);
+    fn get_data(&self) -> Vec<u8>;
 
     fn from_template(template: Template) -> Self
     where

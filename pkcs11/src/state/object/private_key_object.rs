@@ -31,4 +31,8 @@ impl CryptokiObject for PrivateKeyObject {
     fn get_attribute(&self, attribute_type: CK_ATTRIBUTE_TYPE) -> Option<Vec<u8>> {
         None // todo
     }
+
+    fn get_data(&self) -> Vec<u8> {
+        vec![]
+    }
 }

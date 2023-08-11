@@ -43,4 +43,8 @@ impl CryptokiObject for PublicKeyObject {
 
         Some(data)
     }
+
+    fn get_data(&self) -> Vec<u8> {
+        self.data.clone()
+    }
 }
