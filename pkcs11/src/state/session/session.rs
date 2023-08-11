@@ -64,6 +64,10 @@ impl Session {
         object_handle
     }
 
+    pub(crate) fn get_object(&self, object_handle: CK_OBJECT_HANDLE) -> Option<CryptokiArc> {
+        self.objects.get(&object_handle).cloned()
+    }
+
     fn generate_object_handle(&self) -> CK_OBJECT_HANDLE {
         let mut object_handle = OsRng.gen_range(0..CK_OBJECT_HANDLE::MAX);
         while self.objects.contains_key(&object_handle) {

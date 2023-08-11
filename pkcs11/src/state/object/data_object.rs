@@ -2,7 +2,7 @@ use std::vec;
 
 use crate::cryptoki::bindings::{
     CKA_COPYABLE, CKA_DESTROYABLE, CKA_LABEL, CKA_MODIFIABLE, CKA_PRIVATE, CKA_TOKEN,
-    CKA_UNIQUE_ID, CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE, CK_BBOOL, CK_FALSE, CK_TRUE,
+    CKA_UNIQUE_ID, CKA_VALUE, CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE, CK_BBOOL, CK_FALSE, CK_TRUE,
 };
 
 use super::{attribute::Attribute, template::Template, CryptokiObject};
@@ -73,6 +73,13 @@ impl CryptokiObject for DataObject {
                 .get_value(&(CKA_UNIQUE_ID as CK_ATTRIBUTE_TYPE))
                 .unwrap_or(vec![]),
             data: vec![],
+        }
+    }
+
+    fn get_attribute(&self, attribute_type: CK_ATTRIBUTE_TYPE) -> Option<Vec<u8>> {
+        match attribute_type as u32 {
+            CKA_VALUE => Some(self.data.clone()),
+            _ => None,
         }
     }
 }

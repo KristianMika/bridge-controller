@@ -4,7 +4,7 @@ use self::{
     data_object::DataObject, key_object::SecretKeyObject, private_key_object::PrivateKeyObject,
     public_key_object::PublicKeyObject, template::Template,
 };
-use crate::state::object::object_class::ObjectClass;
+use crate::{cryptoki::bindings::CK_ATTRIBUTE_TYPE, state::object::object_class::ObjectClass};
 pub(crate) mod attribute;
 pub(crate) mod data_object;
 pub(crate) mod key_object;
@@ -22,8 +22,11 @@ pub(crate) trait CryptokiObject {
     fn from_template(template: Template) -> Self
     where
         Self: Sized;
+
+    fn get_attribute(&self, attribute_type: CK_ATTRIBUTE_TYPE) -> Option<Vec<u8>>;
 }
 
+#[derive(Clone)]
 pub(crate) struct CryptokiArc {
     pub value: Arc<RwLock<dyn CryptokiObject + Send + Sync>>,
 }

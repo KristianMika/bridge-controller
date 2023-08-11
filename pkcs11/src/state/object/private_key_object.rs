@@ -1,4 +1,6 @@
-use super::{object_class::ObjectClass, template::Template, CryptokiObject};
+use crate::cryptoki::bindings::CK_ATTRIBUTE_TYPE;
+
+use super::{attribute::Attribute, object_class::ObjectClass, template::Template, CryptokiObject};
 
 pub(crate) struct PrivateKeyObject {}
 
@@ -24,5 +26,9 @@ impl CryptokiObject for PrivateKeyObject {
         // TODO
 
         Self {}
+    }
+
+    fn get_attribute(&self, attribute_type: CK_ATTRIBUTE_TYPE) -> Option<Vec<u8>> {
+        None // todo
     }
 }

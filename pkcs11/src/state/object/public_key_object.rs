@@ -1,3 +1,5 @@
+use crate::cryptoki::bindings::{CKA_EC_POINT, CK_ATTRIBUTE_TYPE};
+
 use super::{object_class::ObjectClass, template::Template, CryptokiObject};
 
 pub(crate) struct PublicKeyObject {
@@ -28,5 +30,17 @@ impl CryptokiObject for PublicKeyObject {
         // TODO
 
         Self { data: vec![] }
+    }
+
+    fn get_attribute(&self, attribute_type: CK_ATTRIBUTE_TYPE) -> Option<Vec<u8>> {
+        // todo implement
+        if attribute_type != CKA_EC_POINT as u64 {
+            return None;
+        }
+        let mut data = self.data.clone();
+        data.insert(0, 0x04);
+        data.insert(1, 65); // TODO: into a method
+
+        Some(data)
     }
 }
