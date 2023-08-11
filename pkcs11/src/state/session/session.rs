@@ -64,6 +64,12 @@ impl Session {
         object_handle
     }
 
+    // TODO: custom error
+    pub fn destroy_object(&mut self, object_handle: &CK_OBJECT_HANDLE) -> Option<CryptokiArc> {
+        // todo: are we sure this is the only arc?
+        self.objects.remove(object_handle)
+    }
+
     pub(crate) fn get_object(&self, object_handle: CK_OBJECT_HANDLE) -> Option<CryptokiArc> {
         self.objects.get(&object_handle).cloned()
     }

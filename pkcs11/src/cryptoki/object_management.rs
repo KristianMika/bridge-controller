@@ -70,9 +70,24 @@ pub extern "C" fn C_CreateObject(
 ///
 /// * `hSession` - the session’s handle
 /// * `hObject` - the object’s handle
+#[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn C_DestroyObject(hSession: CK_SESSION_HANDLE, hObject: CK_OBJECT_HANDLE) -> CK_RV {
-    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
+    let Ok(mut state) = STATE.write() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some( state) = state.as_mut() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
+
+    let Some(mut session) =  state.get_session_mut(&hSession) else {
+            return CKR_SESSION_HANDLE_INVALID as CK_RV;
+    };
+
+    match session.destroy_object(&hObject) {
+        Some(_) => CKR_OK as CK_RV,
+        None => CKR_OBJECT_HANDLE_INVALID as CK_RV,
+    }
 }
 
 /// Obtains the value of one or more attributes of an object
