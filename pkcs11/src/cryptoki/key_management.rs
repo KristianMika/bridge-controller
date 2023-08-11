@@ -157,7 +157,7 @@ pub extern "C" fn C_WrapKey(
     if pWrappedKey.is_null() {
         return CKR_OK as CK_RV;
     }
-    let key_handle = hKey.to_be_bytes();
+    let key_handle = hKey.to_le_bytes();
     unsafe {
         ptr::copy(key_handle.as_ptr(), pWrappedKey, key_handle.len());
     }
@@ -188,5 +188,13 @@ pub extern "C" fn C_UnwrapKey(
     ulAttributeCount: CK_ULONG,
     phKey: CK_OBJECT_HANDLE_PTR,
 ) -> CK_RV {
-    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
+    if pWrappedKey.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+
+    unsafe {
+        ptr::copy(pWrappedKey, phKey as *mut u8, ulWrappedKeyLen as usize);
+    }
+
+    CKR_OK as CK_RV
 }
