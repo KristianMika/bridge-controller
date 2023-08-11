@@ -3,9 +3,9 @@ use lazy_static::__Deref;
 use crate::STATE;
 
 use super::bindings::{
-    CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_OK, CK_FLAGS,
-    CK_NOTIFY, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR, CK_SLOT_ID, CK_ULONG, CK_USER_TYPE,
-    CK_UTF8CHAR_PTR, CK_VOID_PTR,
+    CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_OK,
+    CKR_SLOT_ID_INVALID, CK_FLAGS, CK_NOTIFY, CK_RV, CK_SESSION_HANDLE, CK_SESSION_HANDLE_PTR,
+    CK_SLOT_ID, CK_ULONG, CK_USER_TYPE, CK_UTF8CHAR_PTR, CK_VOID_PTR,
 };
 
 /// Opens a session between an application and a token in a particular slot
@@ -38,7 +38,7 @@ pub extern "C" fn C_OpenSession(
         return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
     };
     let Some(token) = state.get_token(&slotID) else {
-        return CKR_ARGUMENTS_BAD as CK_RV;
+        return CKR_SLOT_ID_INVALID as CK_RV;
     };
     let session_handle = state.create_session(token);
     unsafe {

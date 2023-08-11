@@ -84,9 +84,14 @@ pub extern "C" fn C_Digest(
     }
     let hasher = hasher.unwrap();
 
-    let data_buffer: &[u8] = unsafe { std::slice::from_raw_parts(pData, ulDataLen as usize) };
+    // let data_buffer: &[u8] = unsafe { std::slice::from_raw_parts(pData, ulDataLen as usize) };
+    let mut data_buffer = Vec::with_capacity(ulDataLen as usize);
+    unsafe {
+        ptr::copy(pData, data_buffer.as_mut_ptr(), ulDataLen as usize);
+        data_buffer.set_len(ulDataLen as usize);
+    }
 
-    if hasher.update(data_buffer).is_err() {
+    if hasher.update(&data_buffer).is_err() {
         // TODO: reset hasher state
         return CKR_FUNCTION_FAILED as CK_RV;
     }
@@ -97,8 +102,14 @@ pub extern "C" fn C_Digest(
 
     let digest = digest.to_vec();
     unsafe {
-        ptr::copy(digest.as_ptr(), pDigest, digest.len());
         *pulDigestLen = digest.len() as u64;
+    }
+    // todo: check convention from 5.2
+
+    if !pDigest.is_null() {
+        unsafe {
+            ptr::copy(digest.as_ptr(), pDigest, digest.len());
+        }
     }
     CKR_OK as CK_RV
 }
