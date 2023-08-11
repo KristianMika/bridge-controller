@@ -106,4 +106,8 @@ impl Session {
     pub fn set_encryptor(&mut self, encryptor: Aes128) {
         self.encryptor = Some(encryptor);
     }
+
+    pub fn get_encryptor(&self) -> Option<Aes128> {
+        self.encryptor.clone()
+    }
 }

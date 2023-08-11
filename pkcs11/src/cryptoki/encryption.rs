@@ -1,5 +1,7 @@
+use std::ptr;
+
 use aes::{
-    cipher::{generic_array::GenericArray, KeyInit},
+    cipher::{generic_array::GenericArray, BlockEncrypt, KeyInit},
     Aes128,
 };
 
@@ -8,8 +10,8 @@ use crate::STATE;
 use super::bindings::{
     CKM_AES_ECB, CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_FUNCTION_NOT_SUPPORTED,
     CKR_GENERAL_ERROR, CKR_KEY_HANDLE_INVALID, CKR_MECHANISM_INVALID, CKR_OK,
-    CKR_SESSION_HANDLE_INVALID, CK_BYTE_PTR, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_RV,
-    CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
+    CKR_OPERATION_NOT_INITIALIZED, CKR_SESSION_HANDLE_INVALID, CK_BYTE_PTR, CK_MECHANISM_PTR,
+    CK_OBJECT_HANDLE, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Initializes an encryption operation
@@ -65,6 +67,7 @@ pub extern "C" fn C_EncryptInit(
 /// * `pEncryptedData` - points to the location that receives the encrypted data
 /// * `pulEncryptedDataLen` - points to the location that holds the length in bytes of the encrypted data
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_Encrypt(
     hSession: CK_SESSION_HANDLE,
     pData: CK_BYTE_PTR,
@@ -72,7 +75,52 @@ pub extern "C" fn C_Encrypt(
     pEncryptedData: CK_BYTE_PTR,
     pulEncryptedDataLen: CK_ULONG_PTR,
 ) -> CK_RV {
-    CKR_FUNCTION_NOT_SUPPORTED as CK_RV
+    if pData.is_null() || pulEncryptedDataLen.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+    let Ok(state) = STATE.read() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some( state) = state.as_ref() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
+
+    let Some(session) =  state.get_session(&hSession) else {
+            return CKR_SESSION_HANDLE_INVALID as CK_RV;
+    };
+
+    let Some(encryptor)=session.get_encryptor() else {
+        return CKR_OPERATION_NOT_INITIALIZED as CK_RV;
+    };
+
+    let mut data = Vec::with_capacity(ulDataLen as usize);
+    unsafe {
+        ptr::copy(pData, data.as_mut_ptr(), ulDataLen as usize);
+        data.set_len(ulDataLen as usize)
+    };
+    let mut cipher_length = 0;
+    // TODO: check block length
+    for block_i in 0..(data.len() / 16) {
+        let mut block =
+            GenericArray::from_slice(&data[(16 * block_i)..(16 * (block_i + 1))]).to_owned();
+        encryptor.encrypt_block(&mut block);
+        if !pEncryptedData.is_null() {
+            unsafe {
+                ptr::copy(
+                    block.as_ptr(),
+                    pEncryptedData.offset((block_i * 16) as isize),
+                    block.len(),
+                );
+            }
+        }
+        cipher_length += block.len();
+    }
+
+    unsafe {
+        *pulEncryptedDataLen = cipher_length as u64;
+    }
+
+    CKR_OK as CK_RV
 }
 
 /// Continues a multiple-part encryption operation, processing another data part
