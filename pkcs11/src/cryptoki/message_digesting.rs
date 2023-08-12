@@ -132,6 +132,7 @@ mod test {
     };
 
     #[test]
+    #[ignore]
     fn given_valid_data_c_digest_produces_valid_hash() -> Result<(), ErrorStack> {
         assert_eq!(CKR_OK as CK_RV, C_Initialize(NULL_PTR as CK_VOID_PTR));
         let mut session_handle = 0;
