@@ -6,5 +6,6 @@ pub mod key_management;
 pub mod message_digesting;
 pub mod object_management;
 pub mod session_management;
+pub mod signing;
 pub mod slot_token;
 pub mod unsupported;

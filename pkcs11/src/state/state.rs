@@ -64,6 +64,48 @@ where
             .block_on(async { self.communicator.get_groups().await })
     }
 
+    pub(crate) async fn send_auth_request(
+        &mut self,
+        group_id: Vec<u8>,
+        data: Vec<u8>,
+    ) -> Result<Vec<u8>, Box<dyn Error>> {
+        self.communicator.send_auth_request(group_id, data).await
+    }
+
+    pub(crate) fn send_auth_request_blocking(
+        &mut self,
+        group_id: Vec<u8>,
+        data: Vec<u8>,
+    ) -> Result<Vec<u8>, Box<dyn Error>> {
+        self.runtime
+            .block_on(async { self.communicator.send_auth_request(group_id, data).await })
+    }
+
+    pub(crate) async fn get_auth_response(
+        &mut self,
+        task_id: Vec<u8>,
+    ) -> Result<Option<Vec<u8>>, Box<dyn Error>> {
+        self.communicator.get_auth_response(task_id).await
+    }
+
+    pub(crate) fn get_auth_response_blocking(
+        &mut self,
+        task_id: Vec<u8>,
+    ) -> Result<Option<Vec<u8>>, Box<dyn Error>> {
+        self.runtime
+            .block_on(async { self.communicator.get_auth_response(task_id).await })
+    }
+    pub(crate) fn send_signing_request_wait_for_response(
+        &mut self,
+        group_id: Vec<u8>,
+        data: Vec<u8>,
+    ) -> Result<Option<Vec<u8>>, Box<dyn Error>> {
+        self.runtime.block_on(async {
+            let task_id = self.communicator.send_auth_request(group_id, data).await?;
+            self.communicator.get_auth_response(task_id).await
+        })
+    }
+
     pub(crate) fn insert_token(&mut self, token: TokenStore) -> CK_SLOT_ID {
         self.slots.insert_token(token)
     }

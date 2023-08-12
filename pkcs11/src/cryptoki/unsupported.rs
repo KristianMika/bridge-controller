@@ -179,24 +179,6 @@ unsupported!(
 );
 
 unsupported!(
-    C_Sign(
-        hSession: CK_SESSION_HANDLE,
-        pData: CK_BYTE_PTR,
-        ulDataLen: CK_ULONG,
-        pSignature: CK_BYTE_PTR,
-        pulSignatureLen: CK_ULONG_PTR,
-    )
-);
-
-unsupported!(
-    C_SignInit(
-        hSession: CK_SESSION_HANDLE,
-        pMechanism: CK_MECHANISM_PTR,
-        hKey: CK_OBJECT_HANDLE,
-    )
-);
-
-unsupported!(
     C_SignUpdate(
         hSession: CK_SESSION_HANDLE,
         pPart: CK_BYTE_PTR,

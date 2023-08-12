@@ -14,6 +14,7 @@ use super::{
         C_GetAttributeValue,
     },
     session_management::{C_CloseSession, C_Login, C_Logout, C_OpenSession},
+    signing::{C_Sign, C_SignInit},
     slot_token::{C_GetSlotList, C_GetTokenInfo},
     unsupported,
 };
@@ -115,8 +116,8 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_DigestUpdate: Some(unsupported::C_DigestUpdate),
         C_DigestKey: Some(unsupported::C_DigestKey),
         C_DigestFinal: Some(unsupported::C_DigestFinal),
-        C_SignInit: Some(unsupported::C_SignInit),
-        C_Sign: Some(unsupported::C_Sign),
+        C_SignInit: Some(C_SignInit),
+        C_Sign: Some(C_Sign),
         C_SignUpdate: Some(unsupported::C_SignUpdate),
         C_SignFinal: Some(unsupported::C_SignFinal),
         C_SignRecoverInit: Some(unsupported::C_SignRecoverInit),

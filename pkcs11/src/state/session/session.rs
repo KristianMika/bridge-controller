@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{clone, collections::HashMap};
 
 use aes::Aes128;
 use openssl::hash::Hasher;
@@ -25,8 +25,25 @@ pub(crate) struct Session {
     token: TokenStore,
 
     encryptor: Option<Aes128>,
+
+    signer: Option<Signer>,
 }
 
+#[derive(Clone)]
+pub(crate) struct Signer {
+    pub key: CryptokiArc,
+    pub response: Option<Vec<u8>>,
+    pub task_id: Option<Vec<u8>>,
+}
+impl Signer {
+    pub(crate) fn new(key: CryptokiArc) -> Self {
+        Self {
+            key,
+            response: None,
+            task_id: None,
+        }
+    }
+}
 impl Session {
     pub(crate) fn new(token: TokenStore) -> Self {
         Self {
@@ -35,6 +52,7 @@ impl Session {
             objects: Default::default(),
             token,
             encryptor: None,
+            signer: None,
         }
     }
     pub fn get_hasher_mut(&mut self) -> Option<&mut Hasher> {
@@ -109,5 +127,41 @@ impl Session {
 
     pub fn get_encryptor(&self) -> Option<Aes128> {
         self.encryptor.clone()
+    }
+
+    pub fn set_signer(&mut self, signer: Signer) {
+        self.signer = Some(signer)
+    }
+
+    pub fn get_signer(&self) -> Option<Signer> {
+        self.signer.clone()
+    }
+
+    pub fn store_signing_response(&mut self, response: Vec<u8>) {
+        let Some(ref mut signer) = self.signer else {
+            return;
+        };
+
+        signer.response = Some(response);
+    }
+
+    pub fn get_signing_response(&self) -> Option<Vec<u8>> {
+        let Some(ref signer) = self.signer else {
+            return None;
+        };
+        signer.response.clone()
+    }
+
+    pub fn set_signer_task_id(&mut self, task_id: Vec<u8>) {
+        let Some(ref mut signer) = self.signer else {
+            return;
+        };
+        signer.task_id = Some(task_id)
+    }
+    pub fn get_signing_task_id(&self) -> Option<Vec<u8>> {
+        let Some(ref signer) = self.signer else {
+            return None;
+        };
+        signer.task_id.clone()
     }
 }

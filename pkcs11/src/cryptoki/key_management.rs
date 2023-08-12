@@ -114,12 +114,12 @@ pub extern "C" fn C_GenerateKeyPair(
     let token = session.get_token();
     let token = token.read().unwrap();
     let pubkey = token.get_public_key();
-    let pubkey = PublicKeyObject::new(pubkey.into());
+    let pubkey_object = PublicKeyObject::new(pubkey.into());
     let pubkey_handle = session.create_object(CryptokiArc {
-        value: Arc::new(RwLock::new(pubkey)),
+        value: Arc::new(RwLock::new(pubkey_object)),
     });
     unsafe { *phPublicKey = pubkey_handle };
-    let private_key = PrivateKeyObject::new();
+    let private_key = PrivateKeyObject::new(pubkey.into());
     let private_key_handle = session.create_object(CryptokiArc {
         value: Arc::new(RwLock::new(private_key)),
     });
