@@ -15,7 +15,7 @@ use super::{
     },
     session_management::{C_CloseSession, C_Login, C_Logout, C_OpenSession},
     signing::{C_Sign, C_SignInit},
-    slot_token::{C_GetSlotList, C_GetTokenInfo},
+    slot_token::{C_GetSlotInfo, C_GetSlotList, C_GetTokenInfo},
     unsupported,
 };
 use crate::{state::state::CryptokiState, STATE};
@@ -79,7 +79,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_GetInfo: Some(unsupported::C_GetInfo),
         C_GetFunctionList: Some(C_GetFunctionList),
         C_GetSlotList: Some(C_GetSlotList),
-        C_GetSlotInfo: Some(unsupported::C_GetSlotInfo),
+        C_GetSlotInfo: Some(C_GetSlotInfo),
         C_GetTokenInfo: Some(C_GetTokenInfo),
         C_GetMechanismList: Some(unsupported::C_GetMechanismList),
         C_GetMechanismInfo: Some(unsupported::C_GetMechanismInfo),

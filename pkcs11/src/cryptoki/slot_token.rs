@@ -13,8 +13,8 @@ use crate::{
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR,
-    CKR_OK, CKR_TOKEN_NOT_PRESENT, CK_BBOOL, CK_RV, CK_SLOT_ID, CK_SLOT_ID_PTR, CK_TOKEN_INFO_PTR,
-    CK_ULONG, CK_ULONG_PTR,
+    CKR_OK, CKR_SLOT_ID_INVALID, CKR_TOKEN_NOT_PRESENT, CK_BBOOL, CK_RV, CK_SLOT_ID,
+    CK_SLOT_ID_PTR, CK_SLOT_INFO_PTR, CK_TOKEN_INFO_PTR, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Used to obtain a list of slots in the system
@@ -92,5 +92,29 @@ pub extern "C" fn C_GetTokenInfo(slotID: CK_SLOT_ID, pInfo: CK_TOKEN_INFO_PTR) -
         Some(token_info) => unsafe { *pInfo = token_info },
         None => return CKR_TOKEN_NOT_PRESENT as CK_RV,
     }
+    CKR_OK as CK_RV
+}
+
+#[no_mangle]
+#[allow(non_snake_case)]
+pub extern "C" fn C_GetSlotInfo(slotID: CK_SLOT_ID, pInfo: CK_SLOT_INFO_PTR) -> CK_RV {
+    if pInfo.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+    let Ok(state) = STATE.read() else  {
+        return CKR_GENERAL_ERROR as CK_RV;
+    };
+    let Some(state) = state.deref() else {
+        return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
+    };
+    let Some(token) = state.get_token(&slotID) else {
+        return CKR_SLOT_ID_INVALID as CK_RV;
+    };
+    let slot_info = token.read().unwrap().get_slot_info();
+
+    unsafe {
+        *pInfo = slot_info;
+    }
+
     CKR_OK as CK_RV
 }

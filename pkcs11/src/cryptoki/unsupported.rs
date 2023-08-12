@@ -41,10 +41,6 @@ unsupported!(
 );
 
 unsupported!(
-    C_GetSlotInfo(slotID: CK_SLOT_ID, pInfo: CK_SLOT_INFO_PTR)
-);
-
-unsupported!(
     C_GetMechanismList(
         slotID: CK_SLOT_ID,
         pMechanismList: CK_MECHANISM_TYPE_PTR,

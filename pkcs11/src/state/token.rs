@@ -2,16 +2,19 @@ use std::iter::repeat;
 
 use crate::{
     communicator::{Group, GroupId},
-    cryptoki::bindings::{CK_CHAR, CK_TOKEN_INFO, CK_VERSION},
+    cryptoki::bindings::{CK_CHAR, CK_SLOT_INFO, CK_TOKEN_INFO, CK_VERSION},
 };
 
 static LABEL_PREFIX: &str = "Meesign: ";
 const LABEL_BUFFER_LENGTH: usize = 32;
+const DESCRIPTION_BUFFER_LENGTH: usize = 64;
 
 pub(crate) trait Token {
     fn get_token_info(&self) -> CK_TOKEN_INFO;
 
     fn get_public_key(&self) -> &[u8];
+
+    fn get_slot_info(&self) -> CK_SLOT_INFO;
 }
 
 // TODO: store other info, like group name?
@@ -46,6 +49,17 @@ impl Token for MeesignToken {
         }
     }
 
+    fn get_slot_info(&self) -> CK_SLOT_INFO {
+        let version = CK_VERSION { major: 0, minor: 1 };
+        CK_SLOT_INFO {
+            slotDescription: self.create_slot_description(),
+            manufacturerID: Default::default(),
+            flags: Default::default(),
+            hardwareVersion: version,
+            firmwareVersion: version,
+        }
+    }
+
     fn get_public_key(&self) -> &[u8] {
         &self.group_id
     }
@@ -57,17 +71,30 @@ impl MeesignToken {
     }
 
     fn create_token_label(&self) -> [u8; LABEL_BUFFER_LENGTH] {
+        let token_label = self.create_token_name(LABEL_BUFFER_LENGTH);
+        match token_label.try_into() {
+            Ok(val) => val,
+            Err(_) => unreachable!(),
+        }
+    }
+
+    fn create_slot_description(&self) -> [u8; DESCRIPTION_BUFFER_LENGTH] {
+        let token_description = self.create_token_name(DESCRIPTION_BUFFER_LENGTH);
+        match token_description.try_into() {
+            Ok(val) => val,
+            Err(_) => unreachable!(),
+        }
+    }
+
+    fn create_token_name(&self, length: usize) -> Vec<u8> {
         let label: Vec<u8> = (String::from(LABEL_PREFIX) + &self.name)
             .chars()
             .map(|character: char| character as u8)
             .chain(repeat(b' '))
-            .take(LABEL_BUFFER_LENGTH)
+            .take(length)
             .collect();
 
-        match label.try_into() {
-            Ok(val) => val,
-            Err(_) => unreachable!(),
-        }
+        label
     }
 
     // TODO
