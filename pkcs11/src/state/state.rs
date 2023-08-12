@@ -1,3 +1,7 @@
+use crate::{
+    communicator::{meesign::Meesign, Communicator, Group},
+    cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID, CK_TOKEN_INFO},
+};
 use std::{
     error::Error,
     sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
@@ -5,30 +9,19 @@ use std::{
 use tokio::runtime::Runtime;
 use tonic::transport::Certificate;
 
-use crate::{
-    communicator::{meesign::Meesign, Communicator, Group},
-    cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID, CK_TOKEN_INFO},
-};
-
 use super::{
     session::{session::Session, sessions::Sessions},
     slots::{Slots, TokenStore},
 };
 
-pub(crate) struct CryptokiState<C>
-where
-    C: Communicator,
-{
+pub(crate) struct CryptokiState {
     sessions: Sessions,
-    communicator: C,
+    communicator: Box<dyn Communicator + Send + Sync>,
     runtime: Runtime,
     slots: Slots,
 }
 
-impl<C> CryptokiState<C>
-where
-    C: Communicator,
-{
+impl CryptokiState {
     pub(crate) fn create_session(&mut self, token: TokenStore) -> CK_SESSION_HANDLE {
         self.sessions.create_session(token)
     }
@@ -114,10 +107,7 @@ where
         self.slots.get_token_info(slot_id)
     }
 
-    pub(crate) fn new(communicator: C, runtime: Runtime) -> Self
-    where
-        C: Communicator,
-    {
+    pub(crate) fn new(communicator: Box<dyn Communicator + Send + Sync>, runtime: Runtime) -> Self {
         Self {
             sessions: Default::default(),
             communicator,
@@ -131,7 +121,8 @@ where
     }
 }
 
-impl Default for CryptokiState<Meesign> {
+#[cfg(not(feature = "mocked_meesign"))]
+impl Default for CryptokiState {
     // TODO: just tmp, remove later, pls don't look
     fn default() -> Self {
         let cert = Certificate::from_pem(
@@ -144,6 +135,17 @@ impl Default for CryptokiState<Meesign> {
                 .await
                 .unwrap()
         });
-        Self::new(meesign, runtime)
+        Self::new(Box::new(meesign), runtime)
+    }
+}
+
+#[cfg(feature = "mocked_meesign")]
+impl Default for CryptokiState {
+    fn default() -> Self {
+        use crate::communicator::mocked_meesign::MockedMeesign;
+
+        let runtime = Runtime::new().unwrap();
+        let meesign = MockedMeesign::new("testgrp".into());
+        Self::new(Box::new(meesign), runtime)
     }
 }

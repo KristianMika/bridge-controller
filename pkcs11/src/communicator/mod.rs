@@ -3,6 +3,8 @@ use std::error::Error;
 use tonic::async_trait;
 
 pub(crate) mod meesign;
+#[cfg(feature = "mocked_meesign")]
+pub(crate) mod mocked_meesign;
 
 pub(crate) type AuthResponse = Vec<u8>;
 pub(crate) type GroupId = Vec<u8>;
