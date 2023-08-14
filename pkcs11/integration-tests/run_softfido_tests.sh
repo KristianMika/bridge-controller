@@ -8,6 +8,7 @@ cleanup() {
     fi
 }
 
+sudo echo # just to get the sudo password while the stdout is not a mess
 cd softfido && cargo build && cd -
 
 trap 'cleanup' ERR
