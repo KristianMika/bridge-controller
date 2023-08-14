@@ -2,7 +2,7 @@ use std::ptr;
 
 use libc::c_void;
 
-use crate::cryptoki::bindings::{CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE};
+use crate::cryptoki::bindings::{CKA_VALUE, CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE};
 
 pub(crate) struct Attribute {
     attribute_type: CK_ATTRIBUTE_TYPE,
@@ -23,16 +23,16 @@ impl From<CK_ATTRIBUTE> for Attribute {
     fn from(template: CK_ATTRIBUTE) -> Self {
         let mut template_value = None;
         if template.ulValueLen > 0 {
-            let mut value = Vec::with_capacity(template.ulValueLen as usize);
+            let mut value: Vec<u8> = Vec::with_capacity(template.ulValueLen as usize);
             unsafe {
                 ptr::copy(
-                    template.pValue,
+                    template.pValue as *mut u8,
                     value.as_mut_ptr(),
                     template.ulValueLen as usize,
                 );
                 value.set_len(template.ulValueLen as usize);
             }
-            template_value = Some(value.into_iter().map(|b: c_void| b as u8).collect());
+            template_value = Some(value);
         }
         Attribute::new(template.type_, template_value)
     }
