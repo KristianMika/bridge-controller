@@ -72,7 +72,9 @@ impl CryptokiObject for DataObject {
             unique_id: template
                 .get_value(&(CKA_UNIQUE_ID as CK_ATTRIBUTE_TYPE))
                 .unwrap_or(vec![]),
-            data: vec![],
+            data: template
+                .get_value(&(CKA_VALUE as CK_ATTRIBUTE_TYPE))
+                .unwrap_or_default(),
         }
     }
 
