@@ -37,10 +37,6 @@ macro_rules! unsupported{
 }
 
 unsupported!(
-    C_GetInfo(pInfo: CK_INFO_PTR)
-);
-
-unsupported!(
     C_GetMechanismList(
         slotID: CK_SLOT_ID,
         pMechanismList: CK_MECHANISM_TYPE_PTR,

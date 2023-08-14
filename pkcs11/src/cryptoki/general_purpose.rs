@@ -1,9 +1,10 @@
-use std::mem;
+use std::{f32::consts::PI, mem};
 
 use super::{
     bindings::{
         CKR_ARGUMENTS_BAD, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR, CKR_HOST_MEMORY,
-        CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_RV, CK_VERSION, CK_VOID_PTR,
+        CKR_OK, CK_FUNCTION_LIST, CK_FUNCTION_LIST_PTR_PTR, CK_INFO, CK_INFO_PTR, CK_RV,
+        CK_VERSION, CK_VOID_PTR,
     },
     decryption::{C_Decrypt, C_DecryptInit},
     encryption::{C_Encrypt, C_EncryptFinal, C_EncryptInit, C_EncryptUpdate},
@@ -59,6 +60,25 @@ pub extern "C" fn C_Finalize(pReserved: CK_VOID_PTR) -> CK_RV {
     CKR_OK as CK_RV
 }
 
+#[allow(non_snake_case)]
+#[no_mangle]
+pub extern "C" fn C_GetInfo(pInfo: CK_INFO_PTR) -> CK_RV {
+    if pInfo.is_null() {
+        return CKR_ARGUMENTS_BAD as CK_RV;
+    }
+    let info = CK_INFO {
+        cryptokiVersion: CK_VERSION { major: 0, minor: 1 },
+        manufacturerID: [0; 32],
+        flags: 0,
+        libraryDescription: [0; 32],
+        libraryVersion: CK_VERSION { major: 0, minor: 1 },
+    };
+    unsafe {
+        *pInfo = info;
+    }
+    CKR_OK as CK_RV
+}
+
 /// Obtains a pointer to the Cryptoki library’s list of function pointers
 ///
 /// # Arguments
@@ -76,7 +96,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         version,
         C_Initialize: Some(C_Initialize),
         C_Finalize: Some(C_Finalize),
-        C_GetInfo: Some(unsupported::C_GetInfo),
+        C_GetInfo: Some(C_GetInfo),
         C_GetFunctionList: Some(C_GetFunctionList),
         C_GetSlotList: Some(C_GetSlotList),
         C_GetSlotInfo: Some(C_GetSlotInfo),
