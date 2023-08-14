@@ -55,7 +55,10 @@ pub extern "C" fn C_CreateObject(
     };
     let return_code = match state.get_session_mut(&hSession) {
         Some(mut session) => {
-            session.create_object(object);
+            let object_handle = session.create_object(object);
+            unsafe {
+                *phObject = object_handle;
+            }
             CKR_OK as CK_RV
         }
         None => CKR_SESSION_HANDLE_INVALID as CK_RV,
