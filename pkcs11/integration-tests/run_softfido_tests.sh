@@ -8,8 +8,23 @@ cleanup() {
     fi
 }
 
+build-cryptoki() {
+    cd ..
+    cargo build --features=mocked_meesign
+    cd -
+}
+
+build-softfido() {
+    cd softfido
+    cargo build 
+    cd -
+}
+
 sudo echo # just to get the sudo password while the stdout is not a mess
-cd softfido && cargo build && cd -
+
+build-cryptoki
+
+build-softfido
 
 trap 'cleanup' ERR
 
