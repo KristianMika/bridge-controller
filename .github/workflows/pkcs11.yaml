@@ -27,9 +27,9 @@ jobs:
       - name: Install valgrind and requirements
         run: sudo apt-get update && sudo apt-get install --assume-yes valgrind clang libc6-dbg
       - name: Build
-        run: cargo build --verbose
+        run: cargo build --verbose --features mocked_meesign
       - name: Install cargo-valgrind
         run: cargo install cargo-valgrind
       - name: Run tests
         # setting the limit for max # of FDs because of this bug https://bugs.kde.org/show_bug.cgi?id=465435
-        run: ulimit -n 1024 && cargo valgrind test
+        run: ulimit -n 1024 && cargo valgrind test --features mocked_meesign
