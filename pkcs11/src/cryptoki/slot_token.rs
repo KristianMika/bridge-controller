@@ -5,11 +5,7 @@ use std::{
 
 use lazy_static::__Deref;
 
-use crate::{
-    communicator::Group,
-    state::{slots::TokenStore, token::MeesignToken},
-    STATE,
-};
+use crate::{communicator::Group, state::token::MeesignToken, STATE};
 
 use super::bindings::{
     CKR_ARGUMENTS_BAD, CKR_BUFFER_TOO_SMALL, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR,

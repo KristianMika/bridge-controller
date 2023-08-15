@@ -1,7 +1,7 @@
 use std::ptr;
 
 use aes::{
-    cipher::{generic_array::GenericArray, BlockDecrypt, BlockEncrypt, KeyInit},
+    cipher::{generic_array::GenericArray, BlockEncrypt, KeyInit},
     Aes128,
 };
 

@@ -1,5 +1,3 @@
-use lazy_static::__Deref;
-
 use crate::STATE;
 
 use super::bindings::{

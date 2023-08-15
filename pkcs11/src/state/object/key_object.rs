@@ -1,6 +1,6 @@
 use crate::cryptoki::bindings::{CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE, CK_BBOOL, CK_FALSE, CK_TRUE};
 
-use super::{attribute::Attribute, data_object::DataObject, template::Template, CryptokiObject};
+use super::{data_object::DataObject, template::Template, CryptokiObject};
 
 // TODO: consider using bool at this lvl of abstraction
 pub(crate) struct SecretKeyObject {

@@ -1,8 +1,6 @@
 use std::ptr;
 
-use libc::c_void;
-
-use crate::cryptoki::bindings::{CKA_VALUE, CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE};
+use crate::cryptoki::bindings::{CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE};
 
 pub(crate) struct Attribute {
     attribute_type: CK_ATTRIBUTE_TYPE,

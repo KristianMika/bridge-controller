@@ -4,7 +4,7 @@ use crate::{
 };
 use std::{
     error::Error,
-    sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
+    sync::{RwLockReadGuard, RwLockWriteGuard},
 };
 use tokio::runtime::Runtime;
 use tonic::transport::Certificate;

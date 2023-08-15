@@ -1,20 +1,15 @@
 use std::{cmp::min, ptr};
 
-use lazy_static::__Deref;
-
 use crate::{
-    state::object::{
-        attribute::Attribute, object_search::ObjectSearch, template::Template, CryptokiArc,
-        CryptokiObject,
-    },
+    state::object::{attribute::Attribute, object_search::ObjectSearch, template::Template},
     STATE,
 };
 
 use super::bindings::{
-    CKR_ARGUMENTS_BAD, CKR_ATTRIBUTE_TYPE_INVALID, CKR_CRYPTOKI_NOT_INITIALIZED,
-    CKR_FUNCTION_NOT_SUPPORTED, CKR_GENERAL_ERROR, CKR_OBJECT_HANDLE_INVALID, CKR_OK,
-    CKR_SESSION_HANDLE_INVALID, CKR_TEMPLATE_INCOMPLETE, CK_ATTRIBUTE, CK_ATTRIBUTE_PTR,
-    CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV, CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
+    CKR_ARGUMENTS_BAD, CKR_ATTRIBUTE_TYPE_INVALID, CKR_CRYPTOKI_NOT_INITIALIZED, CKR_GENERAL_ERROR,
+    CKR_OBJECT_HANDLE_INVALID, CKR_OK, CKR_SESSION_HANDLE_INVALID, CKR_TEMPLATE_INCOMPLETE,
+    CK_ATTRIBUTE, CK_ATTRIBUTE_PTR, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE_PTR, CK_RV,
+    CK_SESSION_HANDLE, CK_ULONG, CK_ULONG_PTR,
 };
 
 /// Creates an object
@@ -115,7 +110,7 @@ pub extern "C" fn C_GetAttributeValue(
     let Ok(state) = STATE.read() else  {
         return CKR_GENERAL_ERROR as CK_RV;
     };
-    let Some( state) = state.deref() else {
+    let Some( state) = state.as_ref() else {
         return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
     };
 
@@ -229,7 +224,7 @@ pub extern "C" fn C_FindObjects(
     let Ok(state) = STATE.read() else  {
         return CKR_GENERAL_ERROR as CK_RV;
     };
-    let Some( state) = state.deref() else {
+    let Some( state) = state.as_ref() else {
         return CKR_CRYPTOKI_NOT_INITIALIZED as CK_RV;
     };
     let filtered_handles = match state.get_session(&hSession) {

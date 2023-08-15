@@ -5,6 +5,7 @@ use self::{
     public_key_object::PublicKeyObject, template::Template,
 };
 use crate::{cryptoki::bindings::CK_ATTRIBUTE_TYPE, state::object::object_class::ObjectClass};
+
 pub(crate) mod attribute;
 pub(crate) mod data_object;
 pub(crate) mod key_object;

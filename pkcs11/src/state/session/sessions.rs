@@ -5,10 +5,7 @@ use std::{
 
 use rand::{rngs::OsRng, Rng};
 
-use crate::{
-    cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID},
-    state::slots::TokenStore,
-};
+use crate::{cryptoki::bindings::CK_SESSION_HANDLE, state::slots::TokenStore};
 
 use super::session::Session;
 
