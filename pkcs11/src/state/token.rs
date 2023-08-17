@@ -9,7 +9,7 @@ static LABEL_PREFIX: &str = "Meesign: ";
 const LABEL_BUFFER_LENGTH: usize = 32;
 const DESCRIPTION_BUFFER_LENGTH: usize = 64;
 
-pub(crate) trait Token {
+pub(crate) trait Token: Sync + Send {
     fn get_token_info(&self) -> CK_TOKEN_INFO;
 
     fn get_public_key(&self) -> &[u8];

@@ -15,7 +15,7 @@ pub(crate) mod private_key_object;
 pub(crate) mod public_key_object;
 pub(crate) mod template;
 
-pub(crate) trait CryptokiObject {
+pub(crate) trait CryptokiObject: Sync + Send {
     fn does_template_match(&self, template: &Template) -> bool;
     // TODO: refactor
     fn store_data(&mut self, data: Vec<u8>);
@@ -30,7 +30,7 @@ pub(crate) trait CryptokiObject {
 
 #[derive(Clone)]
 pub(crate) struct CryptokiArc {
-    pub value: Arc<RwLock<dyn CryptokiObject + Send + Sync>>,
+    pub value: Arc<RwLock<dyn CryptokiObject>>,
 }
 
 impl CryptokiArc {

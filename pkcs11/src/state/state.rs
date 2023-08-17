@@ -16,7 +16,7 @@ use super::{
 
 pub(crate) struct CryptokiState {
     sessions: Sessions,
-    communicator: Box<dyn Communicator + Send + Sync>,
+    communicator: Box<dyn Communicator>,
     runtime: Runtime,
     slots: Slots,
 }
@@ -107,7 +107,7 @@ impl CryptokiState {
         self.slots.get_token_info(slot_id)
     }
 
-    pub(crate) fn new(communicator: Box<dyn Communicator + Send + Sync>, runtime: Runtime) -> Self {
+    pub(crate) fn new(communicator: Box<dyn Communicator>, runtime: Runtime) -> Self {
         Self {
             sessions: Default::default(),
             communicator,

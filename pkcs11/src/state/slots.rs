@@ -7,7 +7,7 @@ use crate::cryptoki::bindings::{CK_SLOT_ID, CK_TOKEN_INFO};
 
 use super::token::Token;
 
-pub(crate) type TokenStore = Arc<RwLock<dyn Token + Send + Sync>>;
+pub(crate) type TokenStore = Arc<RwLock<dyn Token>>;
 
 // TODO: hide behind a trait
 #[derive(Default)]
