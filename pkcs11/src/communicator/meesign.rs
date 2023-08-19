@@ -8,7 +8,7 @@ use crate::communicator::meesign::proto::{mpc_client::MpcClient, GroupsRequest, 
 use std::{error::Error, str::FromStr, time::Duration};
 
 use self::proto::{task::TaskState, SignRequest, TaskRequest};
-use super::{Communicator, Group};
+use super::{Communicator, Group, GroupId, RequestData, TaskId};
 use crate::communicator::AuthResponse;
 
 mod proto {
@@ -57,9 +57,9 @@ impl Communicator for Meesign {
 
     async fn send_auth_request(
         &mut self,
-        group_id: Vec<u8>,
-        data: Vec<u8>,
-    ) -> Result<Vec<u8>, Box<dyn Error>> {
+        group_id: GroupId,
+        data: RequestData,
+    ) -> Result<TaskId, Box<dyn Error>> {
         let request = tonic::Request::new(SignRequest {
             name: "PKCS#11 auth request".into(),
             group_id,
@@ -72,7 +72,7 @@ impl Communicator for Meesign {
 
     async fn get_auth_response(
         &mut self,
-        task_id: Vec<u8>,
+        task_id: TaskId,
     ) -> Result<Option<AuthResponse>, Box<dyn Error>> {
         for _attempt in 0..MAX_ATTEMPT_COUNT {
             let request = tonic::Request::new(TaskRequest {

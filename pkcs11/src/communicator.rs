@@ -6,8 +6,11 @@ pub(crate) mod meesign;
 #[cfg(feature = "mocked_meesign")]
 pub(crate) mod mocked_meesign;
 
-pub(crate) type AuthResponse = Vec<u8>;
-pub(crate) type GroupId = Vec<u8>;
+type ByteVector = Vec<u8>;
+pub(crate) type AuthResponse = ByteVector;
+pub(crate) type GroupId = ByteVector;
+pub(crate) type TaskId = ByteVector;
+pub(crate) type RequestData = ByteVector;
 
 // TODO: remove once rust 1.74 is released
 #[async_trait]
@@ -16,13 +19,13 @@ pub(crate) trait Communicator: Send + Sync {
 
     async fn send_auth_request(
         &mut self,
-        group_id: Vec<u8>,
-        data: Vec<u8>,
-    ) -> Result<Vec<u8>, Box<dyn Error>>;
+        group_id: GroupId,
+        data: RequestData,
+    ) -> Result<TaskId, Box<dyn Error>>;
 
     async fn get_auth_response(
         &mut self,
-        task_id: Vec<u8>,
+        task_id: TaskId,
     ) -> Result<Option<AuthResponse>, Box<dyn Error>>;
 }
 

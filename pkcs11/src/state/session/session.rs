@@ -5,6 +5,7 @@ use openssl::hash::Hasher;
 use rand::{rngs::OsRng, Rng};
 
 use crate::{
+    communicator::{AuthResponse, TaskId},
     cryptoki::bindings::CK_OBJECT_HANDLE,
     state::{
         object::{cryptoki_object::CryptokiArc, object_search::ObjectSearch},
@@ -32,8 +33,8 @@ pub(crate) struct Session {
 #[derive(Clone)]
 pub(crate) struct Signer {
     pub key: CryptokiArc,
-    pub response: Option<Vec<u8>>,
-    pub task_id: Option<Vec<u8>>,
+    pub response: Option<AuthResponse>,
+    pub task_id: Option<TaskId>,
 }
 impl Signer {
     pub(crate) fn new(key: CryptokiArc) -> Self {
@@ -137,7 +138,7 @@ impl Session {
         self.signer.clone()
     }
 
-    pub fn store_signing_response(&mut self, response: Vec<u8>) {
+    pub fn store_signing_response(&mut self, response: AuthResponse) {
         let Some(ref mut signer) = self.signer else {
             return;
         };
@@ -145,20 +146,20 @@ impl Session {
         signer.response = Some(response);
     }
 
-    pub fn get_signing_response(&self) -> Option<Vec<u8>> {
+    pub fn get_signing_response(&self) -> Option<AuthResponse> {
         let Some(ref signer) = self.signer else {
             return None;
         };
         signer.response.clone()
     }
 
-    pub fn set_signer_task_id(&mut self, task_id: Vec<u8>) {
+    pub fn set_signer_task_id(&mut self, task_id: TaskId) {
         let Some(ref mut signer) = self.signer else {
             return;
         };
         signer.task_id = Some(task_id)
     }
-    pub fn get_signing_task_id(&self) -> Option<Vec<u8>> {
+    pub fn get_signing_task_id(&self) -> Option<TaskId> {
         let Some(ref signer) = self.signer else {
             return None;
         };
