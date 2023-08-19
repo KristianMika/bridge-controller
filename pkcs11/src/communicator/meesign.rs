@@ -5,10 +5,12 @@ use tonic::{
 };
 
 use crate::communicator::meesign::proto::{mpc_client::MpcClient, GroupsRequest, KeyType};
-use std::{error::Error, str::FromStr, time::Duration};
+use std::{str::FromStr, time::Duration};
 
 use self::proto::{task::TaskState, SignRequest, TaskRequest};
-use super::{group::Group, Communicator, GroupId, RequestData, TaskId};
+use super::{
+    communicator_error::CommunicatorError, group::Group, Communicator, GroupId, RequestData, TaskId,
+};
 use crate::communicator::AuthResponse;
 
 mod proto {
@@ -22,12 +24,11 @@ static MAX_ATTEMPT_COUNT: usize = 10;
 static ATTEMPT_SLEEP_SEC: u64 = 5;
 
 impl Meesign {
-    // TODO: custom error handling
     pub async fn new(
         hostname: String,
         port: u32,
         certificate: Certificate,
-    ) -> Result<Self, Box<dyn Error>> {
+    ) -> Result<Self, CommunicatorError> {
         let server_uri = Uri::from_str(&format!("https://{}:{}", &hostname, port.to_string()))?;
         let client_tls_config = ClientTlsConfig::new()
             .domain_name(hostname)
@@ -42,7 +43,7 @@ impl Meesign {
 }
 #[async_trait]
 impl Communicator for Meesign {
-    async fn get_groups(&mut self) -> Result<Vec<Group>, Box<dyn Error>> {
+    async fn get_groups(&mut self) -> Result<Vec<Group>, CommunicatorError> {
         let request = tonic::Request::new(GroupsRequest { device_id: None });
 
         let response = self.client.get_groups(request).await?;
@@ -59,7 +60,7 @@ impl Communicator for Meesign {
         &mut self,
         group_id: GroupId,
         data: RequestData,
-    ) -> Result<TaskId, Box<dyn Error>> {
+    ) -> Result<TaskId, CommunicatorError> {
         let request = tonic::Request::new(SignRequest {
             name: "PKCS#11 auth request".into(),
             group_id,
@@ -73,7 +74,7 @@ impl Communicator for Meesign {
     async fn get_auth_response(
         &mut self,
         task_id: TaskId,
-    ) -> Result<Option<AuthResponse>, Box<dyn Error>> {
+    ) -> Result<Option<AuthResponse>, CommunicatorError> {
         for _attempt in 0..MAX_ATTEMPT_COUNT {
             let request = tonic::Request::new(TaskRequest {
                 task_id: task_id.clone(),
@@ -84,11 +85,13 @@ impl Communicator for Meesign {
                 return Ok(response.get_ref().data.to_owned());
             }
             if response.get_ref().state == TaskState::Failed as i32 {
-                return Ok(None); // TODO: custom error enum
+                return Err(CommunicatorError::TaskFailedError);
             }
             time::sleep(Duration::from_secs(ATTEMPT_SLEEP_SEC)).await;
         }
 
-        Ok(None)
+        Err(CommunicatorError::TaskTimedOutError(
+            (MAX_ATTEMPT_COUNT as u64) * ATTEMPT_SLEEP_SEC,
+        ))
     }
 }

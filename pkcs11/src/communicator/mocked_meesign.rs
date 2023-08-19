@@ -1,10 +1,8 @@
-use std::error::Error;
-
-use super::{AuthResponse, ByteVector, Communicator, Group, GroupId, RequestData, TaskId};
-use p256::ecdsa::{
-    signature::hazmat::{PrehashSigner, PrehashVerifier},
-    SigningKey, VerifyingKey,
+use super::{
+    communicator_error::CommunicatorError, AuthResponse, ByteVector, Communicator, Group, GroupId,
+    RequestData, TaskId,
 };
+use p256::ecdsa::{signature::hazmat::PrehashSigner, SigningKey, VerifyingKey};
 use rand::rngs::OsRng;
 use tonic::async_trait;
 
@@ -33,7 +31,7 @@ impl MockedMeesign {
 
 #[async_trait]
 impl Communicator for MockedMeesign {
-    async fn get_groups(&mut self) -> Result<Vec<Group>, Box<dyn Error>> {
+    async fn get_groups(&mut self) -> Result<Vec<Group>, CommunicatorError> {
         Ok(vec![Group::new(
             self.group_public_key.clone(),
             self.group_name.clone(),
@@ -44,7 +42,7 @@ impl Communicator for MockedMeesign {
         &mut self,
         _group_id: GroupId,
         data: RequestData,
-    ) -> Result<TaskId, Box<dyn Error>> {
+    ) -> Result<TaskId, CommunicatorError> {
         let (signature, _) = self.private_key.sign_prehash(&data)?;
         self.signature = Some(signature.to_vec());
         Ok(vec![])
@@ -53,7 +51,7 @@ impl Communicator for MockedMeesign {
     async fn get_auth_response(
         &mut self,
         _task_id: TaskId,
-    ) -> Result<Option<AuthResponse>, Box<dyn Error>> {
+    ) -> Result<Option<AuthResponse>, CommunicatorError> {
         Ok(self.signature.clone())
     }
 }

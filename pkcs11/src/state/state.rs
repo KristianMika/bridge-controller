@@ -1,13 +1,11 @@
 use crate::{
     communicator::{
-        group::Group, meesign::Meesign, AuthResponse, Communicator, GroupId, RequestData, TaskId,
+        communicator_error::CommunicatorError, group::Group, meesign::Meesign, AuthResponse,
+        Communicator, GroupId, RequestData, TaskId,
     },
     cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID, CK_TOKEN_INFO},
 };
-use std::{
-    error::Error,
-    sync::{RwLockReadGuard, RwLockWriteGuard},
-};
+use std::sync::{RwLockReadGuard, RwLockWriteGuard};
 use tokio::runtime::Runtime;
 use tonic::transport::Certificate;
 
@@ -50,11 +48,11 @@ impl CryptokiState {
         self.sessions.close_sessions()
     }
 
-    pub(crate) async fn get_groups(&mut self) -> Result<Vec<Group>, Box<dyn Error>> {
+    pub(crate) async fn get_groups(&mut self) -> Result<Vec<Group>, CommunicatorError> {
         self.communicator.get_groups().await
     }
 
-    pub(crate) fn get_groups_blocking(&mut self) -> Result<Vec<Group>, Box<dyn Error>> {
+    pub(crate) fn get_groups_blocking(&mut self) -> Result<Vec<Group>, CommunicatorError> {
         self.runtime
             .block_on(async { self.communicator.get_groups().await })
     }
@@ -63,7 +61,7 @@ impl CryptokiState {
         &mut self,
         group_id: GroupId,
         data: RequestData,
-    ) -> Result<TaskId, Box<dyn Error>> {
+    ) -> Result<TaskId, CommunicatorError> {
         self.communicator.send_auth_request(group_id, data).await
     }
 
@@ -71,7 +69,7 @@ impl CryptokiState {
         &mut self,
         group_id: GroupId,
         data: RequestData,
-    ) -> Result<TaskId, Box<dyn Error>> {
+    ) -> Result<TaskId, CommunicatorError> {
         self.runtime
             .block_on(async { self.communicator.send_auth_request(group_id, data).await })
     }
@@ -79,14 +77,14 @@ impl CryptokiState {
     pub(crate) async fn get_auth_response(
         &mut self,
         task_id: TaskId,
-    ) -> Result<Option<AuthResponse>, Box<dyn Error>> {
+    ) -> Result<Option<AuthResponse>, CommunicatorError> {
         self.communicator.get_auth_response(task_id).await
     }
 
     pub(crate) fn get_auth_response_blocking(
         &mut self,
         task_id: TaskId,
-    ) -> Result<Option<AuthResponse>, Box<dyn Error>> {
+    ) -> Result<Option<AuthResponse>, CommunicatorError> {
         self.runtime
             .block_on(async { self.communicator.get_auth_response(task_id).await })
     }
@@ -94,7 +92,7 @@ impl CryptokiState {
         &mut self,
         group_id: GroupId,
         data: RequestData,
-    ) -> Result<Option<TaskId>, Box<dyn Error>> {
+    ) -> Result<Option<TaskId>, CommunicatorError> {
         self.runtime.block_on(async {
             let task_id = self.communicator.send_auth_request(group_id, data).await?;
             self.communicator.get_auth_response(task_id).await
