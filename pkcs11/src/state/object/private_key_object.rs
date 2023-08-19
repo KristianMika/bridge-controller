@@ -1,6 +1,6 @@
 use crate::cryptoki::bindings::CK_ATTRIBUTE_TYPE;
 
-use super::{object_class::ObjectClass, template::Template, CryptokiObject};
+use super::{cryptoki_object::CryptokiObject, object_class::ObjectClass, template::Template};
 
 pub(crate) struct PrivateKeyObject {
     group_id: Vec<u8>,

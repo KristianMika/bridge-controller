@@ -7,7 +7,7 @@ use rand::{rngs::OsRng, Rng};
 use crate::{
     cryptoki::bindings::CK_OBJECT_HANDLE,
     state::{
-        object::{object_search::ObjectSearch, CryptokiArc},
+        object::{cryptoki_object::CryptokiArc, object_search::ObjectSearch},
         slots::TokenStore,
     },
 };

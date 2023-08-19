@@ -7,8 +7,8 @@ use rand::{rngs::OsRng, Rng};
 
 use crate::{
     state::object::{
-        private_key_object::PrivateKeyObject, public_key_object::PublicKeyObject,
-        template::Template, CryptokiArc,
+        cryptoki_object::CryptokiArc, private_key_object::PrivateKeyObject,
+        public_key_object::PublicKeyObject, template::Template,
     },
     STATE,
 };

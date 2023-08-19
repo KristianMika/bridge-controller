@@ -1,6 +1,6 @@
 use crate::cryptoki::bindings::{CKA_EC_POINT, CK_ATTRIBUTE_TYPE};
 
-use super::{object_class::ObjectClass, template::Template, CryptokiObject};
+use super::{cryptoki_object::CryptokiObject, object_class::ObjectClass, template::Template};
 
 const DER_OCTET_STRING_TAG: u8 = 0x04;
 

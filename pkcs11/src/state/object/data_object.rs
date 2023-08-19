@@ -5,7 +5,7 @@ use crate::cryptoki::bindings::{
     CKA_UNIQUE_ID, CKA_VALUE, CK_ATTRIBUTE, CK_ATTRIBUTE_TYPE, CK_BBOOL, CK_FALSE, CK_TRUE,
 };
 
-use super::{template::Template, CryptokiObject};
+use super::{cryptoki_object::CryptokiObject, template::Template};
 
 #[derive(PartialEq, Eq, Hash, Default)]
 pub(crate) struct DataObject {
