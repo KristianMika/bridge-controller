@@ -1,7 +1,7 @@
 use std::iter::repeat;
 
 use crate::{
-    communicator::{Group, GroupId},
+    communicator::{group::Group, GroupId},
     cryptoki::bindings::{CK_CHAR, CK_SLOT_INFO, CK_TOKEN_INFO, CK_VERSION},
 };
 

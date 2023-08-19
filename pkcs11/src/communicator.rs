@@ -2,6 +2,9 @@ use std::error::Error;
 
 use tonic::async_trait;
 
+use self::group::Group;
+
+pub(crate) mod group;
 pub(crate) mod meesign;
 #[cfg(feature = "mocked_meesign")]
 pub(crate) mod mocked_meesign;
@@ -27,22 +30,4 @@ pub(crate) trait Communicator: Send + Sync {
         &mut self,
         task_id: TaskId,
     ) -> Result<Option<AuthResponse>, Box<dyn Error>>;
-}
-
-pub(crate) struct Group {
-    group_id: GroupId,
-    name: String,
-}
-impl Group {
-    pub(crate) fn new(group_id: GroupId, name: String) -> Self {
-        Self { group_id, name }
-    }
-
-    pub(crate) fn get_group_id(&self) -> &GroupId {
-        &self.group_id
-    }
-
-    pub(crate) fn get_name(&self) -> &str {
-        &self.name
-    }
 }

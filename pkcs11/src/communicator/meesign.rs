@@ -8,7 +8,7 @@ use crate::communicator::meesign::proto::{mpc_client::MpcClient, GroupsRequest, 
 use std::{error::Error, str::FromStr, time::Duration};
 
 use self::proto::{task::TaskState, SignRequest, TaskRequest};
-use super::{Communicator, Group, GroupId, RequestData, TaskId};
+use super::{group::Group, Communicator, GroupId, RequestData, TaskId};
 use crate::communicator::AuthResponse;
 
 mod proto {

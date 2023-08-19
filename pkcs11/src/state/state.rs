@@ -1,6 +1,6 @@
 use crate::{
     communicator::{
-        meesign::Meesign, AuthResponse, Communicator, Group, GroupId, RequestData, TaskId,
+        group::Group, meesign::Meesign, AuthResponse, Communicator, GroupId, RequestData, TaskId,
     },
     cryptoki::bindings::{CK_SESSION_HANDLE, CK_SLOT_ID, CK_TOKEN_INFO},
 };
