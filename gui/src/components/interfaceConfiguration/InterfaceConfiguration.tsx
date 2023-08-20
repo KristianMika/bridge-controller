@@ -2,7 +2,11 @@ import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
 import Dropdown, { Option } from "react-dropdown";
 import "react-dropdown/style.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  setInterfaceConfiguration,
+  InterfaceConfiguration as InterfaceConfigurationType,
+} from "../../bindings";
 
 interface IFormData {
   isEnabled: boolean;
@@ -45,6 +49,14 @@ export const InterfaceConfiguration: React.FC = () => {
       return { ...prev, selectedPublicKey: event.value };
     });
   };
+
+  useEffect(() => {
+    setInterfaceConfiguration("Cryptoki", {
+      controller_url: "meesign.local",
+      group_id: [1, 2, 3],
+    });
+  }, []);
+
   return (
     <div className={styles["interface-configuration"]}>
       <form className={styles["interface-configuration__form"]}>
