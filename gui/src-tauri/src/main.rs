@@ -1,15 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
+use actix_web::{App, HttpServer};
+use controller::endpoints::communicator_url::get_communicator_url;
 use system_tray::{create_tray_menu, system_tray_event_handler};
 use tauri::{GlobalWindowEvent, SystemTray, WindowEvent};
 
+mod controller;
 mod system_tray;
 
 /// Handles window events, such as clicks outside the window
@@ -26,6 +23,14 @@ fn window_event_handler(event: GlobalWindowEvent) {
 fn main() {
     env_logger::init();
     tauri::Builder::default()
+        .setup(|_app| {
+            tauri::async_runtime::spawn(
+                HttpServer::new(|| App::new().service(get_communicator_url))
+                    .bind(("127.0.0.1", 12345))?
+                    .run(),
+            );
+            Ok(())
+        })
         .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
         .on_system_tray_event(system_tray_event_handler)
