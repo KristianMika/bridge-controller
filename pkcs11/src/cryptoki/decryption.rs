@@ -21,6 +21,7 @@ use super::{
 /// `pMechanism` - points to the decryption mechanism
 /// `hKey` - the handle of the decryption key
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_DecryptInit(
     hSession: CK_SESSION_HANDLE,
     pMechanism: CK_MECHANISM_PTR,
@@ -40,6 +41,7 @@ pub extern "C" fn C_DecryptInit(
 /// * `pulDataLen` - points to the location that holds the length of the recovered data
 
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_Decrypt(
     hSession: CK_SESSION_HANDLE,
     pEncryptedData: CK_BYTE_PTR,

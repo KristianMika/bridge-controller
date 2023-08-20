@@ -97,6 +97,7 @@ pub extern "C" fn C_DestroyObject(hSession: CK_SESSION_HANDLE, hObject: CK_OBJEC
 /// * `pTemplate` - points to a template that specifies which attribute values are to be obtained, and receives the attribute values
 /// * `ulCount` - the number of attributes in the template
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_GetAttributeValue(
     hSession: CK_SESSION_HANDLE,
     hObject: CK_OBJECT_HANDLE,

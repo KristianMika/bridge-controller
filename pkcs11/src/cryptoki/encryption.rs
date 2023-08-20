@@ -22,6 +22,7 @@ use super::bindings::{
 /// * `pMechanism` - points to the encryption mechanism
 /// * `hKey` - the handle of the encryption key
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_EncryptInit(
     hSession: CK_SESSION_HANDLE,
     pMechanism: CK_MECHANISM_PTR,
@@ -133,6 +134,7 @@ pub extern "C" fn C_Encrypt(
 /// * `pEncryptedPart` - points to the location that receives the encrypted data part
 /// * `pulEncryptedPartLen` - points to the location that holds the length in bytes of the encrypted data part
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_EncryptUpdate(
     hSession: CK_SESSION_HANDLE,
     pPart: CK_BYTE_PTR,
@@ -151,6 +153,7 @@ pub extern "C" fn C_EncryptUpdate(
 /// * `pLastEncryptedPart` - points to the location that receives the last encrypted data part, if any
 /// * `pulLastEncryptedPartLen` - points to the location that holds the length of the last encrypted data part
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_EncryptFinal(
     hSession: CK_SESSION_HANDLE,
     pLastEncryptedPart: CK_BYTE_PTR,

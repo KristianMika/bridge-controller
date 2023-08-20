@@ -91,6 +91,7 @@ pub extern "C" fn C_GenerateKey(
 /// * `phPublicKey` - points to the location that receives the handle of the new public key
 /// * `phPrivateKey` - points to the location that receives the handle of the new private key
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_GenerateKeyPair(
     hSession: CK_SESSION_HANDLE,
     pMechanism: CK_MECHANISM_PTR,
@@ -139,6 +140,7 @@ pub extern "C" fn C_GenerateKeyPair(
 /// * `pWrappedKey` - points to the location that receives the wrapped key
 /// * `pulWrappedKeyLen` - points to the location that receives the length of the wrapped key
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_WrapKey(
     hSession: CK_SESSION_HANDLE,
     pMechanism: CK_MECHANISM_PTR,
@@ -178,6 +180,7 @@ pub extern "C" fn C_WrapKey(
 /// * `ulAttributeCount` - the number of attributes in the template
 /// * `phKey` - points to the location that receives the handle of the recovered key
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_UnwrapKey(
     hSession: CK_SESSION_HANDLE,
     pMechanism: CK_MECHANISM_PTR,

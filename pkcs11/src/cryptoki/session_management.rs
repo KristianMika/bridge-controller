@@ -78,6 +78,7 @@ pub extern "C" fn C_CloseSession(hSession: CK_SESSION_HANDLE) -> CK_RV {
 /// `pPin` - points to the user’s PIN
 /// `ulPinLen` - the length of the PIN
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_Login(
     hSession: CK_SESSION_HANDLE,
     userType: CK_USER_TYPE,
@@ -95,6 +96,7 @@ pub extern "C" fn C_Login(
 ///
 /// * `hSession` - the session’s handle
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_Logout(hSession: CK_SESSION_HANDLE) -> CK_RV {
     // for now do nothing
     // TODO

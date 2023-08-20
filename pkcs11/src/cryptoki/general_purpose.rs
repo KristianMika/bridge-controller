@@ -27,6 +27,7 @@ use crate::{state::state::CryptokiState, STATE};
 ///
 /// * `pInitArgs` - either has the value NULL_PTR or points to a CK_C_INITIALIZE_ARGS structure containing information on how the library should deal with multi-threaded access
 #[no_mangle]
+#[allow(non_snake_case)]
 pub extern "C" fn C_Initialize(pInitArgs: CK_VOID_PTR) -> CK_RV {
     // TODO: check later if some actions are required
     let Ok(mut state) = STATE.write() else  {
@@ -164,6 +165,7 @@ pub extern "C" fn C_GetFunctionList(ppFunctionList: CK_FUNCTION_LIST_PTR_PTR) ->
         C_WaitForSlotEvent: Some(unsupported::C_WaitForSlotEvent),
     };
 
+    // TODO: should we allocate memory?
     unsafe {
         *ppFunctionList = libc::malloc(mem::size_of::<CK_FUNCTION_LIST>() as libc::size_t)
             as *mut CK_FUNCTION_LIST;
