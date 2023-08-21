@@ -1,9 +1,9 @@
-import { AiOutlineQuestion } from "react-icons/ai";
 import {
   BsFillUsbDriveFill,
   BsSimFill,
   BsCurrencyBitcoin,
 } from "react-icons/bs";
+import { SiFidoalliance } from "react-icons/si";
 import { MenuItem } from "./menuItem/MenuItem";
 import styles from "./Menu.module.css";
 import { IconType } from "react-icons";
@@ -32,7 +32,7 @@ export const Menu: React.FC = () => {
     { title: "HWI", icon: BsCurrencyBitcoin, link: "/hwi" },
     { title: "PKCS#11", icon: BsFillUsbDriveFill, link: "/cryptoki" },
     { title: "PC/SC", icon: BsSimFill, link: "/pcsc" },
-    { title: "FIDO", icon: AiOutlineQuestion, link: "/webauthn" },
+    { title: "FIDO", icon: SiFidoalliance, link: "/webauthn" },
   ];
 
   return (
