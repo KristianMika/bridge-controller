@@ -8,6 +8,8 @@ import {
   InterfaceConfiguration as InterfaceConfigurationType,
   CryptographicInterface,
   getInterfaceConfiguration,
+  Group,
+  getGroups,
 } from "../../bindings";
 
 interface IFormData {
@@ -33,6 +35,8 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   const [formData, setFormData] = useState<IFormData>(() => {
     return { ...defaultFormData };
   });
+
+  const [groupIds, setGroupIds] = useState<string[]>([]);
   const handleIsEnabledChange = (checked: boolean) => {
     setFormData((prev: IFormData) => {
       return { ...prev, isEnabled: checked };
@@ -68,6 +72,11 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         return { ...prev, controllerUrl: configuration!.controller_url };
       });
     });
+
+    // getGroups(formData.controllerUrl).then((groups) => {
+    getGroups("meesign.local").then((groups) => {
+      setGroupIds(groups.map((_group: Group) => _group.group_id));
+    });
   }, []);
 
   return (
@@ -94,7 +103,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         </label>
 
         <Dropdown
-          options={["default key", "secondary key"]}
+          options={groupIds}
           placeholder="Select an option"
           className={styles["form__select_pubkey"]}
           disabled={!formData.isEnabled}

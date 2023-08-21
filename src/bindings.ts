@@ -18,5 +18,10 @@ export function getInterfaceConfiguration(cryptographicInterface: CryptographicI
     return invoke()<InterfaceConfiguration | null>("get_interface_configuration", { cryptographicInterface })
 }
 
+export function getGroups(controllerUrl: string) {
+    return invoke()<Group[]>("get_groups", { controllerUrl })
+}
+
+export type Group = { name: string; group_id: string }
 export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"
 export type InterfaceConfiguration = { controller_url: string; group_id: number[] }
