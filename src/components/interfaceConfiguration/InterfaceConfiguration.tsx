@@ -67,11 +67,11 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
       setFormData((prev: IFormData) => {
         return { ...prev, controllerUrl: configuration!.controller_url };
       });
-    });
-
-    // getGroups(formData.controllerUrl).then((groups) => {
-    getGroups("meesign.local").then((groups) => {
-      setGroups(groups);
+      if (configuration!.controller_url) {
+        getGroups(configuration!.controller_url).then((groups) => {
+          setGroups(groups);
+        });
+      }
     });
   }, []);
 
@@ -108,15 +108,13 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           })}
           placeholder="Select an option"
           className={styles["form__select_pubkey"]}
-          isDisabled={!formData.isEnabled}
+          isDisabled={!formData.isEnabled || !formData.controllerUrl}
           onChange={handleDropDownChange}
           components={{ Option: MultilineSelectOption }}
         />
 
-        <label className={styles["form__select_pubkey_label"]}>
-          Public key
-        </label>
-        <button className={styles["form__apply"]}>Apply</button>
+        <label className={styles["form__select_pubkey_label"]}>Group</label>
+        <button className={styles["form__apply"]}>Save</button>
       </form>
     </div>
   );
