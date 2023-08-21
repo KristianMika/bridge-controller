@@ -1,5 +1,9 @@
-import { BiBitcoin } from "react-icons/bi";
 import { AiOutlineQuestion } from "react-icons/ai";
+import {
+  BsFillUsbDriveFill,
+  BsSimFill,
+  BsCurrencyBitcoin,
+} from "react-icons/bs";
 import { MenuItem } from "./menuItem/MenuItem";
 import styles from "./Menu.module.css";
 import { IconType } from "react-icons";
@@ -20,9 +24,10 @@ export const Menu: React.FC = () => {
   };
 
   const menuItems: IMenuItem[] = [
-    { title: "HWI", icon: BiBitcoin },
+    { title: "HWI", icon: BsCurrencyBitcoin },
+    { title: "PKCS#11", icon: BsFillUsbDriveFill },
+    { title: "PC/SC", icon: BsSimFill },
     { title: "FIDO", icon: AiOutlineQuestion },
-    { title: "PKCS#11", icon: AiOutlineQuestion },
   ];
 
   return (
