@@ -1,0 +1,12 @@
+.option__label {
+  color: black;
+}
+
+.option__label--mainlabel {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.option__label--sublabel {
+  font-size: 12px;
+}

@@ -1,17 +1,19 @@
 import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
-import Dropdown, { Option } from "react-dropdown";
+
 import "react-dropdown/style.css";
-import { useEffect, useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import {
-  setInterfaceConfiguration,
-  InterfaceConfiguration as InterfaceConfigurationType,
   CryptographicInterface,
   getInterfaceConfiguration,
   Group,
   getGroups,
 } from "../../bindings";
+import Select from "react-select";
+import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
 
+const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
 interface IFormData {
   isEnabled: boolean;
   controllerUrl: string;
@@ -36,16 +38,10 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     return { ...defaultFormData };
   });
 
-  const [groupIds, setGroupIds] = useState<string[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
   const handleIsEnabledChange = (checked: boolean) => {
     setFormData((prev: IFormData) => {
       return { ...prev, isEnabled: checked };
-    });
-  };
-
-  const handleIsPassThroughEnabledChange = (checked: boolean) => {
-    setFormData((prev: IFormData) => {
-      return { ...prev, isPassThroughtEnabled: checked };
     });
   };
 
@@ -57,7 +53,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     });
   };
 
-  const handleDropDownChange = (event: Option) => {
+  const handleDropDownChange = (event: OptionType) => {
     setFormData((prev: IFormData) => {
       return { ...prev, selectedPublicKey: event.value };
     });
@@ -75,7 +71,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
 
     // getGroups(formData.controllerUrl).then((groups) => {
     getGroups("meesign.local").then((groups) => {
-      setGroupIds(groups.map((_group: Group) => _group.group_id));
+      setGroups(groups);
     });
   }, []);
 
@@ -102,12 +98,19 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           Controller URL
         </label>
 
-        <Dropdown
-          options={groupIds}
+        <Select
+          options={groups.map((group) => {
+            return {
+              label: group.name,
+              subLabel: shortenHexPubkey(group.group_id),
+              value: group.group_id,
+            };
+          })}
           placeholder="Select an option"
           className={styles["form__select_pubkey"]}
-          disabled={!formData.isEnabled}
+          isDisabled={!formData.isEnabled}
           onChange={handleDropDownChange}
+          components={{ Option: MultilineSelectOption }}
         />
 
         <label className={styles["form__select_pubkey_label"]}>
@@ -116,5 +119,19 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <button className={styles["form__apply"]}>Apply</button>
       </form>
     </div>
+  );
+};
+
+interface OptionType {
+  label: string;
+  subLabel: string;
+  value: string;
+}
+
+const shortenHexPubkey = (pubkey: string): string => {
+  return (
+    pubkey.slice(0, HEX_PUBKEY_DISPLAY_CHARS_COUNT) +
+    "..." +
+    pubkey.slice(-HEX_PUBKEY_DISPLAY_CHARS_COUNT)
   );
 };
