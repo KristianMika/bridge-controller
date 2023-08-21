@@ -3,17 +3,18 @@
 }
 
 .interface-configuration__form {
-  margin: 15% auto;
-  height: 80%;
+  margin: 10% auto 0 auto;
+  height: 90%;
   width: 90%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
     "enable_label enable"
     "controller_input_label controller_input"
+    "file_upload_label file_upload"
     "select_pubkey_label select_pubkey"
     "apply_button apply_button";
-  grid-template-rows: 20% 20% 20% 20%;
+  grid-template-rows: 15% 15% 15% 15% 15%;
   justify-items: center;
   align-items: center;
 }
@@ -43,6 +44,14 @@
 
 .form__select_pubkey_label {
   grid-area: select_pubkey_label;
+}
+
+.form__controler_file_input {
+  grid-area: file_upload;
+}
+
+.form__controler_file_input_label {
+  grid-area: file_upload_label;
 }
 
 .form__apply {

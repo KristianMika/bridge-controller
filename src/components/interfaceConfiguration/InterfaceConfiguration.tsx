@@ -31,7 +31,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   const defaultFormData: IFormData = {
     isEnabled: true,
     controllerUrl: "",
-    selectedPublicKey: "default key",
+    selectedPublicKey: "",
   };
 
   const [formData, setFormData] = useState<IFormData>(() => {
@@ -97,7 +97,11 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <label className={styles["form__controler_input_label"]}>
           Controller URL
         </label>
-
+        <button className={styles["form__controler_file_input"]} />
+        <label className={styles["form__controler_file_input_label"]}>
+          {" "}
+          Controller Cert
+        </label>
         <Select
           options={groups.map((group) => {
             return {
@@ -112,7 +116,6 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           onChange={handleDropDownChange}
           components={{ Option: MultilineSelectOption }}
         />
-
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button className={styles["form__apply"]}>Save</button>
       </form>
