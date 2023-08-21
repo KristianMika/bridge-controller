@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "npm run proto && tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "proto": "protoc --ts_out=./src/ --proto_path ./src/proto mpc.proto"
   },
   "dependencies": {
+    "@protobuf-ts/grpcweb-transport": "^2.9.1",
     "@tauri-apps/api": "^1.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -20,6 +22,7 @@
     "typescript-plugin-css-modules": "^5.0.0"
   },
   "devDependencies": {
+    "@protobuf-ts/plugin": "^2.9.1",
     "@tauri-apps/cli": "^1.2.2",
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.15",

@@ -1,9 +1,23 @@
+import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { InterfaceConfiguration } from "./components/interfaceConfiguration/InterfaceConfiguration";
 import { Menu } from "./components/menu/Menu";
 import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
+import { GroupsRequest } from "./mpc";
+import { MPCClient } from "./mpc.client";
 
 function App() {
+  let meesign_transport = new GrpcWebFetchTransport({
+    baseUrl: "http://localhost:1337",
+  });
+  let meesign_client = new MPCClient(meesign_transport);
+
+  const group_request: GroupsRequest = {};
+  meesign_client
+    .getGroups(group_request, { "Access-Control-Allow-Origin": "*" })
+    .then((response) => {
+      alert(response.response);
+    });
   const router = createBrowserRouter([
     {
       path: "/",
