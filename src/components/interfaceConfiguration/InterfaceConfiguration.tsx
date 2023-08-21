@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import {
   setInterfaceConfiguration,
   InterfaceConfiguration as InterfaceConfigurationType,
+  CryptographicInterface,
+  getInterfaceConfiguration,
 } from "../../bindings";
 
 interface IFormData {
@@ -15,15 +17,24 @@ interface IFormData {
   selectedPublicKey: string;
 }
 
-const defaultFormData: IFormData = {
-  isEnabled: false,
-  isPassThroughtEnabled: true,
-  controllerUrl: "",
-  selectedPublicKey: "default key",
-};
+interface IInterfaceConfiguration {
+  canBeDisabled: boolean;
+  interfaceType: CryptographicInterface;
+}
 
-export const InterfaceConfiguration: React.FC = () => {
-  const [formData, setFormData] = useState<IFormData>(defaultFormData);
+export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
+  props
+) => {
+  const defaultFormData: IFormData = {
+    isEnabled: true,
+    isPassThroughtEnabled: true,
+    controllerUrl: "",
+    selectedPublicKey: "default key",
+  };
+
+  const [formData, setFormData] = useState<IFormData>(() => {
+    return { ...defaultFormData };
+  });
   const handleIsEnabledChange = (checked: boolean) => {
     setFormData((prev: IFormData) => {
       return { ...prev, isEnabled: checked };
@@ -51,9 +62,13 @@ export const InterfaceConfiguration: React.FC = () => {
   };
 
   useEffect(() => {
-    setInterfaceConfiguration("Cryptoki", {
-      controller_url: "meesign.local",
-      group_id: [1, 2, 3],
+    getInterfaceConfiguration(props.interfaceType).then((configuration) => {
+      if (!configuration) {
+        return;
+      }
+      setFormData((prev: IFormData) => {
+        return { ...prev, controllerUrl: configuration!.controller_url };
+      });
     });
   }, []);
 
@@ -64,6 +79,7 @@ export const InterfaceConfiguration: React.FC = () => {
           className={styles["form__enabled"]}
           onChange={handleIsEnabledChange}
           checked={formData.isEnabled}
+          disabled={!props.canBeDisabled}
         />
         <label className={styles["form__enabled_label"]}>Enabled</label>
         <input

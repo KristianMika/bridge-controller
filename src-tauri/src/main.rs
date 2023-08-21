@@ -34,6 +34,19 @@ async fn set_interface_configuration(
     Ok(())
 }
 
+#[tauri::command]
+#[specta::specta]
+async fn get_interface_configuration(
+    state: tauri::State<'_, State>,
+    cryptographic_interface: CryptographicInterface,
+) -> Result<Option<InterfaceConfiguration>, String> {
+    let repo = state.get_controller_repo();
+    let configuration = repo
+        .get_interface_configuration(&cryptographic_interface)
+        .unwrap();
+    Ok(configuration)
+}
+
 /// Handles window events, such as clicks outside the window
 fn window_event_handler(event: GlobalWindowEvent) {
     match event.event() {
@@ -48,7 +61,7 @@ fn window_event_handler(event: GlobalWindowEvent) {
 fn main() {
     #[cfg(debug_assertions)]
     ts::export(
-        collect_types![set_interface_configuration],
+        collect_types![set_interface_configuration, get_interface_configuration],
         "../src/bindings.ts",
     )
     .unwrap();
@@ -77,7 +90,10 @@ fn main() {
             Ok(())
         })
         .manage(tauri_state)
-        .invoke_handler(generate_handler![set_interface_configuration])
+        .invoke_handler(generate_handler![
+            set_interface_configuration,
+            get_interface_configuration
+        ])
         .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
         .on_system_tray_event(system_tray_event_handler)

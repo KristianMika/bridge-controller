@@ -7,6 +7,7 @@ export interface IMenuItem {
   icon: IconType;
   title: string;
   isSelected: boolean;
+  link: string;
 }
 
 /**
@@ -26,6 +27,7 @@ export const MenuItem: React.FC<IMenuItem> = (props) => {
     <a
       className={`${styles["menu__menu-item"]} ${addClassIfSelected()}`}
       data-name={props.title}
+      data-link={props.link}
       href="#"
       onClick={props.onClick}
     >
