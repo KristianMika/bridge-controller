@@ -12,7 +12,6 @@ import {
 
 interface IFormData {
   isEnabled: boolean;
-  isPassThroughtEnabled: boolean;
   controllerUrl: string;
   selectedPublicKey: string;
 }
@@ -27,7 +26,6 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
 ) => {
   const defaultFormData: IFormData = {
     isEnabled: true,
-    isPassThroughtEnabled: true,
     controllerUrl: "",
     selectedPublicKey: "default key",
   };
@@ -94,16 +92,6 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <label className={styles["form__controler_input_label"]}>
           Controller URL
         </label>
-
-        <label className={styles["form__autopass_label"]}>
-          Auto pass throught
-        </label>
-        <Switch
-          className={styles["form__autopass"]}
-          onChange={handleIsPassThroughEnabledChange}
-          checked={formData.isPassThroughtEnabled}
-          disabled={!formData.isEnabled}
-        />
 
         <Dropdown
           options={["default key", "secondary key"]}

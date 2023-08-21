@@ -10,11 +10,10 @@
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
     "enable_label enable"
-    "autopass_label autopass"
     "controller_input_label controller_input"
     "select_pubkey_label select_pubkey"
     "apply_button apply_button";
-  grid-template-rows: 15% 15% 15% 15% auto;
+  grid-template-rows: 20% 20% 20% 20%;
   justify-items: center;
   align-items: center;
 }
@@ -35,14 +34,6 @@
 
 .form__controler_input_label {
   grid-area: controller_input_label;
-}
-
-.form__autopass {
-  grid-area: autopass;
-}
-
-.form__autopass_label {
-  grid-area: autopass_label;
 }
 
 .form__select_pubkey {
