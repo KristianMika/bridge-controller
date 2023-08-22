@@ -1,14 +1,14 @@
 import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
-
 import "react-dropdown/style.css";
-
+import { open } from "@tauri-apps/api/dialog";
 import React, { useEffect, useState } from "react";
 import {
   CryptographicInterface,
   getInterfaceConfiguration,
   Group,
   getGroups,
+  setCommunicatorCertificatePath,
 } from "../../bindings";
 import Select from "react-select";
 import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
@@ -75,6 +75,19 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     });
   }, []);
 
+  const uploadFile = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    open({
+      multiple: false,
+      directory: false,
+      filters: [{ name: "PEM Certificates", extensions: ["pem"] }],
+    }).then((filePath) => {
+      if (filePath && typeof filePath === "string") {
+        setCommunicatorCertificatePath(filePath);
+      }
+    });
+  };
+
   return (
     <div className={styles["interface-configuration"]}>
       <form className={styles["interface-configuration__form"]}>
@@ -97,9 +110,13 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <label className={styles["form__controler_input_label"]}>
           Controller URL
         </label>
-        <button className={styles["form__controler_file_input"]} />
-        <label className={styles["form__controler_file_input_label"]}>
-          {" "}
+        <button
+          onClick={uploadFile}
+          className={styles["form__controler_file_upload_button"]}
+        >
+          Select
+        </button>
+        <label className={styles["form__controler_file_upload_button_label"]}>
           Controller Cert
         </label>
         <Select

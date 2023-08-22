@@ -57,6 +57,17 @@ async fn get_interface_configuration(
         .unwrap();
     Ok(configuration)
 }
+
+#[tauri::command]
+#[specta::specta]
+async fn set_communicator_certificate_path(
+    _state: tauri::State<'_, State>,
+    _certificate_path: String,
+) -> Result<(), String> {
+    // TODO
+    Ok(())
+}
+
 #[derive(Type, Serialize)]
 struct Group {
     name: String,
@@ -120,7 +131,8 @@ fn main() {
         collect_types![
             set_interface_configuration,
             get_interface_configuration,
-            get_groups
+            get_groups,
+            set_communicator_certificate_path
         ],
         "../src/bindings.ts",
     )
@@ -153,7 +165,8 @@ fn main() {
         .invoke_handler(generate_handler![
             set_interface_configuration,
             get_interface_configuration,
-            get_groups
+            get_groups,
+            set_communicator_certificate_path
         ])
         .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
