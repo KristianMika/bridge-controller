@@ -22,10 +22,10 @@ export function getGroups(controllerUrl: string) {
     return invoke()<Group[]>("get_groups", { controllerUrl })
 }
 
-export function setCommunicatorCertificatePath(certificatePath: string) {
-    return invoke()<null>("set_communicator_certificate_path", { certificatePath })
+export function setCommunicatorCertificatePath(certificatePath: string, communicatorUrl: string) {
+    return invoke()<null>("set_communicator_certificate_path", { certificatePath,communicatorUrl })
 }
 
 export type Group = { name: string; group_id: string }
-export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"
 export type FrontEndInterfaceConfiguration = { isEnabled: boolean; controllerUrl: string; selectedGroup: string }
+export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"

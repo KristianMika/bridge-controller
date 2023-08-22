@@ -95,7 +95,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
       filters: [{ name: "PEM Certificates", extensions: ["pem"] }],
     }).then((filePath) => {
       if (filePath && typeof filePath === "string") {
-        setCommunicatorCertificatePath(filePath);
+        setCommunicatorCertificatePath(filePath, formData.controllerUrl);
       }
     });
   };

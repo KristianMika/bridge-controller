@@ -25,6 +25,7 @@ use crate::commands::{communicator_url::*, get_groups::*, interface_configuratio
 
 mod commands;
 mod controller;
+mod filesystem;
 mod interface;
 mod state;
 mod system_tray;

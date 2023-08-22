@@ -3,9 +3,13 @@ use crate::state::State;
 #[tauri::command]
 #[specta::specta]
 pub(crate) async fn set_communicator_certificate_path(
-    _state: tauri::State<'_, State>,
-    _certificate_path: String,
+    state: tauri::State<'_, State>,
+    certificate_path: String,
+    communicator_url: String,
 ) -> Result<(), String> {
-    // TODO
+    let filesystem = state.get_filesystem();
+    filesystem
+        .copy_cerrtificate(&certificate_path, &communicator_url)
+        .unwrap();
     Ok(())
 }
