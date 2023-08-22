@@ -21,7 +21,7 @@ impl FileSystem {
     fn encode_url(&self, url: &str) -> String {
         url.replace(".", "_")
     }
-    fn get_certificate_filepath(&self, url: &str) -> Result<PathBuf, Box<dyn Error>> {
+    pub(crate) fn get_certificate_filepath(&self, url: &str) -> Result<PathBuf, Box<dyn Error>> {
         let encoded_url = self.encode_url(url);
         let certificate_filename = format!("{}_certificate.pem", encoded_url);
         Ok(self
