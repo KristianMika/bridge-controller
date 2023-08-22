@@ -1,28 +1,27 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{
-    str::FromStr,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
-use actix_web::{http::Uri, web, App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use controller::{
     controller_repo::sled_controller_repo::SledControllerRepo,
     endpoints::communicator_url::get_communicator_url,
     interface_configuration::InterfaceConfiguration, state::State as ControllerState,
 };
 use hex::ToHex;
-use interface::CryptographicInterface;
-use proto::{mpc_client::MpcClient, Group as ProtoGroup, GroupsRequest, KeyType};
+use proto::Group as ProtoGroup;
 use serde::{Deserialize, Serialize};
 use specta::{collect_types, Type};
 use state::State;
 use system_tray::{create_tray_menu, system_tray_event_handler};
 use tauri::{generate_handler, GlobalWindowEvent, SystemTray, WindowEvent};
 use tauri_specta::ts;
-use tonic::transport::{Certificate, Channel, ClientTlsConfig};
 
+use crate::commands::get_groups::get_groups;
+use crate::commands::{communicator_url::*, get_groups::*, interface_configuration::*};
+
+mod commands;
 mod controller;
 mod interface;
 mod state;
@@ -30,42 +29,6 @@ mod system_tray;
 
 mod proto {
     tonic::include_proto!("meesign");
-}
-
-#[tauri::command]
-#[specta::specta]
-async fn set_interface_configuration(
-    state: tauri::State<'_, State>,
-    cryptographic_interface: CryptographicInterface,
-    configuration: FrontEndInterfaceConfiguration,
-) -> Result<(), String> {
-    let repo = state.get_controller_repo();
-    repo.set_interface_configuration(configuration.into(), cryptographic_interface)
-        .unwrap();
-    Ok(())
-}
-
-#[tauri::command]
-#[specta::specta]
-async fn get_interface_configuration(
-    state: tauri::State<'_, State>,
-    cryptographic_interface: CryptographicInterface,
-) -> Result<Option<FrontEndInterfaceConfiguration>, String> {
-    let repo = state.get_controller_repo();
-    let Some(configuration) = repo
-        .get_interface_configuration(&cryptographic_interface)
-        .unwrap() else {return Ok(None)};
-    Ok(Some(configuration.into()))
-}
-
-#[tauri::command]
-#[specta::specta]
-async fn set_communicator_certificate_path(
-    _state: tauri::State<'_, State>,
-    _certificate_path: String,
-) -> Result<(), String> {
-    // TODO
-    Ok(())
 }
 
 #[derive(Type, Serialize)]
@@ -99,37 +62,6 @@ impl From<ProtoGroup> for Group {
             group_id: format!("0x{}", value.identifier.encode_hex_upper::<String>()),
         }
     }
-}
-
-#[tauri::command]
-#[specta::specta]
-async fn get_groups(controller_url: String) -> Result<Vec<Group>, String> {
-    let cert = Certificate::from_pem(
-        std::fs::read("/home/kiko/Desktop/tmp/meesign-server/keys/meesign-ca-cert.pem").unwrap(),
-    );
-    let server_uri = Uri::from_str(&format!("https://{}:{}", &controller_url, "1337")).unwrap();
-    let client_tls_config = ClientTlsConfig::new()
-        .domain_name(&controller_url)
-        .ca_certificate(cert);
-    let channel = Channel::builder(server_uri)
-        .tls_config(client_tls_config)
-        .unwrap()
-        .connect()
-        .await
-        .unwrap();
-    let mut client = MpcClient::new(channel);
-    let request = tonic::Request::new(GroupsRequest { device_id: None });
-
-    let response = client.get_groups(request).await.unwrap();
-    let groups = &response.get_ref().groups;
-    let groups = groups
-        .into_iter()
-        // TODO: update meesign server to filter groups?
-        .filter(|group| group.key_type == KeyType::SignChallenge as i32)
-        // TODO: don't clone
-        .map(|group: &ProtoGroup| group.to_owned().into())
-        .collect();
-    Ok(groups)
 }
 
 /// Handles window events, such as clicks outside the window

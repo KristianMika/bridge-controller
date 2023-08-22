@@ -27,5 +27,5 @@ export function setCommunicatorCertificatePath(certificatePath: string) {
 }
 
 export type Group = { name: string; group_id: string }
-export type FrontEndInterfaceConfiguration = { isEnabled: boolean; controllerUrl: string; selectedGroup: string }
 export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"
+export type FrontEndInterfaceConfiguration = { isEnabled: boolean; controllerUrl: string; selectedGroup: string }
