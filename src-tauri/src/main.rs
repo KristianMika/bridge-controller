@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::io::Error;
 use std::sync::{Arc, Mutex};
 
 use actix_web::{web, App, HttpServer};
@@ -15,6 +16,7 @@ use serde::{Deserialize, Serialize};
 use specta::{collect_types, Type};
 use state::State;
 use system_tray::{create_tray_menu, system_tray_event_handler};
+use tauri::async_runtime::JoinHandle;
 use tauri::{generate_handler, GlobalWindowEvent, SystemTray, WindowEvent};
 use tauri_specta::ts;
 
@@ -30,6 +32,8 @@ mod system_tray;
 mod proto {
     tonic::include_proto!("meesign");
 }
+
+static CONTROLLER_PORT: u16 = 12345; // TODO
 
 #[derive(Type, Serialize)]
 struct Group {
@@ -75,6 +79,24 @@ fn window_event_handler(event: GlobalWindowEvent) {
         _ => {}
     }
 }
+
+fn spawn_controller_server(
+    wrapped_controller_state: Arc<Mutex<ControllerState>>,
+    port: u16,
+) -> JoinHandle<Result<(), Error>> {
+    tauri::async_runtime::spawn(
+        HttpServer::new(move || {
+            let controller_state = wrapped_controller_state.as_ref().lock().unwrap().clone();
+            App::new()
+                .app_data(web::Data::new(controller_state))
+                .service(get_communicator_url)
+        })
+        .bind(("127.0.0.1", port))
+        .unwrap()
+        .run(),
+    )
+}
+
 fn main() {
     #[cfg(debug_assertions)]
     ts::export(
@@ -98,17 +120,7 @@ fn main() {
     env_logger::init();
     tauri::Builder::default()
         .setup(|_app| {
-            tauri::async_runtime::spawn(
-                HttpServer::new(move || {
-                    let controller_state =
-                        wrapped_controller_state.as_ref().lock().unwrap().clone();
-                    App::new()
-                        .app_data(web::Data::new(controller_state))
-                        .service(get_communicator_url)
-                })
-                .bind(("127.0.0.1", 12345))?
-                .run(),
-            );
+            spawn_controller_server(wrapped_controller_state, CONTROLLER_PORT);
             Ok(())
         })
         .manage(tauri_state)
