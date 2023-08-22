@@ -10,6 +10,7 @@ import {
   Group,
   getGroups,
   setCommunicatorCertificatePath,
+  setInterfaceConfiguration,
 } from "../../bindings";
 import Select, { OnChangeValue } from "react-select";
 import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
@@ -18,7 +19,7 @@ const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
 interface IFormData {
   isEnabled: boolean;
   controllerUrl: string;
-  selectedPublicKey: string;
+  selectedGroup: string;
 }
 const MEESIGN_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
 
@@ -42,7 +43,7 @@ const createOptions = (options: string[]): Option[] => {
 const defaultFormData: IFormData = {
   isEnabled: true,
   controllerUrl: "",
-  selectedPublicKey: "",
+  selectedGroup: "",
 };
 
 export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
@@ -68,7 +69,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
 
   const handleDropDownChange = (event: OptionType) => {
     setFormData((prev: IFormData) => {
-      return { ...prev, selectedPublicKey: event.value };
+      return { ...prev, selectedGroup: event.value };
     });
   };
 
@@ -77,11 +78,9 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
       if (!configuration) {
         return;
       }
-      setFormData((prev: IFormData) => {
-        return { ...prev, controllerUrl: configuration!.controller_url };
-      });
-      if (configuration!.controller_url) {
-        getGroups(configuration!.controller_url).then((groups) => {
+      setFormData(configuration);
+      if (configuration!.controllerUrl) {
+        getGroups(configuration!.controllerUrl).then((groups) => {
           setGroups(groups);
         });
       }
@@ -105,6 +104,18 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     setControllerUrl(inputValue);
     setOptions((prev) => [...prev, createOption(inputValue)]);
   };
+
+  const saveConfiguration = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    setInterfaceConfiguration(props.interfaceType, formData);
+  };
+
+  const handleControllerUrlChange = (newValue: any) => {
+    getGroups(newValue.value).then((groups) => {
+      setGroups(groups);
+    });
+    setControllerUrl(newValue.value);
+  };
   return (
     <div className={styles["interface-configuration"]}>
       <form className={styles["interface-configuration__form"]}>
@@ -119,9 +130,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled}
           className={styles["form__controler_input"]}
           value={formData.controllerUrl}
-          onChange={(newValue) => {
-            setControllerUrl(newValue as string);
-          }}
+          onChange={handleControllerUrlChange}
           onCreateOption={handleOptionCreate}
           name="controllerUrl"
           options={options as any}
@@ -151,10 +160,12 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled || !formData.controllerUrl}
           onChange={handleDropDownChange}
           components={{ Option: MultilineSelectOption }}
-          value={formData["selectedPublicKey"]}
+          value={formData["selectedGroup"]}
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
-        <button className={styles["form__apply"]}>Save</button>
+        <button onClick={saveConfiguration} className={styles["form__apply"]}>
+          Save
+        </button>
       </form>
     </div>
   );

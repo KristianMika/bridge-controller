@@ -15,7 +15,7 @@ use controller::{
 use hex::ToHex;
 use interface::CryptographicInterface;
 use proto::{mpc_client::MpcClient, Group as ProtoGroup, GroupsRequest, KeyType};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use specta::{collect_types, Type};
 use state::State;
 use system_tray::{create_tray_menu, system_tray_event_handler};
@@ -37,10 +37,10 @@ mod proto {
 async fn set_interface_configuration(
     state: tauri::State<'_, State>,
     cryptographic_interface: CryptographicInterface,
-    configuration: InterfaceConfiguration,
+    configuration: FrontEndInterfaceConfiguration,
 ) -> Result<(), String> {
     let repo = state.get_controller_repo();
-    repo.set_interface_configuration(configuration, cryptographic_interface)
+    repo.set_interface_configuration(configuration.into(), cryptographic_interface)
         .unwrap();
     Ok(())
 }
@@ -50,12 +50,12 @@ async fn set_interface_configuration(
 async fn get_interface_configuration(
     state: tauri::State<'_, State>,
     cryptographic_interface: CryptographicInterface,
-) -> Result<Option<InterfaceConfiguration>, String> {
+) -> Result<Option<FrontEndInterfaceConfiguration>, String> {
     let repo = state.get_controller_repo();
-    let configuration = repo
+    let Some(configuration) = repo
         .get_interface_configuration(&cryptographic_interface)
-        .unwrap();
-    Ok(configuration)
+        .unwrap() else {return Ok(None)};
+    Ok(Some(configuration.into()))
 }
 
 #[tauri::command]
@@ -72,6 +72,24 @@ async fn set_communicator_certificate_path(
 struct Group {
     name: String,
     group_id: String,
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Type)]
+pub(crate) struct FrontEndInterfaceConfiguration {
+    isEnabled: bool,
+    controllerUrl: String,
+    selectedGroup: String,
+}
+
+impl From<InterfaceConfiguration> for FrontEndInterfaceConfiguration {
+    fn from(value: InterfaceConfiguration) -> Self {
+        Self {
+            isEnabled: value.is_enabled(),
+            controllerUrl: value.get_controller_url().into(),
+            selectedGroup: format!("0x{}", value.get_group_id().encode_hex_upper::<String>()),
+        }
+    }
 }
 
 impl From<ProtoGroup> for Group {

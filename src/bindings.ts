@@ -10,12 +10,12 @@ declare global {
 // Function avoids 'window not defined' in SSR
 const invoke = () => window.__TAURI_INVOKE__;
 
-export function setInterfaceConfiguration(cryptographicInterface: CryptographicInterface, configuration: InterfaceConfiguration) {
+export function setInterfaceConfiguration(cryptographicInterface: CryptographicInterface, configuration: FrontEndInterfaceConfiguration) {
     return invoke()<null>("set_interface_configuration", { cryptographicInterface,configuration })
 }
 
 export function getInterfaceConfiguration(cryptographicInterface: CryptographicInterface) {
-    return invoke()<InterfaceConfiguration | null>("get_interface_configuration", { cryptographicInterface })
+    return invoke()<FrontEndInterfaceConfiguration | null>("get_interface_configuration", { cryptographicInterface })
 }
 
 export function getGroups(controllerUrl: string) {
@@ -27,5 +27,5 @@ export function setCommunicatorCertificatePath(certificatePath: string) {
 }
 
 export type Group = { name: string; group_id: string }
+export type FrontEndInterfaceConfiguration = { isEnabled: boolean; controllerUrl: string; selectedGroup: string }
 export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"
-export type InterfaceConfiguration = { controller_url: string; group_id: number[] }
