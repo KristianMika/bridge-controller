@@ -26,6 +26,6 @@ export function setCommunicatorCertificatePath(certificatePath: string) {
     return invoke()<null>("set_communicator_certificate_path", { certificatePath })
 }
 
-export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"
 export type Group = { name: string; group_id: string }
+export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"
 export type InterfaceConfiguration = { controller_url: string; group_id: number[] }

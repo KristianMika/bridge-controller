@@ -1,6 +1,7 @@
 import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
 import "react-dropdown/style.css";
+import Creatable from "react-select/creatable";
 import { open } from "@tauri-apps/api/dialog";
 import React, { useEffect, useState } from "react";
 import {
@@ -10,7 +11,7 @@ import {
   getGroups,
   setCommunicatorCertificatePath,
 } from "../../bindings";
-import Select from "react-select";
+import Select, { OnChangeValue } from "react-select";
 import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
 
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
@@ -19,37 +20,49 @@ interface IFormData {
   controllerUrl: string;
   selectedPublicKey: string;
 }
+const MEESIGN_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
 
 interface IInterfaceConfiguration {
   canBeDisabled: boolean;
   interfaceType: CryptographicInterface;
 }
+interface Option {
+  readonly label: string;
+  readonly value: string;
+}
+
+const createOption = (option: string): Option => {
+  return { value: option, label: option };
+};
+
+const createOptions = (options: string[]): Option[] => {
+  return options.map(createOption);
+};
+
+const defaultFormData: IFormData = {
+  isEnabled: true,
+  controllerUrl: "",
+  selectedPublicKey: "",
+};
 
 export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   props
 ) => {
-  const defaultFormData: IFormData = {
-    isEnabled: true,
-    controllerUrl: "",
-    selectedPublicKey: "",
-  };
-
   const [formData, setFormData] = useState<IFormData>(() => {
     return { ...defaultFormData };
   });
-
   const [groups, setGroups] = useState<Group[]>([]);
+  const [options, setOptions] = useState(createOptions(MEESIGN_URLS));
+
   const handleIsEnabledChange = (checked: boolean) => {
     setFormData((prev: IFormData) => {
       return { ...prev, isEnabled: checked };
     });
   };
 
-  const handleChange = (event: React.FormEvent) => {
-    const name = (event.target as HTMLTextAreaElement).name;
-    const value = (event.target as HTMLTextAreaElement).value;
+  const setControllerUrl = (url: string) => {
     setFormData((prev) => {
-      return { ...prev, [name]: value };
+      return { ...prev, controllerUrl: url };
     });
   };
 
@@ -88,6 +101,10 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     });
   };
 
+  const handleOptionCreate = (inputValue: string) => {
+    setControllerUrl(inputValue);
+    setOptions((prev) => [...prev, createOption(inputValue)]);
+  };
   return (
     <div className={styles["interface-configuration"]}>
       <form className={styles["interface-configuration__form"]}>
@@ -98,15 +115,17 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           disabled={!props.canBeDisabled}
         />
         <label className={styles["form__enabled_label"]}>Enabled</label>
-        <input
-          disabled={!formData.isEnabled}
+        <Creatable
+          isDisabled={!formData.isEnabled}
           className={styles["form__controler_input"]}
-          placeholder="Controller URL"
-          type="text"
           value={formData.controllerUrl}
-          onChange={handleChange}
+          onChange={(newValue) => {
+            setControllerUrl(newValue as string);
+          }}
+          onCreateOption={handleOptionCreate}
           name="controllerUrl"
-        ></input>
+          options={options as any}
+        ></Creatable>
         <label className={styles["form__controler_input_label"]}>
           Controller URL
         </label>
@@ -114,7 +133,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           onClick={uploadFile}
           className={styles["form__controler_file_upload_button"]}
         >
-          Select
+          Upload
         </button>
         <label className={styles["form__controler_file_upload_button_label"]}>
           Controller Cert
@@ -132,6 +151,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled || !formData.controllerUrl}
           onChange={handleDropDownChange}
           components={{ Option: MultilineSelectOption }}
+          value={formData["selectedPublicKey"]}
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button className={styles["form__apply"]}>Save</button>
