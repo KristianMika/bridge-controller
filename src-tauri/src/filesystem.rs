@@ -37,4 +37,8 @@ impl FileSystem {
         let destination_filepath = self.get_certificate_filepath(url).unwrap();
         copy(certificate_path, destination_filepath)
     }
+
+    pub(crate) fn get_db_filepath(&self, db_filename: &str) -> Result<PathBuf, Box<dyn Error>> {
+        Ok(self.get_controller_directory()?.join(db_filename))
+    }
 }

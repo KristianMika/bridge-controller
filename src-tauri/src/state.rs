@@ -6,10 +6,10 @@ pub(crate) struct State {
 }
 
 impl State {
-    pub fn new(controller_repo: Box<dyn ControllerRepo>) -> Self {
+    pub fn new(controller_repo: Box<dyn ControllerRepo>, filesystem: FileSystem) -> Self {
         Self {
             controller_repo,
-            filesystem: FileSystem {},
+            filesystem,
         }
     }
     pub fn get_controller_repo(&self) -> &Box<dyn ControllerRepo> {

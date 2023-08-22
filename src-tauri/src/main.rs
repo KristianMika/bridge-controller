@@ -10,6 +10,7 @@ use controller::{
     endpoints::communicator_url::get_communicator_url,
     interface_configuration::InterfaceConfiguration, state::State as ControllerState,
 };
+use filesystem::FileSystem;
 use hex::ToHex;
 use proto::Group as ProtoGroup;
 use serde::{Deserialize, Serialize};
@@ -35,6 +36,7 @@ mod proto {
 }
 
 static CONTROLLER_PORT: u16 = 12345; // TODO
+static SLED_DB_FILENAME: &str = "controller.sled";
 
 #[derive(Type, Serialize)]
 struct Group {
@@ -111,9 +113,11 @@ fn main() {
     )
     .unwrap();
 
-    let db = sled::open("/home/kiko/Desktop/controller.sled").unwrap();
+    let filesystem = FileSystem {};
+    let sled_filepath = filesystem.get_db_filepath(SLED_DB_FILENAME).unwrap();
+    let db = sled::open(sled_filepath).unwrap();
     let controller_repo = SledControllerRepo::new(Arc::new(Mutex::new(db)));
-    let tauri_state = State::new(Box::new(controller_repo.clone()));
+    let tauri_state = State::new(Box::new(controller_repo.clone()), filesystem);
     let controller_state = ControllerState::new(Arc::new(controller_repo));
     // wrapped just so the the closure can take ownership of it multiple times
     let wrapped_controller_state = Arc::new(Mutex::new(controller_state));
