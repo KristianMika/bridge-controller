@@ -129,7 +129,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <Creatable
           isDisabled={!formData.isEnabled}
           className={styles["form__controler_input"]}
-          value={formData.controllerUrl}
+          value={createOption(formData.controllerUrl)}
           onChange={handleControllerUrlChange}
           onCreateOption={handleOptionCreate}
           name="controllerUrl"
@@ -160,7 +160,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled || !formData.controllerUrl}
           onChange={handleDropDownChange}
           components={{ Option: MultilineSelectOption }}
-          value={formData["selectedGroup"]}
+          value={createOption(formData["selectedGroup"])} // TODO: display name, not pubkey
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button onClick={saveConfiguration} className={styles["form__apply"]}>
