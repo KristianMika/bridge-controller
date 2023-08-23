@@ -2,18 +2,17 @@ import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
 import "react-dropdown/style.css";
 import Creatable from "react-select/creatable";
-import { open } from "@tauri-apps/api/dialog";
 import React, { useEffect, useState } from "react";
 import {
   CryptographicInterface,
   getInterfaceConfiguration,
   Group,
   getGroups,
-  setCommunicatorCertificatePath,
   setInterfaceConfiguration,
 } from "../../bindings";
-import Select, { OnChangeValue } from "react-select";
+import Select from "react-select";
 import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
+import { CertificateUpload } from "./CertificateUpload";
 
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
 interface IFormData {
@@ -67,7 +66,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     });
   };
 
-  const handleDropDownChange = (event: OptionType) => {
+  const handleGroupChange = (event: OptionType) => {
     setFormData((prev: IFormData) => {
       return { ...prev, selectedGroup: event.value };
     });
@@ -87,20 +86,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     });
   }, []);
 
-  const uploadFile = (event: React.MouseEvent<HTMLElement>) => {
-    event.preventDefault();
-    open({
-      multiple: false,
-      directory: false,
-      filters: [{ name: "PEM Certificates", extensions: ["pem"] }],
-    }).then((filePath) => {
-      if (filePath && typeof filePath === "string") {
-        setCommunicatorCertificatePath(filePath, formData.controllerUrl);
-      }
-    });
-  };
-
-  const handleOptionCreate = (inputValue: string) => {
+  const handleCommunicatorUrlCreation = (inputValue: string) => {
     setControllerUrl(inputValue);
     setOptions((prev) => [...prev, createOption(inputValue)]);
   };
@@ -110,7 +96,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     setInterfaceConfiguration(props.interfaceType, formData);
   };
 
-  const handleControllerUrlChange = (newValue: any) => {
+  const handleCommunicatorUrlChange = (newValue: any) => {
     setGroups([]);
     setFormData((prev) => {
       return { ...prev, selectedGroup: "" };
@@ -134,21 +120,21 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled}
           className={styles["form__controler_input"]}
           value={createOption(formData.controllerUrl)}
-          onChange={handleControllerUrlChange}
-          onCreateOption={handleOptionCreate}
+          onChange={handleCommunicatorUrlChange}
+          onCreateOption={handleCommunicatorUrlCreation}
           name="controllerUrl"
           options={options as any}
         ></Creatable>
+
         <label className={styles["form__controler_input_label"]}>
           Controller URL
         </label>
-        <button
-          onClick={uploadFile}
+        <CertificateUpload
           className={styles["form__controler_file_upload_button"]}
-          disabled={!formData.isEnabled || !formData.controllerUrl}
-        >
-          Upload
-        </button>
+          isDisabled={!formData.isEnabled || !formData.controllerUrl}
+          communicatorUrl={formData.controllerUrl}
+        />
+
         <label className={styles["form__controler_file_upload_button_label"]}>
           Controller Cert
         </label>
@@ -163,7 +149,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           placeholder="Select an option"
           className={styles["form__select_pubkey"]}
           isDisabled={!formData.isEnabled || !formData.controllerUrl}
-          onChange={handleDropDownChange}
+          onChange={handleGroupChange}
           components={{ Option: MultilineSelectOption }}
           value={createOption(formData["selectedGroup"])} // TODO: display name, not pubkey
         />
