@@ -111,6 +111,10 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   };
 
   const handleControllerUrlChange = (newValue: any) => {
+    setGroups([]);
+    setFormData((prev) => {
+      return { ...prev, selectedGroup: "" };
+    });
     getGroups(newValue.value).then((groups) => {
       setGroups(groups);
     });
