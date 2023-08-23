@@ -98,6 +98,15 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     setInterfaceConfiguration(props.interfaceType, formData);
   };
 
+  // TODO:consider storing in backend
+  const resolveGroupName = (groupPubkey: string): Option => {
+    let group = groups.filter((group: Group) => group.group_id === groupPubkey);
+    if (group.length != 1) {
+      return { label: "", value: "" }; // todo
+    }
+    return { label: group[0].name, value: group[0].group_id };
+  };
+
   const handleCommunicatorUrlChange = (newValue: any) => {
     setGroups([]);
     setFormData((prev) => {
@@ -155,7 +164,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled || !formData.communicatorUrl}
           onChange={handleGroupChange}
           components={{ Option: MultilineSelectOption }}
-          value={createOption(formData["selectedGroup"])} // TODO: display name, not pubkey
+          value={resolveGroupName(formData["selectedGroup"])}
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button onClick={saveConfiguration} className={styles["form__apply"]}>
