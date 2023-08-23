@@ -14,23 +14,23 @@ static MEESIGN_GRPC_PORT: &str = "1337";
 #[tauri::command]
 #[specta::specta]
 pub(crate) async fn get_groups(
-    controller_url: String,
+    communicator_url: String,
     state: tauri::State<'_, State>,
 ) -> Result<Vec<Group>, String> {
     // TODO: consider storing into db as well
     // TODO: make sure we have the cert
     let certificate_path = state
         .get_filesystem()
-        .get_certificate_filepath(&controller_url)
+        .get_certificate_filepath(&communicator_url)
         .unwrap();
     let cert = Certificate::from_pem(std::fs::read(certificate_path).unwrap());
     let server_uri = Uri::from_str(&format!(
         "https://{}:{}",
-        &controller_url, MEESIGN_GRPC_PORT
+        &communicator_url, MEESIGN_GRPC_PORT
     ))
     .unwrap();
     let client_tls_config = ClientTlsConfig::new()
-        .domain_name(&controller_url)
+        .domain_name(&communicator_url)
         .ca_certificate(cert);
     let channel = Channel::builder(server_uri)
         .tls_config(client_tls_config)

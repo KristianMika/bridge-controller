@@ -9,14 +9,14 @@ pub(crate) type GroupId = ByteVector;
 #[derive(Serialize, Deserialize, Debug, Type)]
 
 pub(crate) struct InterfaceConfiguration {
-    controller_url: String,
+    communicator_url: String,
     group_id: GroupId,
     is_enabled: bool,
 }
 
 impl InterfaceConfiguration {
-    pub fn get_controller_url(&self) -> &str {
-        &self.controller_url
+    pub fn get_communicator_url(&self) -> &str {
+        &self.communicator_url
     }
 
     pub fn is_enabled(&self) -> bool {
@@ -34,7 +34,7 @@ impl From<FrontEndInterfaceConfiguration> for InterfaceConfiguration {
         let group_id = hex::decode(prefix_free_hex_id).unwrap();
 
         Self {
-            controller_url: value.controllerUrl,
+            communicator_url: value.communicatorUrl,
             is_enabled: value.isEnabled,
             group_id,
         }

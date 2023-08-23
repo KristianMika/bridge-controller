@@ -10,7 +10,7 @@
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
     "enable_label enable"
-    "controller_input_label controller_input"
+    "communicator_input_label communicator_input"
     "file_upload_label file_upload"
     "select_pubkey_label select_pubkey"
     "apply_button apply_button";
@@ -27,14 +27,14 @@
   grid-area: enable_label;
 }
 
-.form__controler_input {
+.form__communicator_input {
   width: 100%;
-  grid-area: controller_input;
+  grid-area: communicator_input;
   color: black;
 }
 
-.form__controler_input_label {
-  grid-area: controller_input_label;
+.form__communicator_input_label {
+  grid-area: communicator_input_label;
 }
 
 .form__select_pubkey {
@@ -46,14 +46,14 @@
   grid-area: select_pubkey_label;
 }
 
-.form__controler_file_upload_button {
+.form__communicator_file_upload_button {
   grid-area: file_upload;
   width: 100%;
   height: 70%;
   margin: 0 auto;
 }
 
-.form__controler_file_upload_button_label {
+.form__communicator_file_upload_button_label {
   grid-area: file_upload_label;
 }
 

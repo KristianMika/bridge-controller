@@ -48,7 +48,7 @@ struct Group {
 #[derive(Serialize, Deserialize, Type)]
 pub(crate) struct FrontEndInterfaceConfiguration {
     isEnabled: bool,
-    controllerUrl: String,
+    communicatorUrl: String,
     selectedGroup: String,
 }
 
@@ -56,7 +56,7 @@ impl From<InterfaceConfiguration> for FrontEndInterfaceConfiguration {
     fn from(value: InterfaceConfiguration) -> Self {
         Self {
             isEnabled: value.is_enabled(),
-            controllerUrl: value.get_controller_url().into(),
+            communicatorUrl: value.get_communicator_url().into(),
             selectedGroup: format!("0x{}", value.get_group_id().encode_hex_upper::<String>()),
         }
     }

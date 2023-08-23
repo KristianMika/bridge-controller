@@ -17,10 +17,10 @@ import { CertificateUpload } from "./CertificateUpload";
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
 interface IFormData {
   isEnabled: boolean;
-  controllerUrl: string;
+  communicatorUrl: string;
   selectedGroup: string;
 }
-const MEESIGN_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
+const DEFAULT_COMMUNICATOR_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
 
 interface IInterfaceConfiguration {
   canBeDisabled: boolean;
@@ -41,7 +41,7 @@ const createOptions = (options: string[]): Option[] => {
 
 const defaultFormData: IFormData = {
   isEnabled: true,
-  controllerUrl: "",
+  communicatorUrl: "",
   selectedGroup: "",
 };
 
@@ -52,7 +52,9 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     return { ...defaultFormData };
   });
   const [groups, setGroups] = useState<Group[]>([]);
-  const [options, setOptions] = useState(createOptions(MEESIGN_URLS));
+  const [options, setOptions] = useState(
+    createOptions(DEFAULT_COMMUNICATOR_URLS)
+  );
 
   const handleIsEnabledChange = (checked: boolean) => {
     setFormData((prev: IFormData) => {
@@ -60,9 +62,9 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     });
   };
 
-  const setControllerUrl = (url: string) => {
+  const setCommunicatorUrl = (url: string) => {
     setFormData((prev) => {
-      return { ...prev, controllerUrl: url };
+      return { ...prev, communicatorUrl: url };
     });
   };
 
@@ -78,8 +80,8 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         return;
       }
       setFormData(configuration);
-      if (configuration!.controllerUrl) {
-        getGroups(configuration!.controllerUrl).then((groups) => {
+      if (configuration!.communicatorUrl) {
+        getGroups(configuration!.communicatorUrl).then((groups) => {
           setGroups(groups);
         });
       }
@@ -87,7 +89,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   }, []);
 
   const handleCommunicatorUrlCreation = (inputValue: string) => {
-    setControllerUrl(inputValue);
+    setCommunicatorUrl(inputValue);
     setOptions((prev) => [...prev, createOption(inputValue)]);
   };
 
@@ -104,7 +106,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     getGroups(newValue.value).then((groups) => {
       setGroups(groups);
     });
-    setControllerUrl(newValue.value);
+    setCommunicatorUrl(newValue.value);
   };
   return (
     <div className={styles["interface-configuration"]}>
@@ -118,25 +120,27 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <label className={styles["form__enabled_label"]}>Enabled</label>
         <Creatable
           isDisabled={!formData.isEnabled}
-          className={styles["form__controler_input"]}
-          value={createOption(formData.controllerUrl)}
+          className={styles["form__communicator_input"]}
+          value={createOption(formData.communicatorUrl)}
           onChange={handleCommunicatorUrlChange}
           onCreateOption={handleCommunicatorUrlCreation}
-          name="controllerUrl"
+          name="communicatorUrl"
           options={options as any}
         ></Creatable>
 
-        <label className={styles["form__controler_input_label"]}>
-          Controller URL
+        <label className={styles["form__communicator_input_label"]}>
+          Communicator URL
         </label>
         <CertificateUpload
-          className={styles["form__controler_file_upload_button"]}
-          isDisabled={!formData.isEnabled || !formData.controllerUrl}
-          communicatorUrl={formData.controllerUrl}
+          className={styles["form__communicator_file_upload_button"]}
+          isDisabled={!formData.isEnabled || !formData.communicatorUrl}
+          communicatorUrl={formData.communicatorUrl}
         />
 
-        <label className={styles["form__controler_file_upload_button_label"]}>
-          Controller Cert
+        <label
+          className={styles["form__communicator_file_upload_button_label"]}
+        >
+          Communicator Cert
         </label>
         <Select
           options={groups.map((group) => {
@@ -148,7 +152,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           })}
           placeholder="Select an option"
           className={styles["form__select_pubkey"]}
-          isDisabled={!formData.isEnabled || !formData.controllerUrl}
+          isDisabled={!formData.isEnabled || !formData.communicatorUrl}
           onChange={handleGroupChange}
           components={{ Option: MultilineSelectOption }}
           value={createOption(formData["selectedGroup"])} // TODO: display name, not pubkey

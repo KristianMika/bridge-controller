@@ -18,14 +18,14 @@ export function getInterfaceConfiguration(cryptographicInterface: CryptographicI
     return invoke()<FrontEndInterfaceConfiguration | null>("get_interface_configuration", { cryptographicInterface })
 }
 
-export function getGroups(controllerUrl: string) {
-    return invoke()<Group[]>("get_groups", { controllerUrl })
+export function getGroups(communicatorUrl: string) {
+    return invoke()<Group[]>("get_groups", { communicatorUrl })
 }
 
 export function setCommunicatorCertificatePath(certificatePath: string, communicatorUrl: string) {
     return invoke()<null>("set_communicator_certificate_path", { certificatePath,communicatorUrl })
 }
 
-export type FrontEndInterfaceConfiguration = { isEnabled: boolean; controllerUrl: string; selectedGroup: string }
+export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorUrl: string; selectedGroup: string }
 export type CryptographicInterface = "Pcsc" | "Cryptoki" | "Webauthn"
 export type Group = { name: string; group_id: string }

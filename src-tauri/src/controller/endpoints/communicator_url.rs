@@ -13,5 +13,5 @@ pub(crate) async fn get_communicator_url(
         // todo: return custom error
         panic!();
     };
-    String::from(configuration.get_controller_url())
+    String::from(configuration.get_communicator_url())
 }
