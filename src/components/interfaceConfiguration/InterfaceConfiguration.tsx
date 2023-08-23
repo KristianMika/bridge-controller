@@ -145,6 +145,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <button
           onClick={uploadFile}
           className={styles["form__controler_file_upload_button"]}
+          disabled={!formData.isEnabled || !formData.controllerUrl}
         >
           Upload
         </button>
