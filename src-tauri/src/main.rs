@@ -7,8 +7,11 @@ use std::sync::{Arc, Mutex};
 use actix_web::{web, App, HttpServer};
 use controller::{
     controller_repo::sled_controller_repo::SledControllerRepo,
-    endpoints::communicator_url::get_communicator_url,
-    interface_configuration::InterfaceConfiguration, state::State as ControllerState,
+    endpoints::{
+        communicator_url::get_communicator_url, interface_configuration::get_configuration,
+    },
+    interface_configuration::InterfaceConfiguration,
+    state::State as ControllerState,
 };
 use filesystem::FileSystem;
 use hex::ToHex;
@@ -93,6 +96,7 @@ fn spawn_controller_server(
             App::new()
                 .app_data(web::Data::new(controller_state))
                 .service(get_communicator_url)
+                .service(get_configuration)
         })
         .bind(("127.0.0.1", port))
         .unwrap()
