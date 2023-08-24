@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "mpc-bridge",
+    "productName": "bridge-controller",
     "version": "0.0.0"
   },
   "tauri": {
@@ -27,7 +27,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "cz.muni.fi.crocs.meesign-bridge",
+      "identifier": "cz.muni.fi.crocs.bridge-controller",
       "targets": "all"
     },
     "security": {

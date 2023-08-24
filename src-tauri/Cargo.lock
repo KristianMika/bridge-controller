@@ -576,6 +576,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "bridge-controller"
+version = "0.0.0"
+dependencies = [
+ "actix-web",
+ "bincode",
+ "env_logger",
+ "hex",
+ "log",
+ "prost",
+ "serde",
+ "serde_json",
+ "sled",
+ "specta",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-positioner",
+ "tauri-specta",
+ "tonic",
+ "tonic-build",
+]
+
+[[package]]
 name = "brotli"
 version = "3.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2437,28 +2459,6 @@ dependencies = [
  "log",
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.48.0",
-]
-
-[[package]]
-name = "mpc-bridge"
-version = "0.0.0"
-dependencies = [
- "actix-web",
- "bincode",
- "env_logger",
- "hex",
- "log",
- "prost",
- "serde",
- "serde_json",
- "sled",
- "specta",
- "tauri",
- "tauri-build",
- "tauri-plugin-positioner",
- "tauri-specta",
- "tonic",
- "tonic-build",
 ]
 
 [[package]]
