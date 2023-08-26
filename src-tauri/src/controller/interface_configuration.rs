@@ -8,13 +8,13 @@ pub(crate) type GroupId = ByteVector;
 
 #[derive(Serialize, Deserialize, Debug, Type)]
 
-pub(crate) struct InterfaceConfiguration {
+pub(crate) struct InternalInterfaceConfiguration {
     communicator_url: String,
     group_id: GroupId,
     is_enabled: bool,
 }
 
-impl InterfaceConfiguration {
+impl InternalInterfaceConfiguration {
     pub fn get_communicator_url(&self) -> &str {
         &self.communicator_url
     }
@@ -26,9 +26,12 @@ impl InterfaceConfiguration {
     pub fn get_group_id(&self) -> &[u8] {
         &self.group_id
     }
+    pub fn into_group_id(self) -> GroupId {
+        self.group_id
+    }
 }
 
-impl From<FrontEndInterfaceConfiguration> for InterfaceConfiguration {
+impl From<FrontEndInterfaceConfiguration> for InternalInterfaceConfiguration {
     fn from(value: FrontEndInterfaceConfiguration) -> Self {
         let prefix_free_hex_id = &value.selectedGroup[2..];
         let group_id = hex::decode(prefix_free_hex_id).unwrap();

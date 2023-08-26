@@ -10,7 +10,7 @@ use controller::{
     endpoints::{
         communicator_url::get_communicator_url, interface_configuration::get_configuration,
     },
-    interface_configuration::InterfaceConfiguration,
+    interface_configuration::InternalInterfaceConfiguration,
     state::State as ControllerState,
 };
 use filesystem::FileSystem;
@@ -55,8 +55,8 @@ pub(crate) struct FrontEndInterfaceConfiguration {
     selectedGroup: String,
 }
 
-impl From<InterfaceConfiguration> for FrontEndInterfaceConfiguration {
-    fn from(value: InterfaceConfiguration) -> Self {
+impl From<InternalInterfaceConfiguration> for FrontEndInterfaceConfiguration {
+    fn from(value: InternalInterfaceConfiguration) -> Self {
         Self {
             isEnabled: value.is_enabled(),
             communicatorUrl: value.get_communicator_url().into(),

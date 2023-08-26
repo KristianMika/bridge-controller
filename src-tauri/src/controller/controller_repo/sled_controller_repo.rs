@@ -1,7 +1,8 @@
 use std::sync::{Arc, Mutex};
 
 use crate::{
-    controller::interface_configuration::InterfaceConfiguration, interface::CryptographicInterface,
+    controller::interface_configuration::InternalInterfaceConfiguration,
+    interface::CryptographicInterface,
 };
 
 use super::{controller_repo_error::ControllerRepoError, ControllerRepo};
@@ -21,7 +22,7 @@ impl SledControllerRepo {
 impl ControllerRepo for SledControllerRepo {
     fn set_interface_configuration(
         &self,
-        configuration: InterfaceConfiguration,
+        configuration: InternalInterfaceConfiguration,
         interface: CryptographicInterface,
     ) -> Result<(), ControllerRepoError> {
         let key: Vec<u8> = bincode::serialize(&interface)?;
@@ -33,12 +34,12 @@ impl ControllerRepo for SledControllerRepo {
     fn get_interface_configuration(
         &self,
         interface: &CryptographicInterface,
-    ) -> Result<Option<InterfaceConfiguration>, ControllerRepoError> {
+    ) -> Result<Option<InternalInterfaceConfiguration>, ControllerRepoError> {
         let key: Vec<u8> = bincode::serialize(interface)?;
         let Some(value) = self.db.lock()?.get(&key)? else {
             return Ok(None);
         };
-        let configuration: InterfaceConfiguration = bincode::deserialize(&value[..])?;
+        let configuration: InternalInterfaceConfiguration = bincode::deserialize(&value[..])?;
         Ok(Some(configuration))
     }
 }
