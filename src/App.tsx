@@ -21,7 +21,7 @@ function App() {
             <InterfaceConfiguration
               key="hwi"
               canBeDisabled={true}
-              interfaceType={"Cryptoki"} // TODO
+              interfaceType={"cryptoki"} // TODO
             />
           ),
         },
@@ -31,7 +31,7 @@ function App() {
             <InterfaceConfiguration
               key="cryptoki"
               canBeDisabled={false}
-              interfaceType={"Cryptoki"}
+              interfaceType={"cryptoki"}
             />
           ),
         },
@@ -41,7 +41,7 @@ function App() {
             <InterfaceConfiguration
               key="webauthn"
               canBeDisabled={true}
-              interfaceType={"Webauthn"}
+              interfaceType={"webauthn"}
             />
           ),
         },
@@ -51,7 +51,7 @@ function App() {
             <InterfaceConfiguration
               key="pcsc"
               canBeDisabled={true}
-              interfaceType={"Pcsc"}
+              interfaceType={"pcsc"}
             />
           ),
         },
