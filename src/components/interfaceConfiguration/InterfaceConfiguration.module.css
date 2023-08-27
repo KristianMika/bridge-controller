@@ -9,7 +9,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
-    "enable_label enable"
+    "interface_name enable"
     "communicator_input_label communicator_input"
     "file_upload_label file_upload"
     "select_pubkey_label select_pubkey"
@@ -23,8 +23,8 @@
   grid-area: enable;
 }
 
-.form__enabled_label {
-  grid-area: enable_label;
+.form__interface_name {
+  grid-area: interface_name;
 }
 
 .form__communicator_input {

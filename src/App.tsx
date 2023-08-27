@@ -20,6 +20,7 @@ function App() {
           element: (
             <InterfaceConfiguration
               key="hwi"
+              displayName="HWI"
               canBeDisabled={true}
               interfaceType={"cryptoki"} // TODO
             />
@@ -30,6 +31,7 @@ function App() {
           element: (
             <InterfaceConfiguration
               key="cryptoki"
+              displayName="Cryptoki"
               canBeDisabled={false}
               interfaceType={"cryptoki"}
             />
@@ -40,6 +42,7 @@ function App() {
           element: (
             <InterfaceConfiguration
               key="webauthn"
+              displayName="WebAuthn"
               canBeDisabled={true}
               interfaceType={"webauthn"}
             />
@@ -50,6 +53,7 @@ function App() {
           element: (
             <InterfaceConfiguration
               key="pcsc"
+              displayName="PC/SC"
               canBeDisabled={true}
               interfaceType={"pcsc"}
             />

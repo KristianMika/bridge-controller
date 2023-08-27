@@ -25,6 +25,7 @@ const DEFAULT_COMMUNICATOR_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
 interface IInterfaceConfiguration {
   canBeDisabled: boolean;
   interfaceType: CryptographicInterface;
+  displayName: string;
 }
 interface Option {
   readonly label: string;
@@ -126,7 +127,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           checked={formData.isEnabled}
           disabled={!props.canBeDisabled}
         />
-        <label className={styles["form__enabled_label"]}>Enabled</label>
+        <h3 className={styles["form__interface-name"]}>{props.displayName}</h3>
         <Creatable
           isDisabled={!formData.isEnabled}
           className={styles["form__communicator_input"]}
