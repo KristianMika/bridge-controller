@@ -130,11 +130,12 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <Creatable
           isDisabled={!formData.isEnabled}
           className={styles["form__communicator_input"]}
-          value={createOption(formData.communicatorUrl)}
+          value={optionOrNull(formData.communicatorUrl)}
           onChange={handleCommunicatorUrlChange}
           onCreateOption={handleCommunicatorUrlCreation}
           name="communicatorUrl"
           options={options as any}
+          placeholder="Select an option"
         ></Creatable>
 
         <label className={styles["form__communicator_input_label"]}>
@@ -164,7 +165,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled || !formData.communicatorUrl}
           onChange={handleGroupChange}
           components={{ Option: MultilineSelectOption }}
-          value={resolveGroupName(formData["selectedGroup"])}
+          value={optionOrNull(formData["selectedGroup"])}
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button onClick={saveConfiguration} className={styles["form__apply"]}>
@@ -187,4 +188,16 @@ const shortenHexPubkey = (pubkey: string): string => {
     "..." +
     pubkey.slice(-HEX_PUBKEY_DISPLAY_CHARS_COUNT)
   );
+};
+
+/**
+ * If the option is falsy, e.g., "" we need to pass a falsy value to react-select
+ * or else the placeholder won't be displayed
+ */
+const optionOrNull = (value: string | null): Option | null => {
+  if (!value) {
+    // value may == ""
+    return null;
+  }
+  return createOption(value);
 };
