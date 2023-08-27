@@ -1,4 +1,5 @@
 use actix_web::{get, web, Responder};
+use serde::Serialize;
 
 use crate::controller::state::State;
 
@@ -14,5 +15,18 @@ pub(crate) async fn get_communicator_certificate_path(
         .unwrap();
     // TODO check if cert exists
     // TODO: errorhandling
-    filepath.to_str().unwrap().to_string()
+    let filepath = filepath.to_str().unwrap().to_string();
+    let certificate_response = CertificateResponse::new(Some(filepath));
+    web::Json(certificate_response)
+}
+
+#[derive(Serialize)]
+struct CertificateResponse {
+    certificate_path: Option<String>,
+}
+
+impl CertificateResponse {
+    fn new(certificate_path: Option<String>) -> Self {
+        Self { certificate_path }
+    }
 }
