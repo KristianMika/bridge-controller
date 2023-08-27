@@ -8,6 +8,7 @@ use actix_web::{web, App, HttpServer};
 use controller::{
     controller_repo::sled_controller_repo::SledControllerRepo,
     endpoints::{
+        communicator_certificate_path::get_communicator_certificate_path,
         communicator_url::get_communicator_url, interface_configuration::get_configuration,
     },
     interface_configuration::InternalInterfaceConfiguration,
@@ -97,6 +98,7 @@ fn spawn_controller_server(
                 .app_data(web::Data::new(controller_state))
                 .service(get_communicator_url)
                 .service(get_configuration)
+                .service(get_communicator_certificate_path)
         })
         .bind(("127.0.0.1", port))
         .unwrap()
@@ -121,8 +123,8 @@ fn main() {
     let sled_filepath = filesystem.get_db_filepath(SLED_DB_FILENAME).unwrap();
     let db = sled::open(sled_filepath).unwrap();
     let controller_repo = SledControllerRepo::new(Arc::new(Mutex::new(db)));
-    let tauri_state = State::new(Box::new(controller_repo.clone()), filesystem);
-    let controller_state = ControllerState::new(Arc::new(controller_repo));
+    let tauri_state = State::new(Box::new(controller_repo.clone()), filesystem.clone());
+    let controller_state = ControllerState::new(Arc::new(controller_repo), filesystem);
     // wrapped just so the the closure can take ownership of it multiple times
     let wrapped_controller_state = Arc::new(Mutex::new(controller_state));
 

@@ -5,6 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+#[derive(Clone)]
 pub(crate) struct FileSystem {}
 
 impl FileSystem {
