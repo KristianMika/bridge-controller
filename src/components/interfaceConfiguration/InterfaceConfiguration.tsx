@@ -41,6 +41,8 @@ const selectStyle: StylesConfig<Option, false> = {
   control: (provided, state) => {
     // provided has CSSObject type
     // state has ControlProps type
+
+    provided.borderRadius = 0;
     if (state.isDisabled) {
       return {
         ...provided,
