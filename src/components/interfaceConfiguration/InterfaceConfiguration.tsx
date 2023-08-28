@@ -213,7 +213,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button onClick={saveConfiguration} className={styles["form__apply"]}>
-          Save
+          Apply
         </button>
       </form>
     </div>
