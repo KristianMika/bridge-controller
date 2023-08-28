@@ -6,8 +6,9 @@
   line-height: 24px;
   font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  
+  color: #f6f6f6;
+  background-color: var(--background-color);
   --primary-color: #00e4d4;
   --background-color: #212121;
 
