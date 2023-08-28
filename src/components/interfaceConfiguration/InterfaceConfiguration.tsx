@@ -2,6 +2,7 @@ import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
 import "react-dropdown/style.css";
 import Creatable from "react-select/creatable";
+import { Theme } from "react-select";
 import React, { useEffect, useState, CSSProperties } from "react";
 import {
   CryptographicInterface,
@@ -52,6 +53,18 @@ const selectStyle: StylesConfig<Option, false> = {
     return provided;
   },
 };
+
+const selectTheme = (theme: Theme): Theme => ({
+  ...theme,
+  borderRadius: 0,
+  colors: {
+    ...theme.colors,
+    primary: "#00e4d4",
+    primary25: "#defcfa",
+    primary50: "#8ffff8",
+    primary75: "#3bf5e9", // TODO: precise colors calculated, not guessed
+  },
+});
 const createOption = (option: string): Option => {
   return { value: option, label: option };
 };
@@ -161,6 +174,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           options={options as any}
           placeholder="Select an option"
           styles={selectStyle}
+          theme={selectTheme}
         ></Creatable>
 
         <label className={styles["form__communicator_input_label"]}>
@@ -192,6 +206,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           onChange={handleGroupChange}
           components={{ Option: MultilineSelectOption }}
           value={optionOrNull(formData["selectedGroup"])}
+          theme={selectTheme}
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button onClick={saveConfiguration} className={styles["form__apply"]}>
