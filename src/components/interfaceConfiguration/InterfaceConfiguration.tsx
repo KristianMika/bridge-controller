@@ -133,10 +133,10 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   };
 
   // TODO:consider storing in backend
-  const resolveGroupName = (groupPubkey: string): Option => {
+  const resolveGroupName = (groupPubkey: string): Option | null => {
     let group = groups.filter((group: Group) => group.group_id === groupPubkey);
     if (group.length != 1) {
-      return { label: "", value: "" }; // todo
+      return null;
     }
     return { label: group[0].name, value: group[0].group_id };
   };
@@ -205,7 +205,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           isDisabled={!formData.isEnabled || !formData.communicatorUrl}
           onChange={handleGroupChange}
           components={{ Option: MultilineSelectOption }}
-          value={optionOrNull(formData["selectedGroup"])}
+          value={resolveGroupName(formData["selectedGroup"])}
           theme={selectTheme}
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
