@@ -1,0 +1,28 @@
+{
+    "name": "Tauri Box",
+    "runArgs": [
+        "--network=host",
+        "--device=/dev/dri:/dev/dri"
+    ],
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {}
+    },
+    "settings": {},
+    "extensions": [
+        "rust-lang.rust-analyzer",
+        "tauri-apps.tauri-vscode",
+        "serayuzgur.crates",
+        "usernamehw.errorlens",
+        "dsznajder.es7-react-js-snippets"
+    ],
+    "postCreateCommand": "npm install",
+    "containerEnv": {
+        "DISPLAY": "unix:0"
+    },
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+    ],
+    "remoteUser": "dev",
+    "features": {}
+}
