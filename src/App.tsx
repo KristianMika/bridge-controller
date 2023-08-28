@@ -1,4 +1,9 @@
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 import { InterfaceConfiguration } from "./components/interfaceConfiguration/InterfaceConfiguration";
 import { Menu } from "./components/menu/Menu";
 import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
@@ -15,6 +20,10 @@ function App() {
         </>
       ),
       children: [
+        {
+          path: "/",
+          element: <Navigate to="/webauthn"></Navigate>,
+        },
         {
           path: "hwi",
           element: (

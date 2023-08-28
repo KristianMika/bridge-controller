@@ -20,11 +20,11 @@ interface IMenuItem {
  * Bottom navigation menu that allows changing interface configurations
  */
 export const Menu: React.FC = () => {
-  const [selectedItem, setSelectedItem] = useState<string>();
+  const [selectedItem, setSelectedItem] = useState<string>("FIDO");
   const navigate = useNavigate();
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    setSelectedItem(event.currentTarget.dataset.name);
+    setSelectedItem(event.currentTarget.dataset.name as string);
     navigate(event.currentTarget.dataset.link as string);
   };
 
