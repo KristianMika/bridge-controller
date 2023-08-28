@@ -4,16 +4,22 @@
   justify-content: center;
   align-items: center;
   height: var(--menu-item-height);
-  border-left: 2px solid transparent;
+  border-left: 2.5px solid transparent;
 }
 
 .menu__menu-item:hover,
 .menu__menu-item--selected {
   background: rgb(135, 135, 135);
-  background: linear-gradient(
+  /* background: linear-gradient(
     90deg,
     rgba(135, 135, 135, 0.5858718487394958) 0%,
     rgba(47, 47, 47, 0.49343487394957986) 91%
+  ); */
+  background: rgb(0, 228, 212);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 228, 212, 0.4) 0%,
+    rgba(33, 33, 33, 0) 100%
   );
-  border-left: 2px solid rgb(163, 163, 163);
+  border-left: 2.5px solid var(--primary-color);
 }
