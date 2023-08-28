@@ -154,16 +154,19 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   return (
     <div className={styles["interface-configuration"]}>
       <form className={styles["interface-configuration__form"]}>
-        <Switch
-          className={styles["form__enabled"]}
-          onChange={handleIsEnabledChange}
-          checked={formData.isEnabled}
-          disabled={!props.canBeDisabled}
-          onColor={"#00e4d4"} // TODO: global color definition
-          boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-          activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-        />
-        <h3 className={styles["form__interface-name"]}>{props.displayName}</h3>
+        <div className={styles["form__enabled"]}>
+          <Switch
+            onChange={handleIsEnabledChange}
+            checked={formData.isEnabled}
+            disabled={!props.canBeDisabled}
+            onColor={"#00e4d4"} // TODO: global color definition
+            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+          />
+        </div>
+        <div className={styles["form__interface_name"]}>
+          <h2>{props.displayName}</h2>
+        </div>
         <Creatable
           isDisabled={!formData.isEnabled}
           className={styles["form__communicator_input"]}

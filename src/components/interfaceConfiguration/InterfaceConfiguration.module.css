@@ -14,17 +14,23 @@
     "file_upload_label file_upload"
     "select_pubkey_label select_pubkey"
     "apply_button apply_button";
-  grid-template-rows: 15% 15% 15% 15% 40%;
+  grid-template-rows: 20% 15% 15% 15% 35%;
   justify-items: center;
   align-items: center;
 }
 
 .form__enabled {
   grid-area: enable;
+  width: 100%;
+  text-align: end;
+  margin-bottom: 1.1rem;
 }
 
 .form__interface_name {
   grid-area: interface_name;
+  width: 70%;
+  text-align: start;
+  margin-bottom: 1.1rem;
 }
 
 .form__communicator_input {
