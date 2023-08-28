@@ -120,6 +120,9 @@ fn main() {
     .unwrap();
 
     let filesystem = FileSystem {};
+    filesystem
+        .ensure_controller_directory_structure_exists()
+        .expect("Couldn't create controller directory structure");
     let sled_filepath = filesystem.get_db_filepath(SLED_DB_FILENAME).unwrap();
     let db = sled::open(sled_filepath).unwrap();
     let controller_repo = SledControllerRepo::new(Arc::new(Mutex::new(db)));

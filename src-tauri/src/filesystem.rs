@@ -1,6 +1,6 @@
 use std::{
     error::Error,
-    fs::copy,
+    fs::{self, copy},
     io,
     path::{Path, PathBuf},
 };
@@ -8,6 +8,7 @@ use std::{
 use home::home_dir;
 
 static CONTROLLER_DIRECTORY_NAME: &str = ".bridge-controller";
+
 #[derive(Clone)]
 pub(crate) struct FileSystem {}
 
@@ -44,5 +45,24 @@ impl FileSystem {
 
     pub(crate) fn get_db_filepath(&self, db_filename: &str) -> Result<PathBuf, Box<dyn Error>> {
         Ok(self.get_controller_directory()?.join(db_filename))
+    }
+
+    fn ensure_controller_directory_exists(&self) -> Result<(), Box<dyn Error>> {
+        let controller_directory = self.get_controller_directory()?;
+        fs::create_dir_all(controller_directory)?;
+        Ok(())
+    }
+
+    fn ensure_certificates_directory_exists(&self) -> Result<(), Box<dyn Error>> {
+        let certificate_directory = self.get_certificate_directory()?;
+        fs::create_dir_all(certificate_directory)?;
+        Ok(())
+    }
+
+    pub(crate) fn ensure_controller_directory_structure_exists(
+        &self,
+    ) -> Result<(), Box<dyn Error>> {
+        self.ensure_controller_directory_exists()?;
+        self.ensure_certificates_directory_exists()
     }
 }
