@@ -5,8 +5,11 @@
 .option__label--mainlabel {
   font-weight: 500;
   font-size: 16px;
+  height: 1.2rem;
 }
 
 .option__label--sublabel {
   font-size: 12px;
+  height: 1.2rem;
+  font-weight: 400;
 }
