@@ -29,10 +29,10 @@ export const Menu: React.FC = () => {
   };
 
   const menuItems: IMenuItem[] = [
-    { title: "HWI", icon: BsCurrencyBitcoin, link: "/hwi" },
+    { title: "FIDO", icon: SiFidoalliance, link: "/webauthn" },
     { title: "PKCS#11", icon: BsFillUsbDriveFill, link: "/cryptoki" },
     { title: "PC/SC", icon: BsSimFill, link: "/pcsc" },
-    { title: "FIDO", icon: SiFidoalliance, link: "/webauthn" },
+    { title: "HWI", icon: BsCurrencyBitcoin, link: "/hwi" },
   ];
 
   return (
