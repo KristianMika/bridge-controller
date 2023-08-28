@@ -21,7 +21,8 @@
         "DISPLAY": "unix:0"
     },
     "mounts": [
-        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+        "source=./tmp/bridge-files/,target=/home/dev/shared-files/,type=bind,consistency=cached"
     ],
     "remoteUser": "dev",
     "features": {}

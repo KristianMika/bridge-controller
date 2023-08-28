@@ -20,10 +20,11 @@ The front-end part of the MPC interface setup that interconnects common cryptogr
 
 The [devcontainer](./.devcontainer) folder contains a configuration for a development Docker environment.
 
-_Please, note, that some features may not work in this setup (e.g., file uploads), and you will have to build an appimage, and run it on your host._
+_Please, note, this setup has some limitations. For example, you can upload files only from the `/tmp/bridge-files` directory (must be created manually before running the setup, can be changed in [devcontainer.json](./.devcontainer/devcontainer.json) under `mounts`._
 
 1. Install the `ms-vscode-remote.remote-containers` VS Code extension.
-2. Press `Ctrl + Shift + P`, select `>Dev Containers: Open folder in Container...`, and select the root repository directory. (_this may take some time for the the first run_)
+2. Crate a shared directory `/tmp/bridge-files/` (\_important, can't be skipped)
+3. Press `Ctrl + Shift + P`, select `>Dev Containers: Open folder in Container...`, and select the root repository directory. (_this may take some time for the the first run_)
 
 ### Development Build
 
