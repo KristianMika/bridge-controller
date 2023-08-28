@@ -24,6 +24,7 @@ specta = "1.0.5"
 tauri-specta = { version = "1.0.2", features = ["typescript"] }
 tonic = { version = "0.9.2", features = ["tls", "transport"] }
 hex = "0.4.3"
+home = "0.5.5"
 
 # Controller
 actix-web = "4"

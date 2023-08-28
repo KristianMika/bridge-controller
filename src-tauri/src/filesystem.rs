@@ -5,14 +5,17 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use home::home_dir;
+
+static CONTROLLER_DIRECTORY_NAME: &str = ".bridge-controller";
 #[derive(Clone)]
 pub(crate) struct FileSystem {}
 
 impl FileSystem {
     // TODO: custom error
     fn get_controller_directory(&self) -> Result<PathBuf, Box<dyn Error>> {
-        // TODO
-        Ok(PathBuf::from("/home/kiko/Desktop/bridge"))
+        let home_directory = home_dir().expect("Couldn't get home directory");
+        Ok(home_directory.join(CONTROLLER_DIRECTORY_NAME))
     }
 
     fn get_certificate_directory(&self) -> Result<PathBuf, Box<dyn Error>> {
