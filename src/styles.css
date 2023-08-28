@@ -9,6 +9,7 @@
   color: #0f0f0f;
   background-color: #f6f6f6;
   --primary-color: #00e4d4;
+  --background-color: #212121;
 
   --button-hover-outline: outline-offset 200ms ease;
   --button-hover-outline-offset: -6px;
@@ -45,6 +46,6 @@ html,
 @media (prefers-color-scheme: dark) {
   :root {
     color: #f6f6f6;
-    background-color: #2f2f2f;
+    background-color: var(--background-color);
   }
 }
