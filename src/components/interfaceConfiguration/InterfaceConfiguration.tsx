@@ -2,7 +2,7 @@ import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
 import "react-dropdown/style.css";
 import Creatable from "react-select/creatable";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, CSSProperties } from "react";
 import {
   CryptographicInterface,
   getInterfaceConfiguration,
@@ -10,7 +10,7 @@ import {
   getGroups,
   setInterfaceConfiguration,
 } from "../../bindings";
-import Select from "react-select";
+import Select, { StylesConfig } from "react-select";
 import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
 import { CertificateUpload } from "./CertificateUpload";
 
@@ -31,7 +31,25 @@ interface Option {
   readonly label: string;
   readonly value: string;
 }
+const disabledSelectStyles: CSSProperties = {
+  background: "rgb(192, 192, 192)",
+  borderColor: "rgb(192, 192, 192)",
+  color: "rgba(0, 0, 0, 0.4)",
+};
 
+const selectStyle: StylesConfig<Option, false> = {
+  control: (provided, state) => {
+    // provided has CSSObject type
+    // state has ControlProps type
+    if (state.isDisabled) {
+      return {
+        ...provided,
+        ...disabledSelectStyles,
+      };
+    }
+    return provided;
+  },
+};
 const createOption = (option: string): Option => {
   return { value: option, label: option };
 };
@@ -137,6 +155,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           name="communicatorUrl"
           options={options as any}
           placeholder="Select an option"
+          styles={selectStyle}
         ></Creatable>
 
         <label className={styles["form__communicator_input_label"]}>
@@ -161,6 +180,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
               value: group.group_id,
             };
           })}
+          styles={selectStyle}
           placeholder="Select an option"
           className={styles["form__select_pubkey"]}
           isDisabled={!formData.isEnabled || !formData.communicatorUrl}

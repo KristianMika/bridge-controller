@@ -1,6 +1,6 @@
 @import "normalize.css/normalize.css";
 
-:root  {
+:root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
@@ -8,6 +8,7 @@
 
   color: #0f0f0f;
   background-color: #f6f6f6;
+  --primary-color: #00e4d4;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
