@@ -59,8 +59,16 @@
 
 .form__apply {
   grid-area: apply_button;
-  width: 60%;
-  height: 2rem;
+  width: 40%;
+  height: 2.5rem;
+  background-color: var(--primary-color);
+  outline: 2px solid white;
+  transition: var(--button-hover-outline);
+  padding: 2px 0 0 0;
+}
+
+.form__apply:hover {
+  outline-offset: var(--button-hover-outline-offset);
 }
 
 button:disabled {
