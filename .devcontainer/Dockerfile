@@ -13,7 +13,7 @@ EXPOSE 1420
 # controller port
 EXPOSE 12345 
 
-# install basic reguirements
+# install basic requirements
 RUN apt-get update && apt-get install --assume-yes \
     git \
     unzip
