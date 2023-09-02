@@ -1,0 +1,58 @@
+on: [push]
+
+name: Bridge Controller
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install tauri dependencies
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install --assume-yes \
+            libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
+
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v2
+
+      - name: Run rust tests
+        run: cargo test
+        working-directory: ./src-tauri
+
+      # TODO: run front-end tests
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+
+      - name: Install node dependencies
+        run: npm install
+
+      - name: Build bundles
+        run: npm run tauri build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: bridge-controller
+          path: |
+            src-tauri/target/release/bundle/deb/bridge-controller_*_amd64.deb
+            src-tauri/target/release/bundle/appimage/bridge-controller_*_amd64.AppImage
+          if-no-files-found: error
