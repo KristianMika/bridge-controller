@@ -1,5 +1,7 @@
 # Bridge Controller
 
+[![Bridge Controller](https://github.com/KristianMika/bridge-controller/actions/workflows/bridge-controller.yaml/badge.svg)](https://github.com/KristianMika/bridge-controller/actions/workflows/bridge-controller.yaml)
+
 The front-end part of the MPC interface setup that interconnects common cryptographic interfaces with [Meesign](https://meesign.crocs.fi.muni.cz/).
 
 ## Currently Supported Interfaces
