@@ -168,6 +168,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           <h2>{props.displayName}</h2>
         </div>
         <Creatable
+          maxMenuHeight={130}
           isDisabled={!formData.isEnabled}
           className={styles["form__communicator_input"]}
           value={optionOrNull(formData.communicatorUrl)}
@@ -210,6 +211,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           components={{ Option: MultilineSelectOption }}
           value={resolveGroupName(formData["selectedGroup"])}
           theme={selectTheme}
+          maxMenuHeight={120}
         />
         <label className={styles["form__select_pubkey_label"]}>Group</label>
         <button onClick={saveConfiguration} className={styles["form__apply"]}>
