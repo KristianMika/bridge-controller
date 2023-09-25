@@ -16,6 +16,7 @@ use controller::{
 };
 use filesystem::FileSystem;
 use hex::ToHex;
+use process_manager::ProcessManager;
 use proto::Group as ProtoGroup;
 use serde::{Deserialize, Serialize};
 use specta::{collect_types, Type};
@@ -26,12 +27,17 @@ use tauri::{generate_handler, GlobalWindowEvent, SystemTray, WindowEvent};
 use tauri_specta::ts;
 
 use crate::commands::get_groups::get_groups;
-use crate::commands::{communicator_url::*, get_groups::*, interface_configuration::*};
+use crate::commands::process_management::kill_interface_process;
+use crate::commands::{
+    communicator_url::*, get_groups::*, interface_configuration::*, process_management::*,
+};
+use crate::process_manager::{PlatformSpecificProcessExecutor, ProcessExecutor};
 
 mod commands;
 mod controller;
 mod filesystem;
 mod interface;
+mod process_manager;
 mod state;
 mod system_tray;
 
@@ -113,7 +119,9 @@ fn main() {
             set_interface_configuration,
             get_interface_configuration,
             get_groups,
-            set_communicator_certificate_path
+            set_communicator_certificate_path,
+            spawn_interface_process,
+            kill_interface_process
         ],
         "../src/bindings.ts",
     )
@@ -126,7 +134,13 @@ fn main() {
     let sled_filepath = filesystem.get_db_filepath(SLED_DB_FILENAME).unwrap();
     let db = sled::open(sled_filepath).unwrap();
     let controller_repo = SledControllerRepo::new(Arc::new(Mutex::new(db)));
-    let tauri_state = State::new(Box::new(controller_repo.clone()), filesystem.clone());
+    let process_executor = PlatformSpecificProcessExecutor::new();
+    let process_manager = ProcessManager::new(process_executor);
+    let tauri_state = State::new(
+        Box::new(controller_repo.clone()),
+        filesystem.clone(),
+        Arc::new(process_manager),
+    );
     let controller_state = ControllerState::new(Arc::new(controller_repo), filesystem);
     // wrapped just so the the closure can take ownership of it multiple times
     let wrapped_controller_state = Arc::new(Mutex::new(controller_state));
@@ -142,7 +156,9 @@ fn main() {
             set_interface_configuration,
             get_interface_configuration,
             get_groups,
-            set_communicator_certificate_path
+            set_communicator_certificate_path,
+            spawn_interface_process,
+            kill_interface_process
         ])
         .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))

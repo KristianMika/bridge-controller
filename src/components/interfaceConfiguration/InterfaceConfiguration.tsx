@@ -10,6 +10,9 @@ import {
   Group,
   getGroups,
   setInterfaceConfiguration,
+  spawnInterfaceProcess,
+  killInterfaceProcess,
+  CreatableInterface,
 } from "../../bindings";
 import Select, { StylesConfig } from "react-select";
 import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
@@ -130,6 +133,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   const saveConfiguration = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     setInterfaceConfiguration(props.interfaceType, formData);
+    toggleInterface(props.interfaceType, formData.isEnabled);
   };
 
   // TODO:consider storing in backend
@@ -247,3 +251,23 @@ const optionOrNull = (value: string | null): Option | null => {
   }
   return createOption(value);
 };
+
+const toggleInterface = (
+  interfaceType: CryptographicInterface,
+  isEnabled: boolean
+) => {
+  if (!isCreatableInterface(interfaceType)) {
+    return;
+  }
+  const creatableInterface = interfaceType as CreatableInterface;
+  if (isEnabled) {
+    spawnInterfaceProcess(creatableInterface);
+  } else {
+    killInterfaceProcess(creatableInterface);
+  }
+};
+
+const isCreatableInterface = (
+  interfaceType: CryptographicInterface
+): interfaceType is CreatableInterface =>
+  interfaceType == "webauthn" || interfaceType == "pcsc";

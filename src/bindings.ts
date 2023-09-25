@@ -26,6 +26,15 @@ export function setCommunicatorCertificatePath(certificatePath: string, communic
     return invoke()<null>("set_communicator_certificate_path", { certificatePath,communicatorUrl })
 }
 
-export type Group = { name: string; group_id: string }
+export function spawnInterfaceProcess(creatableInterface: CreatableInterface) {
+    return invoke()<null>("spawn_interface_process", { creatableInterface })
+}
+
+export function killInterfaceProcess(creatableInterface: CreatableInterface) {
+    return invoke()<null>("kill_interface_process", { creatableInterface })
+}
+
+export type CreatableInterface = "pcsc" | "webauthn"
 export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorUrl: string; selectedGroup: string }
+export type Group = { name: string; group_id: string }
 export type CryptographicInterface = "pcsc" | "cryptoki" | "webauthn"
