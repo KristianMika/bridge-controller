@@ -14,7 +14,7 @@ impl ProcessExecutor for LinuxProcessExecutor {
             .arg("--token-label")
             .arg("Meesign: testgrp")
             .arg("--pkcs11-module")
-            .arg("/usr/lib/libmeesign_pkcs11.so")
+            .arg("/usr/lib/libcryptoki_bridge.so")
             .env("USED_AS_FIDO", "1")
             .spawn()?;
         std::thread::sleep(std::time::Duration::from_millis(500));
