@@ -48,11 +48,37 @@ jobs:
       - name: Build bundles
         run: npm run tauri build
 
-      - name: Upload artifacts
+      - name: Upload app image
         uses: actions/upload-artifact@v3
         with:
-          name: bridge-controller
-          path: |
-            src-tauri/target/release/bundle/deb/bridge-controller_*_amd64.deb
-            src-tauri/target/release/bundle/appimage/bridge-controller_*_amd64.AppImage
+          name: bridge-controller-appimage
+          path: src-tauri/target/release/bundle/appimage/bridge-controller_*_amd64.AppImage
           if-no-files-found: error
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v3
+        with:
+          name: bridge-controller-deb
+          path: src-tauri/target/release/bundle/deb/bridge-controller_*_amd64.deb
+          if-no-files-found: error
+
+  release:
+    needs: build-and-test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Debian package
+        uses: actions/download-artifact@v3
+        with:
+          name: bridge-controller-deb
+          path: .
+          if-no-files-found: error
+
+      - name: Packagecloud Upload
+        uses: computology/packagecloud-github-action@v0.6
+        with:
+          PACKAGE-NAME: ./bridge-controller*.deb
+          PACKAGECLOUD-USERNAME: kristian_mika
+          PACKAGECLOUD-REPONAME: mpc-bridge/any/any
+          PACKAGECLOUD-DISTRO: debian
+          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
