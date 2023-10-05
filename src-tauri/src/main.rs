@@ -2,11 +2,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 #[cfg(debug_assertions)]
-use specta::collect_types;
+use specta::{collect_types, ts::TsExportError};
 #[cfg(debug_assertions)]
 use tauri_specta::ts;
 
 use std::io::Error;
+use std::path::Path;
 use std::sync::{Arc, Mutex};
 
 use actix_web::{web, App, HttpServer};
@@ -118,18 +119,7 @@ fn spawn_controller_server(
 
 fn main() {
     #[cfg(debug_assertions)]
-    ts::export(
-        collect_types![
-            set_interface_configuration,
-            get_interface_configuration,
-            get_groups,
-            set_communicator_certificate_path,
-            spawn_interface_process,
-            kill_interface_process
-        ],
-        "../src/bindings.ts",
-    )
-    .expect("Couldn't export bindings");
+    generate_typescript_bindings("bindings.ts").expect("Couldn't export bindings");
     let filesystem = FileSystem {};
     filesystem
         .ensure_controller_directory_structure_exists()
@@ -169,4 +159,21 @@ fn main() {
         .on_window_event(window_event_handler)
         .run(tauri::generate_context!())
         .expect("Couldn't run application");
+}
+
+#[cfg(debug_assertions)]
+fn generate_typescript_bindings(bindings_filename: &str) -> Result<(), TsExportError> {
+    let current_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let bindings_path = current_dir.join("..").join("src").join(bindings_filename);
+    ts::export(
+        collect_types![
+            set_interface_configuration,
+            get_interface_configuration,
+            get_groups,
+            set_communicator_certificate_path,
+            spawn_interface_process,
+            kill_interface_process
+        ],
+        bindings_path,
+    )
 }
