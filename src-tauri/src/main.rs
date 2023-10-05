@@ -1,6 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+#[cfg(debug_assertions)]
+use specta::collect_types;
+#[cfg(debug_assertions)]
+use tauri_specta::ts;
+
 use std::io::Error;
 use std::sync::{Arc, Mutex};
 
@@ -19,12 +24,11 @@ use hex::ToHex;
 use process_manager::ProcessManager;
 use proto::Group as ProtoGroup;
 use serde::{Deserialize, Serialize};
-use specta::{collect_types, Type};
+use specta::Type;
 use state::State;
 use system_tray::{create_tray_menu, system_tray_event_handler};
 use tauri::async_runtime::JoinHandle;
 use tauri::{generate_handler, GlobalWindowEvent, SystemTray, WindowEvent};
-use tauri_specta::ts;
 
 use crate::commands::get_groups::get_groups;
 use crate::commands::process_management::kill_interface_process;
@@ -125,8 +129,7 @@ fn main() {
         ],
         "../src/bindings.ts",
     )
-    .unwrap();
-
+    .expect("Couldn't export bindings");
     let filesystem = FileSystem {};
     filesystem
         .ensure_controller_directory_structure_exists()
