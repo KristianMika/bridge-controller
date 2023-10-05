@@ -1,6 +1,7 @@
 use std::process::Child;
 
 use dashmap::DashMap;
+use log::info;
 use serde::Deserialize;
 use specta::Type;
 
@@ -48,7 +49,11 @@ impl ProcessManager {
             CreatableInterface::Pcsc => self.process_executor.create_pcsc_process()?,
             CreatableInterface::Webauthn => self.process_executor.create_webauthn_process()?,
         };
-
+        info!(
+            "process for interface {:?} has been spawned with PID {}",
+            interface,
+            child.id(),
+        );
         self.processes.insert(interface, child);
         Ok(())
     }
@@ -58,7 +63,7 @@ impl ProcessManager {
         interface: &CreatableInterface,
     ) -> Result<(), ProcessManagerError> {
         let Some((_, mut process)) = self.processes.remove(interface) else {
-            return Err(ProcessManagerError::ProcessNotRunning)
+            return Err(ProcessManagerError::ProcessNotRunning);
         };
 
         process.kill()?;
@@ -67,7 +72,7 @@ impl ProcessManager {
         Ok(())
     }
 }
-#[derive(Eq, Hash, PartialEq, Deserialize, Type)]
+#[derive(Eq, Hash, PartialEq, Deserialize, Type, Debug)]
 #[serde(rename_all = "lowercase")]
 pub(crate) enum CreatableInterface {
     Pcsc,

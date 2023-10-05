@@ -1,4 +1,5 @@
 use actix_web::{get, web, Responder};
+use log::debug;
 
 use crate::{controller::state::State, interface::CryptographicInterface};
 
@@ -13,5 +14,10 @@ pub(crate) async fn get_communicator_url(
         // todo: return custom error
         panic!();
     };
-    String::from(configuration.get_communicator_url())
+    let communicator_url = String::from(configuration.get_communicator_url());
+    debug!(
+        "GET /{interface:?}/communicator_url -> {}",
+        communicator_url
+    );
+    communicator_url
 }

@@ -1,12 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::error::Error;
+use std::io;
 #[cfg(debug_assertions)]
-use specta::{collect_types, ts::TsExportError};
-#[cfg(debug_assertions)]
-use tauri_specta::ts;
-
-use std::io::Error;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 
@@ -20,16 +17,22 @@ use controller::{
     interface_configuration::InternalInterfaceConfiguration,
     state::State as ControllerState,
 };
+use env_logger::Target;
 use filesystem::FileSystem;
 use hex::ToHex;
+use log::info;
 use process_manager::ProcessManager;
 use proto::Group as ProtoGroup;
 use serde::{Deserialize, Serialize};
 use specta::Type;
+#[cfg(debug_assertions)]
+use specta::{collect_types, ts::TsExportError};
 use state::State;
 use system_tray::{create_tray_menu, system_tray_event_handler};
 use tauri::async_runtime::JoinHandle;
 use tauri::{generate_handler, GlobalWindowEvent, SystemTray, WindowEvent};
+#[cfg(debug_assertions)]
+use tauri_specta::ts;
 
 use crate::commands::get_groups::get_groups;
 use crate::commands::process_management::kill_interface_process;
@@ -60,7 +63,7 @@ struct Group {
 }
 
 #[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, Debug)]
 pub(crate) struct FrontEndInterfaceConfiguration {
     isEnabled: bool,
     communicatorUrl: String,
@@ -101,7 +104,8 @@ fn window_event_handler(event: GlobalWindowEvent) {
 fn spawn_controller_server(
     wrapped_controller_state: Arc<Mutex<ControllerState>>,
     port: u16,
-) -> JoinHandle<Result<(), Error>> {
+) -> JoinHandle<Result<(), io::Error>> {
+    info!("Spawning controller server on port {}...", port);
     tauri::async_runtime::spawn(
         HttpServer::new(move || {
             let controller_state = wrapped_controller_state.as_ref().lock().unwrap().clone();
@@ -117,10 +121,31 @@ fn spawn_controller_server(
     )
 }
 
+#[cfg(debug_assertions)]
+fn get_logger_target(_filesystem: &FileSystem) -> Result<Target, Box<dyn Error>> {
+    Ok(Target::Stderr)
+}
+
+#[cfg(not(debug_assertions))]
+fn get_logger_target(filesystem: &FileSystem) -> Result<Target, Box<dyn Error>> {
+    let log_file = filesystem.get_log_file()?;
+    Ok(Target::Pipe(Box::new(log_file)))
+}
+
+fn init_logger(filesystem: &FileSystem) -> Result<(), Box<dyn Error>> {
+    env_logger::builder()
+        .filter_level(log::LevelFilter::Info)
+        .target(get_logger_target(filesystem)?)
+        .init();
+    Ok(())
+}
 fn main() {
+    let filesystem = FileSystem {};
+    init_logger(&filesystem).expect("Couldn't initialize logger");
+
     #[cfg(debug_assertions)]
     generate_typescript_bindings("bindings.ts").expect("Couldn't export bindings");
-    let filesystem = FileSystem {};
+
     filesystem
         .ensure_controller_directory_structure_exists()
         .expect("Couldn't create controller directory structure");
@@ -138,7 +163,6 @@ fn main() {
     // wrapped just so the the closure can take ownership of it multiple times
     let wrapped_controller_state = Arc::new(Mutex::new(controller_state));
 
-    env_logger::init();
     tauri::Builder::default()
         .setup(|_app| {
             spawn_controller_server(wrapped_controller_state, CONTROLLER_PORT);
@@ -165,6 +189,7 @@ fn main() {
 fn generate_typescript_bindings(bindings_filename: &str) -> Result<(), TsExportError> {
     let current_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let bindings_path = current_dir.join("..").join("src").join(bindings_filename);
+    info!("Generating typescript bindings at {:?}", bindings_path);
     ts::export(
         collect_types![
             set_interface_configuration,

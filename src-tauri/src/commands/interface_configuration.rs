@@ -1,3 +1,5 @@
+use log::debug;
+
 use crate::{interface::CryptographicInterface, state::State, FrontEndInterfaceConfiguration};
 
 #[tauri::command]
@@ -7,6 +9,7 @@ pub(crate) async fn set_interface_configuration(
     cryptographic_interface: CryptographicInterface,
     configuration: FrontEndInterfaceConfiguration,
 ) -> Result<(), String> {
+    debug!("A command for setting a {cryptographic_interface:?} configuration has been invoked: {configuration:#?}");
     let repo = state.get_controller_repo();
     repo.set_interface_configuration(configuration.into(), cryptographic_interface)
         .unwrap();
@@ -22,6 +25,9 @@ pub(crate) async fn get_interface_configuration(
     let repo = state.get_controller_repo();
     let Some(configuration) = repo
         .get_interface_configuration(&cryptographic_interface)
-        .unwrap() else {return Ok(None)};
+        .unwrap()
+    else {
+        return Ok(None);
+    };
     Ok(Some(configuration.into()))
 }

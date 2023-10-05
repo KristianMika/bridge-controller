@@ -1,3 +1,6 @@
+#[cfg(not(debug_assertions))]
+use std::fs::File;
+
 use std::{
     error::Error,
     fs::{self, copy},
@@ -64,5 +67,11 @@ impl FileSystem {
     ) -> Result<(), Box<dyn Error>> {
         self.ensure_controller_directory_exists()?;
         self.ensure_certificates_directory_exists()
+    }
+
+    #[cfg(not(debug_assertions))]
+    pub(crate) fn get_log_file(&self) -> Result<File, Box<dyn Error>> {
+        let filepath = self.get_controller_directory()?.join("logs.txt");
+        Ok(File::options().create(true).append(true).open(filepath)?)
     }
 }

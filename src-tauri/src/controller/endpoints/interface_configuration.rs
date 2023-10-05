@@ -1,4 +1,5 @@
 use actix_web::{get, web, Responder};
+use log::debug;
 use serde::Serialize;
 
 use crate::{
@@ -30,10 +31,11 @@ pub(crate) async fn get_configuration(
         filepath,
         configuration.into_group_id(),
     );
+    debug!("GET /{interface:?}/configuration -> {:#?}", configuration);
     web::Json(configuration)
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 struct InterfaceConfiguration {
     communicator_url: String,
     communicator_certificate_path: String,
