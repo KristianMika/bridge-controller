@@ -1,11 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::error::Error;
 use std::io;
 #[cfg(debug_assertions)]
 use std::path::Path;
 use std::sync::{Arc, Mutex};
+use std::{error::Error, io::ErrorKind};
 
 use actix_web::{web, App, HttpServer};
 use controller::{
@@ -20,7 +20,7 @@ use controller::{
 use env_logger::Target;
 use filesystem::FileSystem;
 use hex::ToHex;
-use log::info;
+use log::{error, info};
 use process_manager::ProcessManager;
 use proto::Group as ProtoGroup;
 use serde::{Deserialize, Serialize};
@@ -150,7 +150,17 @@ fn main() {
         .ensure_controller_directory_structure_exists()
         .expect("Couldn't create controller directory structure");
     let sled_filepath = filesystem.get_db_filepath(SLED_DB_FILENAME).unwrap();
-    let db = sled::open(sled_filepath).unwrap();
+    let db = match sled::open(sled_filepath) {
+        Ok(db) => db,
+        Err(err) => {
+            if err.kind() == ErrorKind::WouldBlock {
+                eprintln!("There seems to be another instance already running. Exitting...");
+                return;
+            }
+            error!("Failed opening sled DB: {:?}. Panicking...", err);
+            panic!("Couldn't open sled database");
+        }
+    };
     let controller_repo = SledControllerRepo::new(Arc::new(Mutex::new(db)));
     let process_executor = PlatformSpecificProcessExecutor::new();
     let process_manager = ProcessManager::new(process_executor);
