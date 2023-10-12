@@ -1,6 +1,8 @@
-use super::ProcessExecutor;
+use std::process::Child;
 
-struct WindowsProcessExecutor {}
+use super::{ProcessExecutor, process_manager_error::ProcessManagerError};
+
+pub(crate) struct WindowsProcessExecutor {}
 
 impl ProcessExecutor for WindowsProcessExecutor {
     fn new() -> Self {
