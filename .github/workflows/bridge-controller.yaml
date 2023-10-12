@@ -4,12 +4,22 @@ name: Bridge Controller
 
 jobs:
   build-and-test:
-    name: Build and Test
-    runs-on: ubuntu-latest
+    name: ${{ matrix.target }} Build and Test
+    strategy:
+      matrix:
+        target: [Windows, Linux]
+        include:
+          - target: Windows
+            os: windows-latest
+          - target: Linux
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Install tauri dependencies
+        if: ${{ matrix.target == 'Linux' }}
         run: >-
           sudo apt-get update &&
           sudo apt-get install --assume-yes \
@@ -49,6 +59,7 @@ jobs:
         run: npm run tauri build
 
       - name: Upload app image
+        if: ${{ matrix.target == 'Linux' }}
         uses: actions/upload-artifact@v3
         with:
           name: bridge-controller-appimage
@@ -56,6 +67,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Debian package
+        if: ${{ matrix.target == 'Linux' }}
         uses: actions/upload-artifact@v3
         with:
           name: bridge-controller-deb
