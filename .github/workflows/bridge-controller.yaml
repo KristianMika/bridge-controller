@@ -74,6 +74,22 @@ jobs:
           path: src-tauri/target/release/bundle/deb/bridge-controller_*_amd64.deb
           if-no-files-found: error
 
+      - name: Upload Windows msi installer
+        if: ${{ matrix.target == 'Windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: bridge-controller-msi
+          path: src-tauri\target\release\bundle\msi\bridge-controller_*_x64_en-US.msi
+          if-no-files-found: error
+
+      - name: Upload Windows exe binary
+        if: ${{ matrix.target == 'Windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: bridge-controller-exe
+          path: src-tauri\target\release\bundle\nsis\bridge-controller_*_x64-setup.exe
+          if-no-files-found: error
+
   release:
     needs: build-and-test
     if: startsWith(github.ref, 'refs/tags/v')
