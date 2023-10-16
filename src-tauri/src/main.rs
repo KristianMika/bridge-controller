@@ -141,14 +141,15 @@ fn init_logger(filesystem: &FileSystem) -> Result<(), Box<dyn Error>> {
 }
 fn main() {
     let filesystem = FileSystem {};
+    filesystem
+        .ensure_controller_directory_structure_exists()
+        .expect("Couldn't create controller directory structure");
+
     init_logger(&filesystem).expect("Couldn't initialize logger");
 
     #[cfg(debug_assertions)]
     generate_typescript_bindings("bindings.ts").expect("Couldn't export bindings");
 
-    filesystem
-        .ensure_controller_directory_structure_exists()
-        .expect("Couldn't create controller directory structure");
     let sled_filepath = filesystem.get_db_filepath(SLED_DB_FILENAME).unwrap();
     let db = match sled::open(sled_filepath) {
         Ok(db) => db,
