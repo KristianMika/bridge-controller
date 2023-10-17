@@ -28,9 +28,9 @@ use specta::Type;
 #[cfg(debug_assertions)]
 use specta::{collect_types, ts::TsExportError};
 use state::State;
-use system_tray::{create_tray_menu, system_tray_event_handler};
+use system_tray::{create_tray_menu, system_tray_event_handler, window_event_handler};
 use tauri::async_runtime::JoinHandle;
-use tauri::{generate_handler, GlobalWindowEvent, SystemTray, WindowEvent};
+use tauri::{generate_handler, SystemTray};
 #[cfg(debug_assertions)]
 use tauri_specta::ts;
 
@@ -89,18 +89,6 @@ impl From<ProtoGroup> for Group {
     }
 }
 
-/// Handles window events, such as clicks outside the window
-fn window_event_handler(event: GlobalWindowEvent) {
-    match event.event() {
-        WindowEvent::Focused(is_focused) => {
-            if !is_focused {
-                // event.window().hide().unwrap();
-            }
-        }
-        _ => {}
-    }
-}
-
 fn spawn_controller_server(
     wrapped_controller_state: Arc<Mutex<ControllerState>>,
     port: u16,
@@ -116,7 +104,7 @@ fn spawn_controller_server(
                 .service(get_communicator_certificate_path)
         })
         .bind(("127.0.0.1", port))
-        .unwrap()
+        .expect("Couldn't bind controller server to port")
         .run(),
     )
 }

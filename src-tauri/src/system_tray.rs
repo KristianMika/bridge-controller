@@ -1,6 +1,7 @@
 use log::error;
 use tauri::{
-    AppHandle, CustomMenuItem, Manager, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
+    AppHandle, CustomMenuItem, GlobalWindowEvent, Manager, SystemTrayEvent, SystemTrayMenu,
+    SystemTrayMenuItem, WindowEvent,
 };
 use tauri_plugin_positioner::{Position, WindowExt};
 
@@ -44,4 +45,16 @@ pub(crate) fn system_tray_event_handler(app: &AppHandle, event: SystemTrayEvent)
         _ => {}
     }
     tauri_plugin_positioner::on_tray_event(app, &event);
+}
+
+/// Handles window events, such as clicks outside the window
+pub(crate) fn window_event_handler(event: GlobalWindowEvent) {
+    match event.event() {
+        WindowEvent::Focused(is_focused) => {
+            if !is_focused {
+                let _ = event.window().hide();
+            }
+        }
+        _ => {}
+    }
 }
