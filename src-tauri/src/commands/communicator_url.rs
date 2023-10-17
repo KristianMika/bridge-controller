@@ -1,4 +1,4 @@
-use log::debug;
+use log::{debug, error};
 
 use crate::state::State;
 
@@ -11,8 +11,11 @@ pub(crate) async fn set_communicator_certificate_path(
 ) -> Result<(), String> {
     debug!("A command for setting a communicator certificate path for communicator {communicator_url} has been invoked with path: {certificate_path}");
     let filesystem = state.get_filesystem();
-    filesystem
+    let _ = filesystem
         .copy_cerrtificate(&certificate_path, &communicator_url)
-        .unwrap();
+        .map_err(|err| {
+            error!("{err}");
+            String::from("Could not store certificate file")
+        })?;
     Ok(())
 }

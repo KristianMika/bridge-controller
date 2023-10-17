@@ -1,4 +1,4 @@
-use log::debug;
+use log::{debug, error};
 
 use crate::{process_manager::CreatableInterface, state::State};
 
@@ -12,7 +12,10 @@ pub(crate) async fn spawn_interface_process(
     let process_manager = state.get_process_manager();
     process_manager
         .spawn_process(creatable_interface)
-        .map_err(|err| err.to_string())
+        .map_err(|err| {
+            error!("{err}");
+            String::from("Could not spawn process")
+        })
 }
 
 #[tauri::command]
@@ -25,5 +28,8 @@ pub(crate) async fn kill_interface_process(
     let process_manager = state.get_process_manager();
     process_manager
         .kill_process(&creatable_interface)
-        .map_err(|err| err.to_string())
+        .map_err(|err| {
+            error!("{err}");
+            String::from("Could not kill process")
+        })
 }
