@@ -32,7 +32,8 @@ use tauri_specta::ts;
 use crate::commands::get_groups::get_groups;
 use crate::commands::process_management::kill_interface_process;
 use crate::commands::{
-    communicator_url::*, get_groups::*, interface_configuration::*, process_management::*,
+    certificates::*, communicator_url::*, get_groups::*, interface_configuration::*,
+    process_management::*,
 };
 use crate::process_manager::{PlatformSpecificProcessExecutor, ProcessExecutor};
 
@@ -139,7 +140,8 @@ fn main() {
             get_groups,
             set_communicator_certificate_path,
             spawn_interface_process,
-            kill_interface_process
+            kill_interface_process,
+            is_certificate_present
         ])
         .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
@@ -161,7 +163,8 @@ fn generate_typescript_bindings(bindings_filename: &str) -> Result<(), TsExportE
             get_groups,
             set_communicator_certificate_path,
             spawn_interface_process,
-            kill_interface_process
+            kill_interface_process,
+            is_certificate_present
         ],
         bindings_path,
     )
