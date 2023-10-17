@@ -1,4 +1,4 @@
-use actix_web::{get, web, Responder};
+use actix_web::{get, web, HttpResponse, Responder};
 use log::debug;
 use serde::Serialize;
 
@@ -13,18 +13,17 @@ pub(crate) async fn get_configuration(
     data: web::Data<State>,
 ) -> impl Responder {
     // TODO check if cert exists
-    // TODO: errorhandling
     let interface = path.into_inner();
     let repo = data.get_controller_repo();
     let Ok(Some(configuration)) = repo.get_interface_configuration(&interface) else {
-        // todo: return custom error
-        panic!();
+        return HttpResponse::NotFound().body("Configuration not found");
     };
 
     let filesystem = data.get_filesystem();
-    let filepath = filesystem
-        .get_certificate_filepath(&configuration.get_communicator_url())
-        .unwrap();
+    let Ok(filepath) = filesystem.get_certificate_filepath(&configuration.get_communicator_url())
+    else {
+        return HttpResponse::InternalServerError().finish();
+    };
     let filepath = filepath.to_str().unwrap().to_string();
     let configuration = InterfaceConfiguration::new(
         configuration.get_communicator_url().into(),
@@ -32,7 +31,7 @@ pub(crate) async fn get_configuration(
         configuration.into_group_id(),
     );
     debug!("GET /{interface:?}/configuration -> {:#?}", configuration);
-    web::Json(configuration)
+    HttpResponse::Ok().json(web::Json(configuration))
 }
 
 #[derive(Serialize, Debug)]

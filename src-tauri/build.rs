@@ -4,7 +4,8 @@ static PROTO_INPUT_DIRECTORY: &str = "proto";
 static PROTO_INPUT_FILE: &str = "mpc.proto";
 
 fn main() {
-    compile_protofiles(PROTO_INPUT_DIRECTORY, PROTO_INPUT_FILE).unwrap();
+    compile_protofiles(PROTO_INPUT_DIRECTORY, PROTO_INPUT_FILE)
+        .expect("Coudln't compile protofiles");
     tauri_build::build()
 }
 

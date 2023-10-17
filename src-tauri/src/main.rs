@@ -101,7 +101,9 @@ fn main() {
     #[cfg(debug_assertions)]
     generate_typescript_bindings("bindings.ts").expect("Couldn't export bindings");
 
-    let sled_filepath = filesystem.get_db_filepath(SLED_DB_FILENAME).unwrap();
+    let sled_filepath = filesystem
+        .get_db_filepath(SLED_DB_FILENAME)
+        .expect("Couldn't get DB path");
     let db = match sled::open(sled_filepath) {
         Ok(db) => db,
         Err(err) => {

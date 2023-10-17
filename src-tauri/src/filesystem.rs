@@ -4,7 +4,6 @@ use std::fs::File;
 use std::{
     error::Error,
     fs::{self, copy},
-    io,
     path::{Path, PathBuf},
 };
 
@@ -41,9 +40,9 @@ impl FileSystem {
         &self,
         certificate_path: &str,
         url: &str,
-    ) -> Result<u64, io::Error> {
-        let destination_filepath = self.get_certificate_filepath(url).unwrap();
-        copy(certificate_path, destination_filepath)
+    ) -> Result<u64, Box<dyn Error>> {
+        let destination_filepath = self.get_certificate_filepath(url)?;
+        Ok(copy(certificate_path, destination_filepath)?)
     }
 
     pub(crate) fn get_db_filepath(&self, db_filename: &str) -> Result<PathBuf, Box<dyn Error>> {

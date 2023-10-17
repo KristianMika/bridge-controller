@@ -1,4 +1,4 @@
-use actix_web::{get, web, Responder};
+use actix_web::{get, web, HttpResponse, Responder};
 use log::debug;
 use serde::Serialize;
 
@@ -11,18 +11,17 @@ pub(crate) async fn get_communicator_certificate_path(
 ) -> impl Responder {
     let communicator_hostname = path.into_inner();
     let filesystem = data.get_filesystem();
-    let filepath = filesystem
-        .get_certificate_filepath(&communicator_hostname)
-        .unwrap();
+    let Ok(filepath) = filesystem.get_certificate_filepath(&communicator_hostname) else {
+        return HttpResponse::InternalServerError().finish();
+    };
     // TODO check if cert exists
-    // TODO: errorhandling
     let filepath = filepath.to_str().unwrap().to_string();
     let certificate_response = CertificateResponse::new(Some(filepath));
     debug!(
         "GET /{communicator_hostname:?}/certificate_path -> {:#?}",
         certificate_response
     );
-    web::Json(certificate_response)
+    HttpResponse::Ok().json(web::Json(certificate_response))
 }
 
 #[derive(Serialize, Debug)]
