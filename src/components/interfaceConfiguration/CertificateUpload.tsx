@@ -7,6 +7,7 @@ import * as path from "path";
 
 interface ICertificationUpload {
   isDisabled: boolean;
+  isUploaded: boolean;
   communicatorUrl: string;
   className: string;
 }
@@ -35,12 +36,22 @@ export const CertificateUpload: React.FC<ICertificationUpload> = (props) => {
     >
       <div className={styles["certificate-button"]}>
         <span className={styles["certificate-button__filename"]}>
-          {getFilenameFromPath(filename)}
+          {getButtonLabel(filename, props.isUploaded)}
         </span>
         <BsUpload size={21} />
       </div>
     </button>
   );
+};
+
+const getButtonLabel = (
+  filename: string | null,
+  isCertAlreadyUploaded: boolean
+): string => {
+  if (isCertAlreadyUploaded && !filename) {
+    return "(stored)";
+  }
+  return getFilenameFromPath(filename);
 };
 
 const getFilenameFromPath = (filepath: string | null): string => {

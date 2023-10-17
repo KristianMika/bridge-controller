@@ -2,7 +2,8 @@ import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
 import "react-dropdown/style.css";
 import Creatable from "react-select/creatable";
-import { Theme } from "react-select";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useState, CSSProperties } from "react";
 import {
   CryptographicInterface,
@@ -13,24 +14,21 @@ import {
   spawnInterfaceProcess,
   killInterfaceProcess,
   CreatableInterface,
+  isCertificatePresent,
 } from "../../bindings";
 import Select, { StylesConfig } from "react-select";
 import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
 import { CertificateUpload } from "./CertificateUpload";
+import IInterfaceForm, { defaultFormData } from "../../models/IInterfaceForm";
+import IInterfaceConfiguration from "../../models/IInterfaceConfiguration";
+import IOptionType from "../../models/IOptionType";
+import shortenHexPubkey from "../../utils";
+import selectTheme from "../../themes";
 
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
-interface IFormData {
-  isEnabled: boolean;
-  communicatorUrl: string;
-  selectedGroup: string;
-}
+
 const DEFAULT_COMMUNICATOR_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
 
-interface IInterfaceConfiguration {
-  canBeDisabled: boolean;
-  interfaceType: CryptographicInterface;
-  displayName: string;
-}
 interface Option {
   readonly label: string;
   readonly value: string;
@@ -43,9 +41,6 @@ const disabledSelectStyles: CSSProperties = {
 
 const selectStyle: StylesConfig<Option, false> = {
   control: (provided, state) => {
-    // provided has CSSObject type
-    // state has ControlProps type
-
     provided.borderRadius = 0;
     if (state.isDisabled) {
       return {
@@ -57,17 +52,6 @@ const selectStyle: StylesConfig<Option, false> = {
   },
 };
 
-const selectTheme = (theme: Theme): Theme => ({
-  ...theme,
-  borderRadius: 0,
-  colors: {
-    ...theme.colors,
-    primary: "#00e4d4",
-    primary25: "#defcfa",
-    primary50: "#8ffff8",
-    primary75: "#3bf5e9", // TODO: precise colors calculated, not guessed
-  },
-});
 const createOption = (option: string): Option => {
   return { value: option, label: option };
 };
@@ -76,53 +60,57 @@ const createOptions = (options: string[]): Option[] => {
   return options.map(createOption);
 };
 
-const defaultFormData: IFormData = {
-  isEnabled: true,
-  communicatorUrl: "",
-  selectedGroup: "",
-};
-
 export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   props
 ) => {
-  const [formData, setFormData] = useState<IFormData>(() => {
+  const [formData, setFormData] = useState<IInterfaceForm>(() => {
     return { ...defaultFormData };
   });
   const [groups, setGroups] = useState<Group[]>([]);
+  const [isCertUploaded, setIsCertUploaded] = useState<boolean>(false);
   const [options, setOptions] = useState(
     createOptions(DEFAULT_COMMUNICATOR_URLS)
   );
 
   const handleIsEnabledChange = (checked: boolean) => {
-    setFormData((prev: IFormData) => {
+    setFormData((prev: IInterfaceForm) => {
       return { ...prev, isEnabled: checked };
     });
   };
-
+  const setSelectedGroup = (group: string) => {
+    setFormData((prev: IInterfaceForm) => {
+      return { ...prev, selectedGroup: group };
+    });
+  };
   const setCommunicatorUrl = (url: string) => {
     setFormData((prev) => {
       return { ...prev, communicatorUrl: url };
     });
   };
 
-  const handleGroupChange = (event: OptionType) => {
-    setFormData((prev: IFormData) => {
+  const handleGroupChange = (event: IOptionType) => {
+    setFormData((prev: IInterfaceForm) => {
       return { ...prev, selectedGroup: event.value };
     });
   };
 
+  const loadFormData = async () => {
+    let configuration = await getInterfaceConfiguration(props.interfaceType);
+    if (!configuration) {
+      return;
+    }
+    let isCertificatePresentPromise = isCertificatePresent(
+      configuration.communicatorUrl
+    );
+    setFormData(configuration);
+
+    let certUploaded = await isCertificatePresentPromise;
+    setIsCertUploaded(certUploaded);
+
+    // groups are loaded as a side effect of communicator url change
+  };
   useEffect(() => {
-    getInterfaceConfiguration(props.interfaceType).then((configuration) => {
-      if (!configuration) {
-        return;
-      }
-      setFormData(configuration);
-      if (configuration!.communicatorUrl) {
-        getGroups(configuration!.communicatorUrl).then((groups) => {
-          setGroups(groups);
-        });
-      }
-    });
+    loadFormData().catch((_err) => {});
   }, []);
 
   const handleCommunicatorUrlCreation = (inputValue: string) => {
@@ -130,19 +118,60 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     setOptions((prev) => [...prev, createOption(inputValue)]);
   };
 
+  const isConfigurationValidWithSideEffects = (): boolean => {
+    if (!formData.communicatorUrl) {
+      toast.error("Communicator URL is not set");
+      return false;
+    }
+    if (formData.selectedGroup.length == 0) {
+      toast.error("Group is not set");
+      return false;
+    }
+
+    if (!isCertUploaded) {
+      toast.error("Missing certificate");
+      return false;
+    }
+    return true;
+  };
   const saveConfiguration = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
+    if (!isConfigurationValidWithSideEffects()) {
+      return;
+    }
     setInterfaceConfiguration(props.interfaceType, formData);
     toggleInterface(props.interfaceType, formData.isEnabled);
   };
 
-  // TODO:consider storing in backend
   const resolveGroupName = (groupPubkey: string): Option | null => {
+    if (groupPubkey.length == 0) {
+      return null;
+    }
     let group = groups.filter((group: Group) => group.group_id === groupPubkey);
     if (group.length != 1) {
+      setSelectedGroup("");
       return null;
     }
     return { label: group[0].name, value: group[0].group_id };
+  };
+
+  const loadCertPresent = async (communicatorUrl: string) => {
+    let certPresent = await isCertificatePresent(communicatorUrl);
+    setIsCertUploaded(certPresent);
+    return certPresent;
+  };
+
+  const loadGroups = async (communicatorUrl: string) => {
+    if (!loadCertPresent) {
+      return;
+    }
+
+    try {
+      let groups = await getGroups(communicatorUrl);
+      setGroups(groups);
+    } catch (_err) {
+      toast.error(`Failed to fetch groups from "${communicatorUrl}"`);
+    }
   };
 
   const handleCommunicatorUrlChange = (newValue: any) => {
@@ -150,10 +179,8 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     setFormData((prev) => {
       return { ...prev, selectedGroup: "" };
     });
-    getGroups(newValue.value).then((groups) => {
-      setGroups(groups);
-    });
     setCommunicatorUrl(newValue.value);
+    loadGroups(newValue.value);
   };
   return (
     <div className={styles["interface-configuration"]}>
@@ -192,6 +219,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           className={styles["form__communicator_file_upload_button"]}
           isDisabled={!formData.isEnabled || !formData.communicatorUrl}
           communicatorUrl={formData.communicatorUrl}
+          isUploaded={isCertUploaded}
         />
 
         <label
@@ -203,14 +231,19 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           options={groups.map((group) => {
             return {
               label: group.name,
-              subLabel: shortenHexPubkey(group.group_id),
+              subLabel: shortenHexPubkey(
+                group.group_id,
+                HEX_PUBKEY_DISPLAY_CHARS_COUNT
+              ),
               value: group.group_id,
             };
           })}
           styles={selectStyle}
           placeholder="Select an option"
           className={styles["form__select_pubkey"]}
-          isDisabled={!formData.isEnabled || !formData.communicatorUrl}
+          isDisabled={
+            !formData.isEnabled || !formData.communicatorUrl || !isCertUploaded
+          }
           onChange={handleGroupChange}
           components={{ Option: MultilineSelectOption }}
           value={resolveGroupName(formData["selectedGroup"])}
@@ -221,22 +254,21 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
         <button onClick={saveConfiguration} className={styles["form__apply"]}>
           Apply
         </button>
+        <ToastContainer
+          className={styles["toast-position"]}
+          position="top-right"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </form>
     </div>
-  );
-};
-
-interface OptionType {
-  label: string;
-  subLabel: string;
-  value: string;
-}
-
-const shortenHexPubkey = (pubkey: string): string => {
-  return (
-    pubkey.slice(0, HEX_PUBKEY_DISPLAY_CHARS_COUNT) +
-    "..." +
-    pubkey.slice(-HEX_PUBKEY_DISPLAY_CHARS_COUNT)
   );
 };
 

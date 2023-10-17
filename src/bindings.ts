@@ -34,7 +34,11 @@ export function killInterfaceProcess(creatableInterface: CreatableInterface) {
     return invoke()<null>("kill_interface_process", { creatableInterface })
 }
 
-export type Group = { name: string; group_id: string }
+export function isCertificatePresent(communicatorUrl: string) {
+    return invoke()<boolean>("is_certificate_present", { communicatorUrl })
+}
+
 export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorUrl: string; selectedGroup: string }
 export type CreatableInterface = "pcsc" | "webauthn"
+export type Group = { name: string; group_id: string }
 export type CryptographicInterface = "pcsc" | "cryptoki" | "webauthn"
