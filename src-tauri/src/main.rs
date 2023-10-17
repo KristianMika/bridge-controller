@@ -53,7 +53,7 @@ mod proto {
     tonic::include_proto!("meesign");
 }
 
-static CONTROLLER_PORT: u16 = 12345; // TODO
+static CONTROLLER_PORT: u16 = 11115;
 static SLED_DB_FILENAME: &str = "controller.sled";
 
 #[derive(Type, Serialize)]
