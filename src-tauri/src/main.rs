@@ -22,7 +22,6 @@ use filesystem::FileSystem;
 use hex::ToHex;
 use log::{error, info};
 use process_manager::ProcessManager;
-use proto::Group as ProtoGroup;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 #[cfg(debug_assertions)]
@@ -44,6 +43,7 @@ use crate::process_manager::{PlatformSpecificProcessExecutor, ProcessExecutor};
 mod commands;
 mod controller;
 mod filesystem;
+pub(crate) mod group;
 mod interface;
 mod process_manager;
 mod state;
@@ -55,12 +55,6 @@ mod proto {
 
 static CONTROLLER_PORT: u16 = 11115;
 static SLED_DB_FILENAME: &str = "controller.sled";
-
-#[derive(Type, Serialize)]
-struct Group {
-    name: String,
-    group_id: String,
-}
 
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize, Type, Debug)]
@@ -76,15 +70,6 @@ impl From<InternalInterfaceConfiguration> for FrontEndInterfaceConfiguration {
             isEnabled: value.is_enabled(),
             communicatorUrl: value.get_communicator_url().into(),
             selectedGroup: format!("0x{}", value.get_group_id().encode_hex_upper::<String>()),
-        }
-    }
-}
-
-impl From<ProtoGroup> for Group {
-    fn from(value: ProtoGroup) -> Self {
-        Self {
-            name: value.name,
-            group_id: format!("0x{}", value.identifier.encode_hex_upper::<String>()),
         }
     }
 }

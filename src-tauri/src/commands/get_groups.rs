@@ -5,9 +5,9 @@ use log::{debug, error};
 use tonic::transport::{Certificate, Channel, ClientTlsConfig};
 
 use crate::{
+    group::Group,
     proto::{mpc_client::MpcClient, Group as ProtoGroup, GroupsRequest, KeyType},
     state::State,
-    Group,
 };
 
 static MEESIGN_GRPC_PORT: &str = "1337";
