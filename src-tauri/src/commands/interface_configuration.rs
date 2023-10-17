@@ -1,6 +1,9 @@
 use log::{debug, error};
 
-use crate::{interface::CryptographicInterface, state::State, FrontEndInterfaceConfiguration};
+use crate::{
+    controller::interface_configuration::FrontEndInterfaceConfiguration,
+    interface::CryptographicInterface, state::State,
+};
 
 #[tauri::command]
 #[specta::specta]

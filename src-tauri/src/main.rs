@@ -14,16 +14,12 @@ use controller::{
         communicator_certificate_path::get_communicator_certificate_path,
         communicator_url::get_communicator_url, interface_configuration::get_configuration,
     },
-    interface_configuration::InternalInterfaceConfiguration,
     state::State as ControllerState,
 };
 use env_logger::Target;
 use filesystem::FileSystem;
-use hex::ToHex;
 use log::{error, info};
 use process_manager::ProcessManager;
-use serde::{Deserialize, Serialize};
-use specta::Type;
 #[cfg(debug_assertions)]
 use specta::{collect_types, ts::TsExportError};
 use state::State;
@@ -55,24 +51,6 @@ mod proto {
 
 static CONTROLLER_PORT: u16 = 11115;
 static SLED_DB_FILENAME: &str = "controller.sled";
-
-#[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Type, Debug)]
-pub(crate) struct FrontEndInterfaceConfiguration {
-    isEnabled: bool,
-    communicatorUrl: String,
-    selectedGroup: String,
-}
-
-impl From<InternalInterfaceConfiguration> for FrontEndInterfaceConfiguration {
-    fn from(value: InternalInterfaceConfiguration) -> Self {
-        Self {
-            isEnabled: value.is_enabled(),
-            communicatorUrl: value.get_communicator_url().into(),
-            selectedGroup: format!("0x{}", value.get_group_id().encode_hex_upper::<String>()),
-        }
-    }
-}
 
 fn spawn_controller_server(
     wrapped_controller_state: Arc<Mutex<ControllerState>>,

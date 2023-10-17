@@ -1,7 +1,6 @@
+use hex::ToHex;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-
-use crate::FrontEndInterfaceConfiguration;
 
 type ByteVector = Vec<u8>;
 pub(crate) type GroupId = ByteVector;
@@ -40,6 +39,24 @@ impl From<FrontEndInterfaceConfiguration> for InternalInterfaceConfiguration {
             communicator_url: value.communicatorUrl,
             is_enabled: value.isEnabled,
             group_id,
+        }
+    }
+}
+
+#[allow(non_snake_case)]
+#[derive(Serialize, Deserialize, Type, Debug)]
+pub(crate) struct FrontEndInterfaceConfiguration {
+    isEnabled: bool,
+    communicatorUrl: String,
+    selectedGroup: String,
+}
+
+impl From<InternalInterfaceConfiguration> for FrontEndInterfaceConfiguration {
+    fn from(value: InternalInterfaceConfiguration) -> Self {
+        Self {
+            isEnabled: value.is_enabled(),
+            communicatorUrl: value.get_communicator_url().into(),
+            selectedGroup: format!("0x{}", value.get_group_id().encode_hex_upper::<String>()),
         }
     }
 }
