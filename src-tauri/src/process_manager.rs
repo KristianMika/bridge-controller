@@ -43,7 +43,7 @@ impl ProcessManager {
         interface: CreatableInterface,
     ) -> Result<(), ProcessManagerError> {
         if self.processes.contains_key(&interface) {
-            return Err(ProcessManagerError::ProcessAlreadyRunning);
+            return Err(ProcessManagerError::ProcessAlreadyRunning(interface));
         }
         let child = match interface {
             CreatableInterface::Pcsc => self.process_executor.create_pcsc_process()?,
@@ -63,7 +63,7 @@ impl ProcessManager {
         interface: &CreatableInterface,
     ) -> Result<(), ProcessManagerError> {
         let Some((_, mut process)) = self.processes.remove(interface) else {
-            return Err(ProcessManagerError::ProcessNotRunning);
+            return Err(ProcessManagerError::ProcessNotRunning(*interface));
         };
 
         process.kill()?;
@@ -72,7 +72,7 @@ impl ProcessManager {
         Ok(())
     }
 }
-#[derive(Eq, Hash, PartialEq, Deserialize, Type, Debug)]
+#[derive(Eq, Hash, PartialEq, Deserialize, Type, Debug, Copy, Clone)]
 #[serde(rename_all = "lowercase")]
 pub(crate) enum CreatableInterface {
     Pcsc,
