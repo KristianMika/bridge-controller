@@ -8,6 +8,7 @@ import * as path from "path";
 interface ICertificationUpload {
   isDisabled: boolean;
   isUploaded: boolean;
+  setIsUploaded: (isUploaded: boolean) => void;
   communicatorUrl: string;
   className: string;
 }
@@ -24,6 +25,7 @@ export const CertificateUpload: React.FC<ICertificationUpload> = (props) => {
       if (filePath && typeof filePath === "string") {
         setFilename(filePath);
         setCommunicatorCertificatePath(filePath, props.communicatorUrl);
+        props.setIsUploaded(true);
       }
     });
   };

@@ -5,7 +5,7 @@ interface IInterfaceForm {
 }
 
 export const defaultFormData: IInterfaceForm = {
-  isEnabled: true,
+  isEnabled: false,
   communicatorUrl: "",
   selectedGroup: "",
 };

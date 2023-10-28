@@ -12,7 +12,7 @@ use controller::{
     controller_repo::sled_controller_repo::SledControllerRepo,
     endpoints::{
         communicator_certificate_path::get_communicator_certificate_path,
-        communicator_url::get_communicator_url, interface_configuration::get_configuration,
+        interface_configuration::get_configuration,
     },
     state::State as ControllerState,
 };
@@ -32,8 +32,8 @@ use tauri_specta::ts;
 use crate::commands::get_groups::get_groups;
 use crate::commands::process_management::kill_interface_process;
 use crate::commands::{
-    certificates::*, communicator_url::*, get_groups::*, interface_configuration::*,
-    process_management::*,
+    certificates::*, get_groups::*, interface_configuration::*, process_management::*,
+    tool_configurations::*,
 };
 use crate::process_manager::{PlatformSpecificProcessExecutor, ProcessExecutor};
 
@@ -63,7 +63,6 @@ fn spawn_controller_server(
             let controller_state = wrapped_controller_state.as_ref().lock().unwrap().clone();
             App::new()
                 .app_data(web::Data::new(controller_state))
-                .service(get_communicator_url)
                 .service(get_configuration)
                 .service(get_communicator_certificate_path)
         })
@@ -86,7 +85,7 @@ fn get_logger_target(filesystem: &FileSystem) -> Result<Target, Box<dyn Error>> 
 
 fn init_logger(filesystem: &FileSystem) -> Result<(), Box<dyn Error>> {
     env_logger::builder()
-        .filter_level(log::LevelFilter::Info)
+        .filter_level(log::LevelFilter::Debug) // TODO: back to info
         .target(get_logger_target(filesystem)?)
         .init();
     Ok(())
@@ -137,11 +136,13 @@ fn main() {
         .invoke_handler(generate_handler![
             set_interface_configuration,
             get_interface_configuration,
+            remove_interface_configuration,
             get_groups,
             set_communicator_certificate_path,
             spawn_interface_process,
             kill_interface_process,
-            is_certificate_present
+            is_certificate_present,
+            get_configured_tools
         ])
         .plugin(tauri_plugin_positioner::init())
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
@@ -160,11 +161,13 @@ fn generate_typescript_bindings(bindings_filename: &str) -> Result<(), TsExportE
         collect_types![
             set_interface_configuration,
             get_interface_configuration,
+            remove_interface_configuration,
             get_groups,
             set_communicator_certificate_path,
             spawn_interface_process,
             kill_interface_process,
-            is_certificate_present
+            is_certificate_present,
+            get_configured_tools
         ],
         bindings_path,
     )

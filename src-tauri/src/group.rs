@@ -4,7 +4,7 @@ use specta::Type;
 
 use super::proto::Group as ProtoGroup;
 
-#[derive(Type, Serialize)]
+#[derive(Type, Serialize, Debug)]
 pub(crate) struct Group {
     name: String,
     group_id: String,

@@ -52,7 +52,8 @@ pub(crate) fn window_event_handler(event: GlobalWindowEvent) {
     match event.event() {
         WindowEvent::Focused(is_focused) => {
             if !is_focused {
-                let _ = event.window().hide();
+                // TODO: uncomment
+                // let _ = event.window().hide();
             }
         }
         _ => {}

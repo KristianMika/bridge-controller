@@ -1,6 +1,6 @@
 use actix_web::{get, web, HttpResponse, Responder};
 use log::debug;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     controller::{interface_configuration::GroupId, state::State},
@@ -10,12 +10,14 @@ use crate::{
 #[get("/{interface}/configuration")]
 pub(crate) async fn get_configuration(
     path: web::Path<CryptographicInterface>,
+    query: web::Query<InterfaceQuery>,
     data: web::Data<State>,
 ) -> impl Responder {
     // TODO check if cert exists
+    let tool = query.into_inner().tool;
     let interface = path.into_inner();
     let repo = data.get_controller_repo();
-    let Ok(Some(configuration)) = repo.get_interface_configuration(&interface) else {
+    let Ok(Some(configuration)) = repo.get_interface_configuration(&interface, &tool) else {
         return HttpResponse::NotFound().body("Configuration not found");
     };
 
@@ -32,6 +34,11 @@ pub(crate) async fn get_configuration(
     );
     debug!("GET /{interface:?}/configuration -> {:#?}", configuration);
     HttpResponse::Ok().json(web::Json(configuration))
+}
+
+#[derive(Deserialize)]
+pub struct InterfaceQuery {
+    tool: Option<String>,
 }
 
 #[derive(Serialize, Debug)]

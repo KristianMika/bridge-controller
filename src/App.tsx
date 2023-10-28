@@ -4,11 +4,16 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import { InterfaceConfiguration } from "./components/interfaceConfiguration/InterfaceConfiguration";
+import {
+  InterfaceConfiguration,
+  ITool,
+} from "./components/interfaceConfiguration/InterfaceConfiguration";
+import { MultiToolInterfaceConfiguration } from "./components/interfaceConfiguration/MultiToolInterfaceConfiguration";
 import { Menu } from "./components/menu/Menu";
 import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
 
 function App() {
+  const anyTool: ITool = { displayName: "All", tool: null };
   const router = createBrowserRouter([
     {
       path: "/",
@@ -32,13 +37,14 @@ function App() {
               displayName="HWI"
               canBeDisabled={true}
               interfaceType={"cryptoki"} // TODO
+              tool={anyTool}
             />
           ),
         },
         {
           path: "cryptoki",
           element: (
-            <InterfaceConfiguration
+            <MultiToolInterfaceConfiguration
               key="cryptoki"
               displayName="Cryptoki"
               canBeDisabled={false}
@@ -54,6 +60,7 @@ function App() {
               displayName="WebAuthn"
               canBeDisabled={true}
               interfaceType={"webauthn"}
+              tool={anyTool}
             />
           ),
         },
@@ -65,6 +72,7 @@ function App() {
               displayName="PC/SC"
               canBeDisabled={true}
               interfaceType={"pcsc"}
+              tool={anyTool}
             />
           ),
         },

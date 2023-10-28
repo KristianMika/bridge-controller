@@ -8,7 +8,7 @@ pub(crate) async fn spawn_interface_process(
     state: tauri::State<'_, State>,
     creatable_interface: CreatableInterface,
 ) -> Result<(), String> {
-    debug!("A command for spawning a {creatable_interface:?} process has been invoked");
+    debug!("Command spawn_interface_process for interface '{creatable_interface:?}'");
     let process_manager = state.get_process_manager();
     process_manager
         .spawn_process(creatable_interface)
@@ -24,7 +24,7 @@ pub(crate) async fn kill_interface_process(
     state: tauri::State<'_, State>,
     creatable_interface: CreatableInterface,
 ) -> Result<(), String> {
-    debug!("A command for killing a {creatable_interface:?} process has been invoked");
+    debug!("Command kill_interface_process for interface '{creatable_interface:?}'");
     let process_manager = state.get_process_manager();
     process_manager
         .kill_process(&creatable_interface)

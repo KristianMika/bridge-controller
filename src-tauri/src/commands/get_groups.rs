@@ -1,4 +1,4 @@
-use std::{error::Error, str::FromStr, time::Duration};
+use std::{error::Error, str::FromStr};
 
 use actix_web::http::Uri;
 use log::{debug, error};
@@ -18,7 +18,6 @@ pub(crate) async fn get_groups(
     communicator_url: String,
     state: tauri::State<'_, State>,
 ) -> Result<Vec<Group>, String> {
-    debug!("A command for getting groups for communicator {communicator_url} has been invoked");
     // TODO: consider storing into db as well
     // TODO: make sure we have the cert
     let certificate_path = state
@@ -44,6 +43,7 @@ pub(crate) async fn get_groups(
             error!("Couldn't get groups: {err}");
             String::from("Could not get groups")
         })?;
+    debug!("Command get_groups for url {communicator_url:?} returning {groups:?}");
     Ok(groups)
 }
 
@@ -65,7 +65,7 @@ async fn get_authentication_groups(
 
     let response = client.get_groups(request).await?;
     let groups = &response.get_ref().groups;
-    let groups = groups
+    let groups: Vec<Group> = groups
         .into_iter()
         // TODO: update meesign server to filter groups?
         .filter(|group| group.key_type == KeyType::SignChallenge as i32)

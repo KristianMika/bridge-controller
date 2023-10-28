@@ -38,7 +38,10 @@ const disabledSelectStyles: CSSProperties = {
   borderColor: "rgb(192, 192, 192)",
   color: "rgba(0, 0, 0, 0.4)",
 };
-
+export interface ITool {
+  displayName: string;
+  tool: string | null;
+}
 const selectStyle: StylesConfig<Option, false> = {
   control: (provided, state) => {
     provided.borderRadius = 0;
@@ -64,7 +67,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   props
 ) => {
   const [formData, setFormData] = useState<IInterfaceForm>(() => {
-    return { ...defaultFormData };
+    return { ...defaultFormData, isEnabled: !props.canBeDisabled };
   });
   const [groups, setGroups] = useState<Group[]>([]);
   const [isCertUploaded, setIsCertUploaded] = useState<boolean>(false);
@@ -95,7 +98,10 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   };
 
   const loadFormData = async () => {
-    let configuration = await getInterfaceConfiguration(props.interfaceType);
+    let configuration = await getInterfaceConfiguration(
+      props.interfaceType,
+      props.tool.tool
+    );
     if (!configuration) {
       return;
     }
@@ -104,14 +110,14 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     );
     setFormData(configuration);
 
-    let certUploaded = await isCertificatePresentPromise;
-    setIsCertUploaded(certUploaded);
+    let certPresent = await isCertificatePresentPromise;
+    setIsCertUploaded(certPresent);
 
-    // groups are loaded as a side effect of communicator url change
+    loadGroups(configuration.communicatorUrl);
   };
   useEffect(() => {
     loadFormData().catch((_err) => {});
-  }, []);
+  }, [props.tool, props.interfaceType]);
 
   const handleCommunicatorUrlCreation = (inputValue: string) => {
     setCommunicatorUrl(inputValue);
@@ -139,7 +145,10 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     if (!isConfigurationValidWithSideEffects()) {
       return;
     }
-    setInterfaceConfiguration(props.interfaceType, formData);
+    let tool = props.tool.tool;
+    setInterfaceConfiguration(props.interfaceType, tool, formData)
+      .then(() => toast.success("Configuration saved"))
+      .catch(() => toast.error("Failed to save configuration"));
     toggleInterface(props.interfaceType, formData.isEnabled);
   };
 
@@ -149,7 +158,6 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     }
     let group = groups.filter((group: Group) => group.group_id === groupPubkey);
     if (group.length != 1) {
-      setSelectedGroup("");
       return null;
     }
     return { label: group[0].name, value: group[0].group_id };
@@ -162,10 +170,9 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
   };
 
   const loadGroups = async (communicatorUrl: string) => {
-    if (!loadCertPresent) {
+    if (!(await loadCertPresent(communicatorUrl))) {
       return;
     }
-
     try {
       let groups = await getGroups(communicatorUrl);
       setGroups(groups);
@@ -182,93 +189,99 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     setCommunicatorUrl(newValue.value);
     loadGroups(newValue.value);
   };
+
   return (
-    <div className={styles["interface-configuration"]}>
-      <form className={styles["interface-configuration__form"]}>
-        <div className={styles["form__enabled"]}>
-          <Switch
-            onChange={handleIsEnabledChange}
-            checked={formData.isEnabled}
-            disabled={!props.canBeDisabled}
-            onColor={"#00e4d4"} // TODO: global color definition
-            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+    <>
+      <div className={styles["interface-configuration"]}>
+        <form className={styles["interface-configuration__form"]}>
+          <div className={styles["form__enabled"]}>
+            <Switch
+              onChange={handleIsEnabledChange}
+              checked={formData.isEnabled}
+              disabled={!props.canBeDisabled}
+              onColor={"#00e4d4"} // TODO: global color definition
+              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+            />
+          </div>
+          <div className={styles["form__interface_name"]}>
+            <h2>{props.displayName}</h2>
+          </div>
+          <Creatable
+            maxMenuHeight={130}
+            isDisabled={!formData.isEnabled}
+            className={styles["form__communicator_input"]}
+            value={optionOrNull(formData.communicatorUrl)}
+            onChange={handleCommunicatorUrlChange}
+            onCreateOption={handleCommunicatorUrlCreation}
+            name="communicatorUrl"
+            options={options as any}
+            placeholder="Select an option"
+            styles={selectStyle}
+            theme={selectTheme}
+          ></Creatable>
+
+          <label className={styles["form__communicator_input_label"]}>
+            Communicator URL
+          </label>
+          <CertificateUpload
+            className={styles["form__communicator_file_upload_button"]}
+            isDisabled={!formData.isEnabled || !formData.communicatorUrl}
+            communicatorUrl={formData.communicatorUrl}
+            isUploaded={isCertUploaded}
+            setIsUploaded={setIsCertUploaded}
           />
-        </div>
-        <div className={styles["form__interface_name"]}>
-          <h2>{props.displayName}</h2>
-        </div>
-        <Creatable
-          maxMenuHeight={130}
-          isDisabled={!formData.isEnabled}
-          className={styles["form__communicator_input"]}
-          value={optionOrNull(formData.communicatorUrl)}
-          onChange={handleCommunicatorUrlChange}
-          onCreateOption={handleCommunicatorUrlCreation}
-          name="communicatorUrl"
-          options={options as any}
-          placeholder="Select an option"
-          styles={selectStyle}
-          theme={selectTheme}
-        ></Creatable>
 
-        <label className={styles["form__communicator_input_label"]}>
-          Communicator URL
-        </label>
-        <CertificateUpload
-          className={styles["form__communicator_file_upload_button"]}
-          isDisabled={!formData.isEnabled || !formData.communicatorUrl}
-          communicatorUrl={formData.communicatorUrl}
-          isUploaded={isCertUploaded}
-        />
-
-        <label
-          className={styles["form__communicator_file_upload_button_label"]}
-        >
-          Communicator Cert
-        </label>
-        <Select
-          options={groups.map((group) => {
-            return {
-              label: group.name,
-              subLabel: shortenHexPubkey(
-                group.group_id,
-                HEX_PUBKEY_DISPLAY_CHARS_COUNT
-              ),
-              value: group.group_id,
-            };
-          })}
-          styles={selectStyle}
-          placeholder="Select an option"
-          className={styles["form__select_pubkey"]}
-          isDisabled={
-            !formData.isEnabled || !formData.communicatorUrl || !isCertUploaded
-          }
-          onChange={handleGroupChange}
-          components={{ Option: MultilineSelectOption }}
-          value={resolveGroupName(formData["selectedGroup"])}
-          theme={selectTheme}
-          maxMenuHeight={120}
-        />
-        <label className={styles["form__select_pubkey_label"]}>Group</label>
-        <button onClick={saveConfiguration} className={styles["form__apply"]}>
-          Apply
-        </button>
-        <ToastContainer
-          className={styles["toast-position"]}
-          position="top-right"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
-      </form>
-    </div>
+          <label
+            className={styles["form__communicator_file_upload_button_label"]}
+          >
+            Communicator Cert
+          </label>
+          <Select
+            options={groups.map((group) => {
+              return {
+                label: group.name,
+                subLabel: shortenHexPubkey(
+                  group.group_id,
+                  HEX_PUBKEY_DISPLAY_CHARS_COUNT
+                ),
+                value: group.group_id,
+              };
+            })}
+            styles={selectStyle}
+            placeholder="Select an option"
+            className={styles["form__select_pubkey"]}
+            isDisabled={
+              !formData.isEnabled ||
+              !formData.communicatorUrl ||
+              !isCertUploaded
+            }
+            onChange={handleGroupChange}
+            components={{ Option: MultilineSelectOption }}
+            value={resolveGroupName(formData["selectedGroup"])}
+            theme={selectTheme}
+            maxMenuHeight={120}
+          />
+          <label className={styles["form__select_pubkey_label"]}>Group</label>
+          <button onClick={saveConfiguration} className={styles["form__apply"]}>
+            Apply
+          </button>
+          <ToastContainer
+            className={styles["toast-position"]}
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+        </form>
+      </div>
+    </>
   );
 };
 

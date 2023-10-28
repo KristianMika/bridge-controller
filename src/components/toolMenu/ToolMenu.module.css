@@ -1,0 +1,19 @@
+.tool_menu {
+  margin-top: 2rem;
+  width: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tool_menu__add_button:hover {
+  background: transparent;
+  border-left: var(--placeholder-border-left);
+}
+
+.tool_menu__add_button {
+  text-decoration: none;
+  color: inherit;
+  border-left: var(--placeholder-border-left);
+  padding-top: 0.5rem;
+}

@@ -5,7 +5,7 @@ use specta::Type;
 type ByteVector = Vec<u8>;
 pub(crate) type GroupId = ByteVector;
 
-#[derive(Serialize, Deserialize, Debug, Type)]
+#[derive(Serialize, Deserialize, Debug, Type, Clone)]
 
 pub(crate) struct InternalInterfaceConfiguration {
     communicator_url: String,
@@ -14,6 +14,14 @@ pub(crate) struct InternalInterfaceConfiguration {
 }
 
 impl InternalInterfaceConfiguration {
+    #[cfg(test)]
+    pub fn new(communicator_url: String, group_id: GroupId, is_enabled: bool) -> Self {
+        Self {
+            communicator_url,
+            group_id,
+            is_enabled,
+        }
+    }
     pub fn get_communicator_url(&self) -> &str {
         &self.communicator_url
     }

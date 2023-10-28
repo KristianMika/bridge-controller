@@ -6,7 +6,6 @@
   line-height: 24px;
   font-weight: 400;
 
-  
   color: #f6f6f6;
   background-color: var(--background-color);
   --primary-color: #00e4d4;
@@ -23,7 +22,18 @@
 
   --menu-separator-color: #e6e6e615;
   --menu-item-height: 4rem;
+  --menu-item-width: 4rem;
   --menu-width: 4rem;
+
+  /* Option selections */
+  --selected-item-background-color-fallback: rgb(0, 228, 212);
+  --selected-item-background-gradient: linear-gradient(
+    90deg,
+    rgba(0, 228, 212, 0.4) 0%,
+    rgba(33, 33, 33, 0) 100%
+  );
+  --selected-item-border-left: 2.5px solid var(--primary-color);
+  --placeholder-border-left: 2.5px solid transparent;
 }
 
 body,

@@ -10,12 +10,16 @@ declare global {
 // Function avoids 'window not defined' in SSR
 const invoke = () => window.__TAURI_INVOKE__;
 
-export function setInterfaceConfiguration(cryptographicInterface: CryptographicInterface, configuration: FrontEndInterfaceConfiguration) {
-    return invoke()<null>("set_interface_configuration", { cryptographicInterface,configuration })
+export function setInterfaceConfiguration(cryptographicInterface: CryptographicInterface, tool: string | null, configuration: FrontEndInterfaceConfiguration) {
+    return invoke()<null>("set_interface_configuration", { cryptographicInterface,tool,configuration })
 }
 
-export function getInterfaceConfiguration(cryptographicInterface: CryptographicInterface) {
-    return invoke()<FrontEndInterfaceConfiguration | null>("get_interface_configuration", { cryptographicInterface })
+export function getInterfaceConfiguration(cryptographicInterface: CryptographicInterface, tool: string | null) {
+    return invoke()<FrontEndInterfaceConfiguration | null>("get_interface_configuration", { cryptographicInterface,tool })
+}
+
+export function removeInterfaceConfiguration(cryptographicInterface: CryptographicInterface, tool: string | null) {
+    return invoke()<null>("remove_interface_configuration", { cryptographicInterface,tool })
 }
 
 export function getGroups(communicatorUrl: string) {
@@ -36,6 +40,10 @@ export function killInterfaceProcess(creatableInterface: CreatableInterface) {
 
 export function isCertificatePresent(communicatorUrl: string) {
     return invoke()<boolean>("is_certificate_present", { communicatorUrl })
+}
+
+export function getConfiguredTools(cryptographicInterface: CryptographicInterface) {
+    return invoke()<(string | null)[]>("get_configured_tools", { cryptographicInterface })
 }
 
 export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorUrl: string; selectedGroup: string }

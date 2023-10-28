@@ -1,5 +1,7 @@
 use std::process::{Child, Command};
 
+use log::debug;
+
 use super::{process_manager_error::ProcessManagerError, ProcessExecutor};
 
 pub(crate) struct LinuxProcessExecutor {}
@@ -17,6 +19,10 @@ impl ProcessExecutor for LinuxProcessExecutor {
             .arg("/usr/lib/libcryptoki_bridge.so")
             .env("USED_AS_FIDO", "1")
             .spawn()?;
+        debug!(
+            "SoftFIDO process has been spawned with PID {}",
+            softfido_child.id()
+        );
         std::thread::sleep(std::time::Duration::from_millis(500));
         let _usb_ip_attach = Command::new("usbip")
             .arg("attach")
@@ -25,6 +31,7 @@ impl ProcessExecutor for LinuxProcessExecutor {
             .arg("--busid")
             .arg("1-1")
             .spawn()?;
+        debug!("usbip attach process has been spawned");
 
         Ok(softfido_child)
     }
