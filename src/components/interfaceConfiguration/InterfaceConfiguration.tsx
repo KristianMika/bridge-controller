@@ -38,10 +38,7 @@ const disabledSelectStyles: CSSProperties = {
   borderColor: "rgb(192, 192, 192)",
   color: "rgba(0, 0, 0, 0.4)",
 };
-export interface ITool {
-  displayName: string;
-  tool: string | null;
-}
+
 const selectStyle: StylesConfig<Option, false> = {
   control: (provided, state) => {
     provided.borderRadius = 0;
@@ -267,7 +264,6 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
             Apply
           </button>
           <ToastContainer
-            className={styles["toast-position"]}
             position="top-right"
             autoClose={2000}
             hideProgressBar={false}

@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from "react";
 import styles from "./MultiToolInterfaceConfiguration.module.css";
 import {
-  CryptographicInterface,
   getConfiguredTools,
   removeInterfaceConfiguration,
 } from "../../bindings";
 import { MenuSeparator } from "../menuSeparator/MenuSeparator";
 import { ToolMenu } from "../toolMenu/ToolMenu";
-import { InterfaceConfiguration, ITool } from "./InterfaceConfiguration";
+import { InterfaceConfiguration } from "./InterfaceConfiguration";
+import IMultiToolInterfaceConfiguration from "../../models/IMultiToolInterfaceConfiguration";
+import ITool from "../../models/ITool";
 
-interface IMultiToolInterfaceConfiguration {
-  canBeDisabled: boolean;
-  interfaceType: CryptographicInterface;
-  displayName: string;
-}
-const changeToolnameForFrontend = (tool: string | null): ITool =>
+/**
+ * Backend only stores an array of tools, but we also need to represent an option for "any" tool.
+ * This function converts a tool string to an object with a displayName and tool value.
+ *
+ * @param tool if null, then the configuration is tool-independent, otherwise it is tool-specific for the tool specified
+ * @returns
+ */
+const toolObjectFromValue = (tool: string | null): ITool =>
   !tool
     ? { displayName: "Any", tool: null }
     : { displayName: tool, tool: tool };
+
+/**
+ * This component wraps `InterfaceConfigurationComponent` and enables per-tool configuration
+ */
 export const MultiToolInterfaceConfiguration: React.FC<
   IMultiToolInterfaceConfiguration
 > = (props) => {
@@ -25,8 +32,8 @@ export const MultiToolInterfaceConfiguration: React.FC<
   const [selectedTool, setSelectedTool] = useState<ITool>();
 
   const loadTools = async () => {
-    let configured_tools = await getConfiguredTools(props.interfaceType);
-    let mappedTools = configured_tools.map(changeToolnameForFrontend);
+    let configuredTools = await getConfiguredTools(props.interfaceType);
+    let mappedTools = configuredTools.map(toolObjectFromValue);
     if (mappedTools.length === 0) {
       let anyTool: ITool = { displayName: "Any", tool: null };
       mappedTools = [anyTool];
@@ -42,7 +49,6 @@ export const MultiToolInterfaceConfiguration: React.FC<
     setTools([...tools, tool]);
   };
   const removeTool = (tool: ITool) => {
-    // TODO: consider fetching tools and refreshing state from the backend
     setTools((currentTools) => currentTools.filter((t) => t != tool));
     removeInterfaceConfiguration(props.interfaceType, tool.tool);
     if (tools.length > 0) {

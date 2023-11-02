@@ -4,15 +4,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ToolMenuItem } from "./toolMenuItem/ToolMenuItem";
 import { ToolMenuItemCreation } from "./toolMenuItemCreation/ToolMenuItemCreation";
 import { ToolMenuSeparator } from "./toolMenuSeparator/ToolMenuSeparator";
-import { ITool } from "../interfaceConfiguration/InterfaceConfiguration";
-
-interface IToolMenu {
-  tools: ITool[];
-  addTool: (tool: ITool) => void;
-  removeTool: (tool: ITool) => void;
-  selectedTool: ITool;
-  setSelectedTool: (tool: ITool) => void;
-}
+import ITool from "../../models/ITool";
+import IToolMenu from "../../models/IToolMenu";
 
 export const ToolMenu: React.FC<IToolMenu> = (props) => {
   const [isToolCreationEntryVisible, setIsToolCreationEntryVisible] =

@@ -4,15 +4,9 @@ import { BsUpload } from "react-icons/bs";
 import styles from "./CertificateUpload.module.css";
 import React, { useState } from "react";
 import * as path from "path";
+import ICertificateUpload from "../../models/ICertificateUpload";
 
-interface ICertificationUpload {
-  isDisabled: boolean;
-  isUploaded: boolean;
-  setIsUploaded: (isUploaded: boolean) => void;
-  communicatorUrl: string;
-  className: string;
-}
-export const CertificateUpload: React.FC<ICertificationUpload> = (props) => {
+export const CertificateUpload: React.FC<ICertificateUpload> = (props) => {
   const [filename, setFilename] = useState<string | null>(null);
 
   const uploadFile = (event: React.MouseEvent<HTMLElement>) => {

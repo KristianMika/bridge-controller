@@ -1,12 +1,9 @@
-import { ITool } from "../../interfaceConfiguration/InterfaceConfiguration";
+import IToolMenuItem from "../../../models/IToolMenuItem";
 import styles from "./ToolMenuItem.module.css";
 
-interface IToolMenuItem {
-  tool: ITool;
-  isSelected: boolean;
-  setSelected: (tool: ITool) => void;
-}
-
+/**
+ * A component representing a single tool item in the tool menu
+ */
 export const ToolMenuItem: React.FC<IToolMenuItem> = (props) => {
   return (
     <a

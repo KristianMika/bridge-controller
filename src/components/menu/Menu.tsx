@@ -6,15 +6,9 @@ import {
 import { SiFidoalliance } from "react-icons/si";
 import { MenuItem } from "./menuItem/MenuItem";
 import styles from "./Menu.module.css";
-import { IconType } from "react-icons";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-interface IMenuItem {
-  title: string;
-  icon: IconType;
-  link: string;
-}
+import IMenuItem from "../../models/IMenuItem";
 
 /**
  * Bottom navigation menu that allows changing interface configurations

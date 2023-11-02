@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ITool } from "../../interfaceConfiguration/InterfaceConfiguration";
+import ITool from "../../../models/ITool";
+import IToolMenuItemCreation from "../../../models/IToolMenuItemCreation";
 import { ToolMenuSeparator } from "../toolMenuSeparator/ToolMenuSeparator";
 import styles from "./ToolMenuItemCreation.module.css";
 
-interface IToolMenuItemCreation {
-  isCreationActive: boolean;
-  newItemCreationHandler: (tool: ITool) => void;
-  cancelCreation: () => void;
-}
-
+/**
+ * A component allowing creation of a new tool item in the tool menu
+ */
 export const ToolMenuItemCreation: React.FC<IToolMenuItemCreation> = (
   props
 ) => {

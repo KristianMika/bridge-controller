@@ -4,13 +4,11 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import {
-  InterfaceConfiguration,
-  ITool,
-} from "./components/interfaceConfiguration/InterfaceConfiguration";
+import { InterfaceConfiguration } from "./components/interfaceConfiguration/InterfaceConfiguration";
 import { MultiToolInterfaceConfiguration } from "./components/interfaceConfiguration/MultiToolInterfaceConfiguration";
 import { Menu } from "./components/menu/Menu";
 import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
+import ITool from "./models/ITool";
 
 function App() {
   const anyTool: ITool = { displayName: "All", tool: null };
