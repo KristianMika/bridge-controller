@@ -17,8 +17,22 @@ pub(crate) async fn get_configuration(
     let tool = query.into_inner().tool;
     let interface = path.into_inner();
     let repo = data.get_controller_repo();
-    let Ok(Some(configuration)) = repo.get_interface_configuration(&interface, &tool) else {
-        return HttpResponse::NotFound().body("Configuration not found");
+    let Ok(configuration) = repo.get_interface_configuration(&interface, &tool) else {
+        return HttpResponse::InternalServerError().finish();
+    };
+
+    let configuration = match configuration {
+        Some(configuration) => configuration,
+        None => {
+            // There is no configuration specific to the tool, let's return the general, tool-independent configuration
+            let Ok(configuration) = repo.get_interface_configuration(&interface, &None) else {
+                return HttpResponse::InternalServerError().finish();
+            };
+            let Some(configuration) = configuration else {
+                return HttpResponse::NotFound().body("No configuration found");
+            };
+            configuration
+        }
     };
 
     let filesystem = data.get_filesystem();
@@ -32,7 +46,10 @@ pub(crate) async fn get_configuration(
         filepath,
         configuration.into_group_id(),
     );
-    debug!("GET /{interface:?}/configuration -> {:#?}", configuration);
+    debug!(
+        "GET /{interface:?}/configuration?tool={tool:?} -> {:#?}",
+        configuration
+    );
     HttpResponse::Ok().json(web::Json(configuration))
 }
 
