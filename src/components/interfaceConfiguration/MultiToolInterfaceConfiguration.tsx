@@ -9,6 +9,7 @@ import { ToolMenu } from "../toolMenu/ToolMenu";
 import { InterfaceConfiguration } from "./InterfaceConfiguration";
 import IMultiToolInterfaceConfiguration from "../../models/IMultiToolInterfaceConfiguration";
 import ITool from "../../models/ITool";
+import AnimationComponent from "../animation/animatedComponent/AnimationComponent";
 
 /**
  * Backend only stores an array of tools, but we also need to represent an option for "any" tool.
@@ -65,12 +66,14 @@ export const MultiToolInterfaceConfiguration: React.FC<
         removeTool={removeTool}
       />
       <MenuSeparator />
-      <InterfaceConfiguration
-        canBeDisabled={props.canBeDisabled}
-        interfaceType={props.interfaceType}
-        displayName={props.displayName}
-        tool={selectedTool!}
-      />
+      <AnimationComponent uniqueKey={selectedTool?.displayName || ""}>
+        <InterfaceConfiguration
+          canBeDisabled={props.canBeDisabled}
+          interfaceType={props.interfaceType}
+          displayName={props.displayName}
+          tool={selectedTool!}
+        />
+      </AnimationComponent>
     </div>
   );
 };

@@ -43,6 +43,14 @@
   );
   --selected-item-border-left: 2.5px solid var(--primary-color);
   --placeholder-border-left: 2.5px solid transparent;
+
+  /* Animation definitions */
+  --animation-starting-opacity: 0;
+  --animation-ending-opacity: 1;
+  --animation-enter-transform: scale(0.96);
+  --animation-exit-transform: scale(0.96);
+  --animation-opacity-transition-duration: 300ms;
+  --animation-transform-transition-duration: 250ms;
 }
 
 body,
@@ -61,4 +69,31 @@ html,
   flex-direction: row;
   justify-content: start;
   text-align: center;
+}
+
+/* Animation definitions  */
+.fade-enter {
+  opacity: var(--animation-starting-opacity);
+  transform: var(--animation-enter-transform);
+}
+
+.fade-enter-active {
+  opacity: var(--animation-ending-opacity);
+  transform: scale(1);
+  transition: opacity var(--animation-opacity-transition-duration),
+    transform var(--animation-transform-transition-duration);
+}
+
+/* Fade-out animation is not displayed. I believe it's because 
+the component is unmounted before the animation can finish*/
+.fade-exit {
+  opacity: var(--animation-ending-opacity);
+  transform: scale(1);
+}
+
+.fade-exit-active {
+  opacity: var(--animation-starting-opacity);
+  transform: var(--animation-exit-transform);
+  transition: opacity var(--animation-opacity-transition-duration),
+    transform var(--animation-transform-transition-duration);
 }

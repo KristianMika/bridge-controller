@@ -4,7 +4,8 @@
   margin-top: 50%;
   height: 50%;
   width: 100%;
-  justify-content: space-evenly;
+  justify-content: center;
+  gap: 0.2rem;
 }
 
 .menu-wrapper {

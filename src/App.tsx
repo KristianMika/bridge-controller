@@ -9,6 +9,7 @@ import { MultiToolInterfaceConfiguration } from "./components/interfaceConfigura
 import { Menu } from "./components/menu/Menu";
 import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
 import ITool from "./models/ITool";
+import AnimatedOutlet from "./components/animation/animatedOutlet/AnimatedOutlet";
 
 const App = () => {
   const anyTool: ITool = { displayName: "All", tool: null };
@@ -19,7 +20,7 @@ const App = () => {
         <>
           <Menu />
           <MenuSeparator />
-          <Outlet />
+          <AnimatedOutlet />
         </>
       ),
       children: [
