@@ -22,7 +22,7 @@ import { CertificateUpload } from "./CertificateUpload";
 import IInterfaceForm, { defaultFormData } from "../../models/IInterfaceForm";
 import IInterfaceConfiguration from "../../models/IInterfaceConfiguration";
 import IOptionType from "../../models/IOptionType";
-import shortenHexPubkey from "../../utils";
+import shortenHexString from "../../utils";
 import selectTheme from "../../themes";
 
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
@@ -238,7 +238,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
             options={groups.map((group) => {
               return {
                 label: group.name,
-                subLabel: shortenHexPubkey(
+                subLabel: shortenHexString(
                   group.group_id,
                   HEX_PUBKEY_DISPLAY_CHARS_COUNT
                 ),

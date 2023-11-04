@@ -1,32 +1,41 @@
 @import "normalize.css/normalize.css";
 
 :root {
+  /* Font definitions */
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
-
-  color: #f6f6f6;
-  background-color: var(--background-color);
-  --primary-color: #00e4d4;
-  --background-color: #212121;
-
-  --button-hover-outline: outline-offset 200ms ease;
-  --button-hover-outline-offset: -6px;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --menu-separator-color: #e6e6e615;
+  /* Color definitions*/
+  --bright-turquoise-color: #00e4d4;
+  --raisin-black-color: #212121;
+  --cultured-color: #f6f6f6;
+  --platinum-color: #e6e6e615;
+
+  --primary-color: var(--bright-turquoise-color);
+
+  /* Color applications */
+  color: var(--cultured-color);
+  background-color: var(--raisin-black-color);
+
+  /* Button definitions */
+  --button-hover-outline: outline-offset 200ms ease;
+  --button-hover-outline-offset: -6px;
+
+  /* Menu definitions */
+  --menu-separator-color: var(--platinum-color);
   --menu-item-height: 4rem;
   --menu-item-width: 4rem;
   --menu-width: 4rem;
 
   /* Option selections */
-  --selected-item-background-color-fallback: rgb(0, 228, 212);
+  --selected-item-background-color-fallback: var(--bright-turquoise-color);
   --selected-item-background-gradient: linear-gradient(
     90deg,
     rgba(0, 228, 212, 0.4) 0%,
@@ -52,11 +61,4 @@ html,
   flex-direction: row;
   justify-content: start;
   text-align: center;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: var(--background-color);
-  }
 }

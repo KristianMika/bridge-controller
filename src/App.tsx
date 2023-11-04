@@ -10,7 +10,7 @@ import { Menu } from "./components/menu/Menu";
 import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
 import ITool from "./models/ITool";
 
-function App() {
+const App = () => {
   const anyTool: ITool = { displayName: "All", tool: null };
   const router = createBrowserRouter([
     {
@@ -70,6 +70,6 @@ function App() {
       <RouterProvider router={router} />
     </div>
   );
-}
+};
 
 export default App;

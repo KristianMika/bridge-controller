@@ -8,7 +8,7 @@ const selectTheme = (theme: Theme): Theme => ({
     primary: "#00e4d4",
     primary25: "#defcfa",
     primary50: "#8ffff8",
-    primary75: "#3bf5e9", // TODO: precise colors calculated, not guessed
+    primary75: "#3bf5e9",
   },
 });
 
