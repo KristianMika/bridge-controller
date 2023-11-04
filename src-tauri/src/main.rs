@@ -104,17 +104,7 @@ fn main() {
     let sled_filepath = filesystem
         .get_db_filepath(SLED_DB_FILENAME)
         .expect("Couldn't get DB path");
-    let db = match sled::open(sled_filepath) {
-        Ok(db) => db,
-        Err(err) => {
-            if err.kind() == ErrorKind::WouldBlock {
-                eprintln!("There seems to be another instance already running. Exitting...");
-                return;
-            }
-            error!("Failed opening sled DB: {:?}. Panicking...", err);
-            panic!("Couldn't open sled database");
-        }
-    };
+    let db = sled::open(sled_filepath).expect("Can't open sled DB");
     let controller_repo = SledControllerRepo::new(Arc::new(Mutex::new(db)));
     let process_executor = PlatformSpecificProcessExecutor::new();
     let process_manager = ProcessManager::new(process_executor);

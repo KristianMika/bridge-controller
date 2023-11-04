@@ -148,7 +148,7 @@ mod test {
     use crate::controller::interface_configuration::InternalInterfaceConfiguration;
 
     fn init_controller_repo() -> Result<SledControllerRepo, Box<dyn Error>> {
-        let db = Arc::new(Mutex::new(sled::Config::tmp()?.open()?));
+        let db = Arc::new(Mutex::new(sled::Config::new().temporary(true).open()?));
         let repo = SledControllerRepo::new(db);
         Ok(repo)
     }

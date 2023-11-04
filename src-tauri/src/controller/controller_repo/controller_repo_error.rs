@@ -14,6 +14,8 @@ pub(crate) enum ControllerRepoError {
     SerializationError(bincode::ErrorKind),
     #[error("Locke poisoned when trying to unlock")]
     LockPoisonedError,
+    #[error("Sled error: {0}")]
+    SledError(#[from] sled::Error),
 }
 
 impl From<Box<bincode::ErrorKind>> for ControllerRepoError {
