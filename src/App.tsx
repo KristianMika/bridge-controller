@@ -28,18 +28,6 @@ function App() {
           element: <Navigate to="/webauthn"></Navigate>,
         },
         {
-          path: "hwi",
-          element: (
-            <InterfaceConfiguration
-              key="hwi"
-              displayName="HWI"
-              canBeDisabled={true}
-              interfaceType={"cryptoki"} // TODO
-              tool={anyTool}
-            />
-          ),
-        },
-        {
           path: "cryptoki",
           element: (
             <MultiToolInterfaceConfiguration

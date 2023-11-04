@@ -26,7 +26,6 @@ export const Menu: React.FC = () => {
     { title: "FIDO", icon: SiFidoalliance, link: "/webauthn" },
     { title: "PKCS#11", icon: BsFillUsbDriveFill, link: "/cryptoki" },
     { title: "PC/SC", icon: BsSimFill, link: "/pcsc" },
-    { title: "HWI", icon: BsCurrencyBitcoin, link: "/hwi" },
   ];
 
   return (
