@@ -244,7 +244,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
               };
             })}
             styles={selectStyle}
-            placeholder="Select an option"
+            placeholder="Select a group"
             className={styles["form__select-pubkey"]}
             isDisabled={
               !formData.isEnabled ||
@@ -256,6 +256,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
             value={resolveGroupName(formData["selectedGroup"])}
             theme={selectTheme}
             maxMenuHeight={120}
+            noOptionsMessage={() => "No groups found"}
           />
           <label className={styles["form__select-pubkey-label"]}>Group</label>
           <button onClick={saveConfiguration} className={styles["form__apply"]}>
