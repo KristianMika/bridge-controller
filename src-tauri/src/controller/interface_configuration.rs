@@ -8,22 +8,22 @@ pub(crate) type GroupId = ByteVector;
 #[derive(Serialize, Deserialize, Debug, Type, Clone)]
 
 pub(crate) struct InternalInterfaceConfiguration {
-    communicator_url: String,
+    communicator_hostname: String,
     group_id: GroupId,
     is_enabled: bool,
 }
 
 impl InternalInterfaceConfiguration {
     #[cfg(test)]
-    pub fn new(communicator_url: String, group_id: GroupId, is_enabled: bool) -> Self {
+    pub fn new(communicator_hostname: String, group_id: GroupId, is_enabled: bool) -> Self {
         Self {
-            communicator_url,
+            communicator_hostname,
             group_id,
             is_enabled,
         }
     }
-    pub fn get_communicator_url(&self) -> &str {
-        &self.communicator_url
+    pub fn get_communicator_hostname(&self) -> &str {
+        &self.communicator_hostname
     }
 
     pub fn is_enabled(&self) -> bool {
@@ -44,7 +44,7 @@ impl From<FrontEndInterfaceConfiguration> for InternalInterfaceConfiguration {
         let group_id = hex::decode(prefix_free_hex_id).unwrap();
 
         Self {
-            communicator_url: value.communicatorUrl,
+            communicator_hostname: value.communicatorHostname,
             is_enabled: value.isEnabled,
             group_id,
         }
@@ -55,7 +55,7 @@ impl From<FrontEndInterfaceConfiguration> for InternalInterfaceConfiguration {
 #[derive(Serialize, Deserialize, Type, Debug)]
 pub(crate) struct FrontEndInterfaceConfiguration {
     isEnabled: bool,
-    communicatorUrl: String,
+    communicatorHostname: String,
     selectedGroup: String,
 }
 
@@ -63,7 +63,7 @@ impl From<InternalInterfaceConfiguration> for FrontEndInterfaceConfiguration {
     fn from(value: InternalInterfaceConfiguration) -> Self {
         Self {
             isEnabled: value.is_enabled(),
-            communicatorUrl: value.get_communicator_url().into(),
+            communicatorHostname: value.get_communicator_hostname().into(),
             selectedGroup: format!("0x{}", value.get_group_id().encode_hex_upper::<String>()),
         }
     }

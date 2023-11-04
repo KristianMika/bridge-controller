@@ -25,21 +25,24 @@ impl FileSystem {
         Ok(Path::new(&self.get_controller_directory()?).join("certificates"))
     }
 
-    fn encode_url(&self, url: &str) -> String {
-        url.replace('.', "_")
+    fn encode_hostname(&self, hostname: &str) -> String {
+        hostname.replace('.', "_")
     }
-    pub(crate) fn get_certificate_filepath(&self, url: &str) -> Result<PathBuf, Box<dyn Error>> {
-        let encoded_url = self.encode_url(url);
-        let certificate_filename = format!("{}_certificate.pem", encoded_url);
+    pub(crate) fn get_certificate_filepath(
+        &self,
+        hostname: &str,
+    ) -> Result<PathBuf, Box<dyn Error>> {
+        let encoded_hostname = self.encode_hostname(hostname);
+        let certificate_filename = format!("{}_certificate.pem", encoded_hostname);
         Ok(self.get_certificate_directory()?.join(certificate_filename))
     }
 
     pub(crate) fn copy_cerrtificate(
         &self,
         certificate_path: &str,
-        url: &str,
+        hostname: &str,
     ) -> Result<u64, Box<dyn Error>> {
-        let destination_filepath = self.get_certificate_filepath(url)?;
+        let destination_filepath = self.get_certificate_filepath(hostname)?;
         Ok(copy(certificate_path, destination_filepath)?)
     }
 

@@ -1,12 +1,12 @@
 interface IInterfaceForm {
   isEnabled: boolean;
-  communicatorUrl: string;
+  communicatorHostname: string;
   selectedGroup: string;
 }
 
 export const defaultFormData: IInterfaceForm = {
   isEnabled: false,
-  communicatorUrl: "",
+  communicatorHostname: "",
   selectedGroup: "",
 };
 

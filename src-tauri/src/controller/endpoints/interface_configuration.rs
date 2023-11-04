@@ -36,13 +36,13 @@ pub(crate) async fn get_configuration(
     };
 
     let filesystem = data.get_filesystem();
-    let Ok(filepath) = filesystem.get_certificate_filepath(configuration.get_communicator_url())
+    let Ok(filepath) = filesystem.get_certificate_filepath(configuration.get_communicator_hostname())
     else {
         return HttpResponse::InternalServerError().finish();
     };
     let filepath = filepath.to_str().unwrap().to_string();
     let configuration = InterfaceConfiguration::new(
-        configuration.get_communicator_url().into(),
+        configuration.get_communicator_hostname().into(),
         filepath,
         configuration.into_group_id(),
     );
@@ -60,19 +60,19 @@ pub struct InterfaceQuery {
 
 #[derive(Serialize, Debug)]
 struct InterfaceConfiguration {
-    communicator_url: String,
+    communicator_hostname: String,
     communicator_certificate_path: String,
     group_id: GroupId,
 }
 
 impl InterfaceConfiguration {
     fn new(
-        communicator_url: String,
+        communicator_hostname: String,
         communicator_certificate_path: String,
         group_id: GroupId,
     ) -> Self {
         Self {
-            communicator_url,
+            communicator_hostname,
             communicator_certificate_path,
             group_id,
         }

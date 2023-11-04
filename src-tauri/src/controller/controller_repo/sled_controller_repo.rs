@@ -156,11 +156,11 @@ mod test {
     fn test_sled_controller_repo() -> Result<(), Box<dyn Error>> {
         let repo = init_controller_repo()?;
         let interface = CryptographicInterface::Cryptoki;
-        let communicator_url = "meesign.crocs.fi.muni.cz".into();
+        let communicator_hostname = "meesign.crocs.fi.muni.cz".into();
         let group_id = vec![1, 2, 3, 4, 5];
         let is_enabled = false;
         let configuration =
-            InternalInterfaceConfiguration::new(communicator_url, group_id, is_enabled);
+            InternalInterfaceConfiguration::new(communicator_hostname, group_id, is_enabled);
 
         repo.set_interface_configuration(configuration.clone(), interface.clone(), None)?;
         repo.set_interface_configuration(configuration, interface.clone(), Some("ssh".into()))?;

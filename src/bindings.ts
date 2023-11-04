@@ -56,11 +56,11 @@ export function removeInterfaceConfiguration(cryptographicInterface: Cryptograph
  * 
  * # Arguments
  * 
- * * `communicator_url` - The url of the communicator.
+ * * `communicator_hostname` - The hostname of the communicator.
  * * `state` - The state of the application.
  */
-export function getGroups(communicatorUrl: string) {
-    return invoke()<Group[]>("get_groups", { communicatorUrl })
+export function getGroups(communicatorHostname: string) {
+    return invoke()<Group[]>("get_groups", { communicatorHostname })
 }
 
 /**
@@ -69,11 +69,11 @@ export function getGroups(communicatorUrl: string) {
  * # Arguments
  * 
  * * `certificate_path` - The path to the certificate file.
- * * `communicator_url` - The url of the communicator.
+ * * `communicator_hostname` - The hostname of the communicator.
  * * `state` - The state of the application.
  */
-export function storeCommunicatorCertificate(certificatePath: string, communicatorUrl: string) {
-    return invoke()<null>("store_communicator_certificate", { certificatePath,communicatorUrl })
+export function storeCommunicatorCertificate(certificatePath: string, communicatorHostname: string) {
+    return invoke()<null>("store_communicator_certificate", { certificatePath,communicatorHostname })
 }
 
 /**
@@ -101,14 +101,14 @@ export function killInterfaceProcess(creatableInterface: CreatableInterface) {
 }
 
 /**
- * Checks if there is a certificate stored for the current communicator url.
+ * Checks if there is a certificate stored for the specified communicator.
  * 
  * # Arguments
- * * `communicator_url` - The url of the communicator.
+ * * `communicator_hostname` - The hostname of the communicator.
  * * `state` - The state of the application.
  */
-export function isCertificatePresent(communicatorUrl: string) {
-    return invoke()<boolean>("is_certificate_present", { communicatorUrl })
+export function isCertificatePresent(communicatorHostname: string) {
+    return invoke()<boolean>("is_certificate_present", { communicatorHostname })
 }
 
 /**
@@ -123,7 +123,7 @@ export function getConfiguredTools(cryptographicInterface: CryptographicInterfac
     return invoke()<(string | null)[]>("get_configured_tools", { cryptographicInterface })
 }
 
-export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorUrl: string; selectedGroup: string }
+export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorHostname: string; selectedGroup: string }
 export type CreatableInterface = "pcsc" | "webauthn"
 export type Group = { name: string; group_id: string }
 export type CryptographicInterface = "pcsc" | "cryptoki" | "webauthn"

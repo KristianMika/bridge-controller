@@ -27,7 +27,10 @@ import { selectTheme, primaryColor, selectStyle } from "../../themes";
 import IOption from "../../models/IOption";
 
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
-const DEFAULT_COMMUNICATOR_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
+const DEFAULT_COMMUNICATOR_HOSTNAMES = [
+  "meesign.crocs.fi.muni.cz",
+  "localhost",
+];
 
 const createOption = (option: string): IOption => {
   return { value: option, label: option };
@@ -44,7 +47,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [isCertUploaded, setIsCertUploaded] = useState<boolean>(false);
   const [options, setOptions] = useState(
-    createOptions(DEFAULT_COMMUNICATOR_URLS)
+    createOptions(DEFAULT_COMMUNICATOR_HOSTNAMES)
   );
 
   const handleIsEnabledChange = (checked: boolean) => {
@@ -53,9 +56,9 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     });
   };
 
-  const setCommunicatorUrl = (url: string) => {
+  const setCommunicatorHostname = (hostname: string) => {
     setFormData((prev) => {
-      return { ...prev, communicatorUrl: url };
+      return { ...prev, communicatorHostname: hostname };
     });
   };
 
@@ -74,27 +77,27 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
       return;
     }
     let isCertificatePresentPromise = isCertificatePresent(
-      configuration.communicatorUrl
+      configuration.communicatorHostname
     );
     setFormData(configuration);
 
     let certPresent = await isCertificatePresentPromise;
     setIsCertUploaded(certPresent);
 
-    loadGroups(configuration.communicatorUrl);
+    loadGroups(configuration.communicatorHostname);
   };
   useEffect(() => {
     loadFormData().catch((_err) => {});
   }, [props.tool, props.interfaceType]);
 
-  const handleCommunicatorUrlCreation = (inputValue: string) => {
-    setCommunicatorUrl(inputValue);
+  const handleCommunicatorHostnameCreation = (inputValue: string) => {
+    setCommunicatorHostname(inputValue);
     setOptions((prev) => [...prev, createOption(inputValue)]);
   };
 
   const isConfigurationValidWithSideEffects = (): boolean => {
-    if (!formData.communicatorUrl) {
-      toast.error("Communicator URL is not set");
+    if (!formData.communicatorHostname) {
+      toast.error("Communicator hostname is not set");
       return false;
     }
     if (formData.selectedGroup.length == 0) {
@@ -131,30 +134,30 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     return { label: group[0].name, value: group[0].group_id };
   };
 
-  const loadCertPresent = async (communicatorUrl: string) => {
-    let certPresent = await isCertificatePresent(communicatorUrl);
+  const loadCertPresent = async (communicatorHostname: string) => {
+    let certPresent = await isCertificatePresent(communicatorHostname);
     setIsCertUploaded(certPresent);
     return certPresent;
   };
 
-  const loadGroups = async (communicatorUrl: string) => {
-    if (!(await loadCertPresent(communicatorUrl))) {
+  const loadGroups = async (communicatorHostname: string) => {
+    if (!(await loadCertPresent(communicatorHostname))) {
       return;
     }
     try {
-      let groups = await getGroups(communicatorUrl);
+      let groups = await getGroups(communicatorHostname);
       setGroups(groups);
     } catch (_err) {
-      toast.error(`Failed to fetch groups from "${communicatorUrl}"`);
+      toast.error(`Failed to fetch groups from "${communicatorHostname}"`);
     }
   };
 
-  const handleCommunicatorUrlChange = (newValue: any) => {
+  const handleCommunicatorHostnameChange = (newValue: any) => {
     setGroups([]);
     setFormData((prev) => {
       return { ...prev, selectedGroup: "" };
     });
-    setCommunicatorUrl(newValue.value);
+    setCommunicatorHostname(newValue.value);
     loadGroups(newValue.value);
   };
 
@@ -179,10 +182,10 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
             maxMenuHeight={130}
             isDisabled={!formData.isEnabled}
             className={styles["form__communicator-input"]}
-            value={optionOrNull(formData.communicatorUrl)}
-            onChange={handleCommunicatorUrlChange}
-            onCreateOption={handleCommunicatorUrlCreation}
-            name="communicatorUrl"
+            value={optionOrNull(formData.communicatorHostname)}
+            onChange={handleCommunicatorHostnameChange}
+            onCreateOption={handleCommunicatorHostnameCreation}
+            name="communicatorHostname"
             options={options as any}
             placeholder="Select an option"
             styles={selectStyle}
@@ -190,12 +193,12 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
           ></Creatable>
 
           <label className={styles["form__communicator-input-label"]}>
-            Communicator URL
+            Communicator Host
           </label>
           <CertificateUpload
             className={styles["form__communicator-file-upload-button"]}
-            isDisabled={!formData.isEnabled || !formData.communicatorUrl}
-            communicatorUrl={formData.communicatorUrl}
+            isDisabled={!formData.isEnabled || !formData.communicatorHostname}
+            communicatorHostname={formData.communicatorHostname}
             isUploaded={isCertUploaded}
             setIsUploaded={setIsCertUploaded}
           />
@@ -221,7 +224,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
             className={styles["form__select-pubkey"]}
             isDisabled={
               !formData.isEnabled ||
-              !formData.communicatorUrl ||
+              !formData.communicatorHostname ||
               !isCertUploaded
             }
             onChange={handleGroupChange}

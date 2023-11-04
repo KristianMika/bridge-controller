@@ -18,7 +18,7 @@ const CertificateUpload: React.FC<ICertificateUpload> = (props) => {
     }).then((filePath) => {
       if (filePath && typeof filePath === "string") {
         setFilename(filePath);
-        storeCommunicatorCertificate(filePath, props.communicatorUrl);
+        storeCommunicatorCertificate(filePath, props.communicatorHostname);
         props.setIsUploaded(true);
       }
     });
