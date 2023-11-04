@@ -35,8 +35,10 @@ impl FileSystem {
         hostname.replace('.', "_")
     }
 
-    /// Constructs a filepath for a certificate given a hostname. The path is of form [certificate directory]/hostnamecertificate.pem.
-    /// Returning a valid path doesn't mean the certificate exists. To get an already present certificate, use `get_certificate_filepath`
+    /// Constructs a filepath for a certificate given a hostname.
+    /// The path is of form [certificate directory]/hostnamecertificate.pem.
+    /// Returning a valid path doesn't mean the certificate exists.
+    /// To get an already present certificate, use `get_certificate_filepath`
     ///
     /// # Arguments
     ///
@@ -50,11 +52,13 @@ impl FileSystem {
         Ok(self.get_certificate_directory()?.join(certificate_filename))
     }
 
-    /// Gets a certificate filepath for a given hostname. If the certificate doesn't exist, returns `None`.
+    /// Gets a certificate filepath for a given hostname.
+    /// If the certificate doesn't exist, returns `None`.
     ///
     /// # Arguments
     ///
-    /// * `hostname` - The hostname of the communicator for which the certificate should be returned
+    /// * `hostname` - The hostname of the communicator for
+    ///     which the certificate should be returned
     pub(crate) fn get_certificate_filepath(
         &self,
         hostname: &str,

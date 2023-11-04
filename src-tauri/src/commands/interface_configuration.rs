@@ -10,8 +10,10 @@ use crate::{
 ///
 /// # Arguments
 ///
-/// * `cryptographic_interface` - The cryptographic interface for which the configuration should be stored
-/// * `tool` - The tool for which the configuration should be stored, if None, the configuration is handled as tool-independent
+/// * `cryptographic_interface` - The cryptographic interface for which
+///     the configuration should be stored
+/// * `tool` - The tool for which the configuration should be stored,
+///     if None, the configuration is handled as tool-independent
 /// * `configuration` - The configuration that should be stored
 /// * `state` - The state of the application
 #[tauri::command]
@@ -42,8 +44,10 @@ pub(crate) async fn set_interface_configuration(
 ///
 /// # Arguments
 ///
-/// * `cryptographic_interface` - The cryptographic interface for which the configuration should be fetched
-/// * `tool` - The tool for which the configuration should be fetched, if None, the general, tool-independent configuration is returned
+/// * `cryptographic_interface` - The cryptographic interface
+///     for which the configuration should be fetched
+/// * `tool` - The tool for which the configuration should be fetched,
+///     if None, the general, tool-independent configuration is returned
 /// * `state` - The state of the application
 #[tauri::command]
 #[specta::specta]
@@ -69,8 +73,10 @@ pub(crate) async fn get_interface_configuration(
 /// # Arguments
 ///
 /// * `state` - The state of the application
-/// * `cryptographic_interface` - The cryptographic interface for which the configuration should be removed
-/// * `tool` - The tool for which the configuration should be removed, if None, the general, tool-independent configuration is removed
+/// * `cryptographic_interface` - The cryptographic interface
+///     for which the configuration should be removed
+/// * `tool` - The tool for which the configuration should be removed,
+///     if None, the general, tool-independent configuration is removed
 #[tauri::command]
 #[specta::specta]
 pub(crate) async fn remove_interface_configuration(

@@ -10,7 +10,8 @@ use crate::{interface::CreatableInterface, process::process_executor::ProcessExe
 
 pub(crate) mod process_manager_error;
 
-/// Manages the processes of emulated interfaces, its creation and termination
+/// Manages the processes of emulated interfaces,
+/// its creation and termination
 pub(crate) struct ProcessManager {
     /// A map of all running processes
     processes: DashMap<CreatableInterface, Child>,

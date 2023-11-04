@@ -12,7 +12,8 @@ pub(crate) use windows_process_executor::WindowsProcessExecutor as PlatformSpeci
 
 use super::process_manager::process_manager_error::ProcessManagerError;
 
-/// ProcessExecutor is responsible for spawning new processes of emulated interfaces
+/// ProcessExecutor is responsible for spawning
+/// new processes of emulated interfaces
 pub(crate) trait ProcessExecutor {
     /// Instantiates a new ProcessExecutor
     fn new() -> Self;

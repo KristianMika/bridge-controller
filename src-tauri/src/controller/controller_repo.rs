@@ -14,7 +14,8 @@ pub(crate) trait ControllerRepo: Send + Sync {
     ///
     /// * `configuration` - The interface configuration to store.
     /// * `interface` - The interface to store the configuration for.
-    /// * `tool` - The tool to store the configuration for. Value None means that the configuration is for all tools.
+    /// * `tool` - The tool to store the configuration for.
+    ///     Value None means that the configuration is for all tools.
     fn set_interface_configuration(
         &self,
         configuration: InternalInterfaceConfiguration,
@@ -27,14 +28,16 @@ pub(crate) trait ControllerRepo: Send + Sync {
     /// # Arguments
     ///
     /// * `interface` - The interface to retrieve the configuration for.
-    /// * `tool` - The tool to retrieve the configuration for. Value None means that the configuration is for all tools.
+    /// * `tool` - The tool to retrieve the configuration for.
+    ///     Value None means that the configuration is for all tools.
     fn get_interface_configuration(
         &self,
         interface: &CryptographicInterface,
         tool: &Option<String>,
     ) -> Result<Option<InternalInterfaceConfiguration>, ControllerRepoError>;
 
-    /// Retrieves the list of tools for which there is a configuration present in the database.
+    /// Retrieves the list of tools for which there is a configuration
+    /// present in the database.
     ///
     /// # Arguments
     ///
@@ -49,7 +52,8 @@ pub(crate) trait ControllerRepo: Send + Sync {
     /// # Arguments
     ///
     /// * `interface` - The interface to remove the configuration for.
-    /// * `tool` - The tool to remove the configuration for. Value None means that the configuration is for all tools.
+    /// * `tool` - The tool to remove the configuration for.
+    ///     Value None means that the configuration is for all tools.
     fn remove_interface_configuration(
         &self,
         interface: &CryptographicInterface,

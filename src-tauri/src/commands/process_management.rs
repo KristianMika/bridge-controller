@@ -3,11 +3,13 @@ use log::{debug, error};
 use crate::interface::CreatableInterface;
 use crate::state::State;
 
-/// Launches an emulated interface process. If the process is running, returns an error.
+/// Launches an emulated interface process. If the process is running,
+/// returns an error.
 ///
 /// # Arguments
 ///
-/// * `creatable_interface` - The emulated interface that should be launched
+/// * `creatable_interface` - The emulated interface that
+///     should be launched
 /// * `state` - The state of the application
 #[tauri::command]
 #[specta::specta]
@@ -25,7 +27,8 @@ pub(crate) async fn spawn_interface_process(
         })
 }
 
-/// Kills an emulated interface process. If the process is not running, returns an error.
+/// Kills an emulated interface process. If the process is not running,
+/// returns an error.
 ///
 /// # Arguments
 ///

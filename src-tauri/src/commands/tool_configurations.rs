@@ -7,7 +7,8 @@ use crate::{interface::CryptographicInterface, state::State};
 ///
 /// # Arguments
 ///
-/// * `cryptographic_interface` - The cryptographic interface for which the configured tools should be returned
+/// * `cryptographic_interface` - The cryptographic interface
+///     for which the configured tools should be returned
 /// * `state` - The state of the application
 #[tauri::command]
 #[specta::specta]

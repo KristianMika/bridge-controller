@@ -24,7 +24,8 @@ pub(crate) async fn get_configuration(
     let configuration = match configuration {
         Some(configuration) => configuration,
         None => {
-            // There is no configuration specific to the tool, let's return the general, tool-independent configuration
+            // There is no configuration specific to the tool,
+            // let's return the general, tool-independent configuration
             let Ok(configuration) = repo.get_interface_configuration(&interface, &None) else {
                 return HttpResponse::InternalServerError().finish();
             };
