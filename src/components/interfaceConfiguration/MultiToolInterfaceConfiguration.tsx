@@ -36,14 +36,19 @@ const MultiToolInterfaceConfiguration: React.FC<
   const loadTools = async () => {
     let configuredTools = await getConfiguredTools(props.interfaceType);
     let mappedTools = configuredTools.map(toolObjectFromValue);
-    if (mappedTools.length === 0) {
+
+    if (!isToolIndependentOptionPresent(mappedTools)) {
+      // ensure there is always an option for "any" tool
+      // it may not be present in clean DB, but we don't want to init the db
+      // with dummy values
       let anyTool: ITool = { displayName: "Any", tool: null };
-      mappedTools = [anyTool];
+      mappedTools.push(anyTool);
     }
     let tool = mappedTools[0] as ITool;
     setSelectedTool(tool);
     setTools(mappedTools);
   };
+
   useEffect(() => {
     loadTools();
   }, []);
@@ -98,3 +103,7 @@ const MultiToolInterfaceConfiguration: React.FC<
 };
 
 export default MultiToolInterfaceConfiguration;
+
+const isToolIndependentOptionPresent = (mappedTools: ITool[]): boolean => {
+  return mappedTools.some((tool: ITool) => tool.tool === null);
+};
