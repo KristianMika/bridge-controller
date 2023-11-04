@@ -1,12 +1,12 @@
-.tool_menu_form--invisible {
+.tool-menu__form--invisible {
   display: none;
 }
 
-.tool_menu_form--visible {
+.tool-menu__form--visible {
   display: inline-block;
 }
 
-.tool_menu__new_tool {
+.tool-menu__new-tool {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
@@ -21,7 +21,7 @@
   color: inherit;
 }
 
-.tool_menu__new_tool_input {
+.tool-menu__new-tool-input {
   width: 90%;
   margin: 0 auto;
   background-color: transparent;
@@ -30,6 +30,6 @@
   color: white;
 }
 
-.tool_menu__input_confirmation_button {
+.tool-menu__input-confirmation-button {
   display: none;
 }

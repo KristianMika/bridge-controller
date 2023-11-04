@@ -1,8 +1,8 @@
-.tool_menu__item:visited {
+.tool-menu__item:visited {
   color: inherit;
 }
 
-.tool_menu__item {
+.tool-menu__item {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
@@ -17,8 +17,8 @@
   color: inherit;
 }
 
-.tool_menu__item:hover,
-.tool_menu__item--selected {
+.tool-menu__item:hover,
+.tool-menu__item--selected {
   background: var(--selected-item-background-color-fallback);
   background: var(--selected-item-background-gradient);
   border-left: var(--selected-item-border-left);

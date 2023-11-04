@@ -29,7 +29,7 @@ export const Menu: React.FC = () => {
   ];
 
   return (
-    <div className={styles.menu_wrapper}>
+    <div className={styles["menu-wrapper"]}>
       <div className={styles.menu}>
         {menuItems.map((menuItem) => (
           <MenuItem

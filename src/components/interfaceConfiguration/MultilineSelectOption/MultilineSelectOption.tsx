@@ -13,12 +13,12 @@ export const MultilineSelectOption: React.FC<IMultilineSelectOption> = (
   return (
     <components.Option {...props}>
       <div
-        className={`${styles["option__label"]} ${styles["option__label--mainlabel"]}`}
+        className={`${styles["option__label"]} ${styles["option__main-label"]}`}
       >
         {props.data.label}
       </div>
       <div
-        className={`${styles["option__label"]} ${styles["option__label--sublabel"]}`}
+        className={`${styles["option__label"]} ${styles["option__sublabel"]}`}
       >
         {props.data.subLabel}
       </div>

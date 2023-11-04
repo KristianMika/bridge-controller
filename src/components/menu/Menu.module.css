@@ -7,7 +7,7 @@
   justify-content: space-evenly;
 }
 
-.menu_wrapper {
+.menu-wrapper {
   height: 100%;
   width: var(--menu-width);
 }

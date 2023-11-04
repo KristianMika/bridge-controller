@@ -64,14 +64,14 @@ export const ToolMenuItemCreation: React.FC<IToolMenuItemCreation> = (
     <form
       className={
         props.isCreationActive
-          ? styles["tool_menu_form--visible"]
-          : styles["tool_menu_form--invisible"]
+          ? styles["tool-menu__form--visible"]
+          : styles["tool-menu__form--invisible"]
       }
     >
-      <div className={styles["tool_menu__new_tool"]}>
+      <div className={styles["tool-menu__new-tool"]}>
         <input
           name="new_tool_input"
-          className={styles["tool_menu__new_tool_input"]}
+          className={styles["tool-menu__new-tool-input"]}
           type="text"
           onChange={handleNewToolChange}
           value={newToolName}
@@ -83,7 +83,7 @@ export const ToolMenuItemCreation: React.FC<IToolMenuItemCreation> = (
         />
       </div>
       <button
-        className={styles["tool_menu__input_confirmation_button"]}
+        className={styles["tool-menu__input-confirmation-button"]}
         onClick={confirmToolCreation}
       ></button>
       <ToolMenuSeparator />

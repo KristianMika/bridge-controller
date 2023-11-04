@@ -1,4 +1,4 @@
-.tool_menu {
+.tool-menu {
   margin-top: 2rem;
   width: 5rem;
   display: flex;
@@ -6,12 +6,12 @@
   align-items: center;
 }
 
-.tool_menu__add_button:hover {
+.tool-menu__add-button:hover {
   background: transparent;
   border-left: var(--placeholder-border-left);
 }
 
-.tool_menu__add_button {
+.tool-menu__add-button {
   text-decoration: none;
   color: inherit;
   border-left: var(--placeholder-border-left);

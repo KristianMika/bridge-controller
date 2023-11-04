@@ -7,18 +7,20 @@ import { ToolMenuSeparator } from "./toolMenuSeparator/ToolMenuSeparator";
 import ITool from "../../models/ITool";
 import IToolMenu from "../../models/IToolMenu";
 
+/**
+ * Enables the selection of a tool for which the configuration will be displayed
+ */
 export const ToolMenu: React.FC<IToolMenu> = (props) => {
   const [isToolCreationEntryVisible, setIsToolCreationEntryVisible] =
     useState<boolean>(false);
 
+  // Create a callback for the delete key to remove the currently selected tool
   const keyDowns = useCallback(
     (event: any) => {
       if (event.key === "Delete") {
         removeCurrentTool();
       }
     },
-    // this dependecy is a hack, I don't know why the function can't reference the variable,
-    // but it sticks with the value present on variable initialization
     [props.selectedTool]
   );
 
@@ -54,14 +56,14 @@ export const ToolMenu: React.FC<IToolMenu> = (props) => {
     tools.map((tool) => createMenuItem(tool));
 
   return (
-    <div className={styles["tool_menu"]}>
+    <div className={styles["tool-menu"]}>
       {createMenuItems(props.tools)}
       <ToolMenuItemCreation
         isCreationActive={isToolCreationEntryVisible}
         cancelCreation={() => setIsToolCreationEntryVisible(false)}
         newItemCreationHandler={props.addTool}
       />
-      <a className={styles["tool_menu__add_button"]} href="#" onClick={addTool}>
+      <a className={styles["tool-menu__add-button"]} href="#" onClick={addTool}>
         <IoMdAddCircleOutline size={18} />
       </a>
     </div>

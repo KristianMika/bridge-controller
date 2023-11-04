@@ -191,7 +191,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
     <>
       <div className={styles["interface-configuration"]}>
         <form className={styles["interface-configuration__form"]}>
-          <div className={styles["form__enabled"]}>
+          <div className={styles["form--enabled"]}>
             <Switch
               onChange={handleIsEnabledChange}
               checked={formData.isEnabled}
@@ -201,13 +201,13 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
               activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
             />
           </div>
-          <div className={styles["form__interface_name"]}>
+          <div className={styles["form__interface-name"]}>
             <h2>{props.displayName}</h2>
           </div>
           <Creatable
             maxMenuHeight={130}
             isDisabled={!formData.isEnabled}
-            className={styles["form__communicator_input"]}
+            className={styles["form__communicator-input"]}
             value={optionOrNull(formData.communicatorUrl)}
             onChange={handleCommunicatorUrlChange}
             onCreateOption={handleCommunicatorUrlCreation}
@@ -218,11 +218,11 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
             theme={selectTheme}
           ></Creatable>
 
-          <label className={styles["form__communicator_input_label"]}>
+          <label className={styles["form__communicator-input-label"]}>
             Communicator URL
           </label>
           <CertificateUpload
-            className={styles["form__communicator_file_upload_button"]}
+            className={styles["form__communicator-file-upload-button"]}
             isDisabled={!formData.isEnabled || !formData.communicatorUrl}
             communicatorUrl={formData.communicatorUrl}
             isUploaded={isCertUploaded}
@@ -230,7 +230,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
           />
 
           <label
-            className={styles["form__communicator_file_upload_button_label"]}
+            className={styles["form__communicator-file-upload-button-label"]}
           >
             Communicator Cert
           </label>
@@ -247,7 +247,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
             })}
             styles={selectStyle}
             placeholder="Select an option"
-            className={styles["form__select_pubkey"]}
+            className={styles["form__select-pubkey"]}
             isDisabled={
               !formData.isEnabled ||
               !formData.communicatorUrl ||
@@ -259,7 +259,7 @@ export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
             theme={selectTheme}
             maxMenuHeight={120}
           />
-          <label className={styles["form__select_pubkey_label"]}>Group</label>
+          <label className={styles["form__select-pubkey-label"]}>Group</label>
           <button onClick={saveConfiguration} className={styles["form__apply"]}>
             Apply
           </button>

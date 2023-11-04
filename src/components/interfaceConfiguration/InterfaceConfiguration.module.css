@@ -19,47 +19,47 @@
   align-items: center;
 }
 
-.form__enabled {
+.form--enabled {
   grid-area: enable;
   width: 100%;
   text-align: end;
   margin-bottom: 1.1rem;
 }
 
-.form__interface_name {
+.form__interface-name {
   grid-area: interface_name;
   width: 70%;
   text-align: start;
   margin-bottom: 1.1rem;
 }
 
-.form__communicator_input {
+.form__communicator-input {
   width: 100%;
   grid-area: communicator_input;
   color: black;
 }
 
-.form__communicator_input_label {
+.form__communicator-input-label {
   grid-area: communicator_input_label;
 }
 
-.form__select_pubkey {
+.form__select-pubkey {
   grid-area: select_pubkey;
   width: 100%;
 }
 
-.form__select_pubkey_label {
+.form__select-pubkey-label {
   grid-area: select_pubkey_label;
 }
 
-.form__communicator_file_upload_button {
+.form__communicator-file-upload-button {
   grid-area: file_upload;
   width: 100%;
   height: 70%;
   margin: 0 auto;
 }
 
-.form__communicator_file_upload_button_label {
+.form__communicator-file-upload-button-label {
   grid-area: file_upload_label;
 }
 
