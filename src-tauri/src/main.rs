@@ -1,6 +1,19 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod proto {
+    tonic::include_proto!("meesign");
+}
+
+mod commands;
+mod controller;
+mod filesystem;
+pub(crate) mod group;
+mod interface;
+mod process;
+mod state;
+mod system_tray;
+
 use std::error::Error;
 use std::io;
 #[cfg(debug_assertions)]
@@ -33,19 +46,6 @@ use crate::commands::{
 use crate::process::process_executor::{PlatformSpecificProcessExecutor, ProcessExecutor};
 use crate::process::process_manager::ProcessManager;
 
-mod commands;
-mod controller;
-mod filesystem;
-pub(crate) mod group;
-mod interface;
-mod process;
-mod state;
-mod system_tray;
-
-mod proto {
-    tonic::include_proto!("meesign");
-}
-
 static CONTROLLER_PORT: u16 = 11115;
 static SLED_DB_FILENAME: &str = "controller.sled";
 
@@ -68,11 +68,13 @@ fn spawn_controller_server(
     )
 }
 
+/// Returns a logger target for debug build, which is the standard error output
 #[cfg(debug_assertions)]
 fn get_logger_target(_filesystem: &FileSystem) -> Result<Target, Box<dyn Error>> {
     Ok(Target::Stderr)
 }
 
+/// Returns a logger target for release build, which is a pipe to the log file
 #[cfg(not(debug_assertions))]
 fn get_logger_target(filesystem: &FileSystem) -> Result<Target, Box<dyn Error>> {
     let log_file = filesystem.get_log_file()?;
@@ -86,6 +88,33 @@ fn init_logger(filesystem: &FileSystem) -> Result<(), Box<dyn Error>> {
         .init();
     Ok(())
 }
+
+/// Generates typescript bindings for better and safer front-end back-end integration
+///
+/// # Arguments
+///
+/// * `bindings_filename` - The name of the file to which the bindings will be written
+#[cfg(debug_assertions)]
+fn generate_typescript_bindings(bindings_filename: &str) -> Result<(), TsExportError> {
+    let current_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let bindings_path = current_dir.join("..").join("src").join(bindings_filename);
+    info!("Generating typescript bindings at {:?}", bindings_path);
+    ts::export(
+        collect_types![
+            set_interface_configuration,
+            get_interface_configuration,
+            remove_interface_configuration,
+            get_groups,
+            store_communicator_certificate,
+            spawn_interface_process,
+            kill_interface_process,
+            is_certificate_present,
+            get_configured_tools
+        ],
+        bindings_path,
+    )
+}
+
 fn main() {
     let filesystem = FileSystem {};
     filesystem
@@ -136,25 +165,4 @@ fn main() {
         .on_window_event(window_event_handler)
         .run(tauri::generate_context!())
         .expect("Couldn't run application");
-}
-
-#[cfg(debug_assertions)]
-fn generate_typescript_bindings(bindings_filename: &str) -> Result<(), TsExportError> {
-    let current_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let bindings_path = current_dir.join("..").join("src").join(bindings_filename);
-    info!("Generating typescript bindings at {:?}", bindings_path);
-    ts::export(
-        collect_types![
-            set_interface_configuration,
-            get_interface_configuration,
-            remove_interface_configuration,
-            get_groups,
-            store_communicator_certificate,
-            spawn_interface_process,
-            kill_interface_process,
-            is_certificate_present,
-            get_configured_tools
-        ],
-        bindings_path,
-    )
 }
