@@ -3,15 +3,35 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use serde::Serialize;
+use log::error;
 
 use crate::{
     controller::interface_configuration::InternalInterfaceConfiguration,
     interface::CryptographicInterface,
 };
 
+use self::configuration_key::ConfigurationKey;
+
 use super::{controller_repo_error::ControllerRepoError, ControllerRepo};
 
+mod configuration_key;
+
+/// Repository for storing and retrieving interface configurations
+/// using the sled database.
+///
+/// # DB Structure
+///
+/// * mapping `CryptographicInterface -> HashSet<Option<String>>`
+///     represents the set of tools configured for the interface
+/// * mapping `ConfigurationKey -> InternalInterfaceConfiguration`
+///     represents the interface configuration for the specific
+///     interface, and tool
+///
+/// # Abnormality
+///
+/// * There is a need to store a tool-independent configuration.
+///     This kind of configuration is used as a fallback,
+///     or a default configuration. For this case, the value `None` is used.
 #[derive(Clone)]
 pub(crate) struct SledControllerRepo {
     db: Arc<Mutex<sled::Db>>,
@@ -24,6 +44,12 @@ impl SledControllerRepo {
 }
 
 impl SledControllerRepo {
+    /// Stores a set of tools that are configured for the given interface.
+    ///
+    /// # Arguments
+    ///
+    /// * `tools` - The tools to store.
+    /// * `interface` - The interface to store the tools for.
     fn store_configured_tools(
         &self,
         tools: &HashSet<Option<String>>,
@@ -35,6 +61,13 @@ impl SledControllerRepo {
         Ok(())
     }
 
+    /// Adds a tool to the set of tools that are configured
+    /// for the given interface.
+    ///
+    /// # Arguments
+    ///
+    /// * `tool` - The tool to add to the set of tools.
+    /// * `interface` - The interface to add the tool for.
     fn add_configured_tool_entry(
         &self,
         tool: Option<String>,
@@ -43,17 +76,26 @@ impl SledControllerRepo {
         let key: Vec<u8> = bincode::serialize(interface)?;
 
         let Some(tools) = self.db.lock()?.get(key)? else {
+            // this is the first tool for this interface
             let mut tools: HashSet<Option<String>> = HashSet::new();
             tools.insert(tool);
             return self.store_configured_tools(&tools, interface);
         };
         let mut tools: HashSet<Option<String>> = bincode::deserialize(&tools)?;
         if tools.insert(tool) {
+            // the tool was not present in the set
             self.store_configured_tools(&tools, interface)?;
         }
         Ok(())
     }
 
+    /// Removes a tool from the set of tools that are configured
+    /// for the given interface.
+    ///
+    /// # Arguments
+    ///
+    /// * `tool` - The tool to remove from the set of tools.
+    /// * `interface` - The interface to remove the tool for.
     fn remove_configured_tool_entry(
         &self,
         tool: &Option<String>,
@@ -62,18 +104,24 @@ impl SledControllerRepo {
         let key: Vec<u8> = bincode::serialize(interface)?;
 
         let Some(tools) = self.db.lock()?.get(key)? else {
+            // there are no tools for this interface
             // this is an inconsistency
+            error!("There are no tools for interface {interface:?} in the database, but remove_configured_tool_entry was called with tool {tool:?}");
             return Ok(());
         };
+
         let mut tools: HashSet<Option<String>> = bincode::deserialize(&tools)?;
         if tools.remove(tool) {
+            // the tool was present in the set
             self.store_configured_tools(&tools, interface)?;
         }
         Ok(())
     }
 }
 
-// TODO: optimize using the provided example: https://github.com/spacejam/sled/blob/main/examples/structured.rs
+// TODO: optimize using the provided example:
+// https://github.com/spacejam/sled/blob/main/examples/structured.rs
+// TODO: consider using SQLite because of the issues mentioned above
 impl ControllerRepo for SledControllerRepo {
     fn set_interface_configuration(
         &self,
@@ -125,18 +173,6 @@ impl ControllerRepo for SledControllerRepo {
         self.db.lock()?.remove(key)?;
         self.remove_configured_tool_entry(tool, interface)?;
         Ok(())
-    }
-}
-
-#[derive(Serialize)]
-struct ConfigurationKey {
-    interface: CryptographicInterface,
-    tool: Option<String>,
-}
-
-impl ConfigurationKey {
-    fn new(interface: CryptographicInterface, tool: Option<String>) -> Self {
-        Self { interface, tool }
     }
 }
 
