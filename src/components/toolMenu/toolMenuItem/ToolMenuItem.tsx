@@ -4,7 +4,7 @@ import styles from "./ToolMenuItem.module.css";
 /**
  * A component representing a single tool item in the tool menu
  */
-export const ToolMenuItem: React.FC<IToolMenuItem> = (props) => {
+const ToolMenuItem: React.FC<IToolMenuItem> = (props) => {
   return (
     <a
       title={props.tool.displayName}
@@ -18,3 +18,5 @@ export const ToolMenuItem: React.FC<IToolMenuItem> = (props) => {
     </a>
   );
 };
+
+export default ToolMenuItem;

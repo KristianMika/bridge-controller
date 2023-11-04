@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ITool from "../../../models/ITool";
 import IToolMenuItemCreation from "../../../models/IToolMenuItemCreation";
-import { ToolMenuSeparator } from "../toolMenuSeparator/ToolMenuSeparator";
+import ToolMenuSeparator from "../toolMenuSeparator/ToolMenuSeparator";
 import styles from "./ToolMenuItemCreation.module.css";
 
 /**
  * A component allowing creation of a new tool item in the tool menu
  */
-export const ToolMenuItemCreation: React.FC<IToolMenuItemCreation> = (
-  props
-) => {
+const ToolMenuItemCreation: React.FC<IToolMenuItemCreation> = (props) => {
   const [newToolName, setNewToolName] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -90,3 +88,5 @@ export const ToolMenuItemCreation: React.FC<IToolMenuItemCreation> = (
     </form>
   );
 };
+
+export default ToolMenuItemCreation;

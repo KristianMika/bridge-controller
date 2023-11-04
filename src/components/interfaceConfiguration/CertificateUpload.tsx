@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import * as path from "path";
 import ICertificateUpload from "../../models/ICertificateUpload";
 
-export const CertificateUpload: React.FC<ICertificateUpload> = (props) => {
+const CertificateUpload: React.FC<ICertificateUpload> = (props) => {
   const [filename, setFilename] = useState<string | null>(null);
 
   const uploadFile = (event: React.MouseEvent<HTMLElement>) => {
@@ -67,3 +67,5 @@ const getFilenameFromPath = (filepath: string | null): string => {
   }
   return filename;
 };
+
+export default CertificateUpload;

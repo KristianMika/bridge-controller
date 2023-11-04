@@ -17,8 +17,8 @@ import {
   isCertificatePresent,
 } from "../../bindings";
 import Select, { StylesConfig } from "react-select";
-import { MultilineSelectOption } from "./MultilineSelectOption/MultilineSelectOption";
-import { CertificateUpload } from "./CertificateUpload";
+import MultilineSelectOption from "./MultilineSelectOption/MultilineSelectOption";
+import CertificateUpload from "./CertificateUpload";
 import IInterfaceForm, { defaultFormData } from "../../models/IInterfaceForm";
 import IInterfaceConfiguration from "../../models/IInterfaceConfiguration";
 import IOptionType from "../../models/IOptionType";
@@ -60,9 +60,7 @@ const createOptions = (options: string[]): Option[] => {
   return options.map(createOption);
 };
 
-export const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (
-  props
-) => {
+const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
   const [formData, setFormData] = useState<IInterfaceForm>(() => {
     return { ...defaultFormData, isEnabled: !props.canBeDisabled };
   });
@@ -312,3 +310,5 @@ const isCreatableInterface = (
   interfaceType: CryptographicInterface
 ): interfaceType is CreatableInterface =>
   interfaceType == "webauthn" || interfaceType == "pcsc";
+
+export default InterfaceConfiguration;

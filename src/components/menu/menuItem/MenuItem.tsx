@@ -13,7 +13,7 @@ export interface IMenuItem {
 /**
  * A single menu item in the menu component.
  */
-export const MenuItem: React.FC<IMenuItem> = (props) => {
+const MenuItem: React.FC<IMenuItem> = (props) => {
   const menuIconStyle = { color: "#e6e6e6", fontSize: "2rem" };
 
   const addClassIfSelected = (): string => {
@@ -35,3 +35,5 @@ export const MenuItem: React.FC<IMenuItem> = (props) => {
     </a>
   );
 };
+
+export default MenuItem;

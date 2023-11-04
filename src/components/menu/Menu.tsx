@@ -1,19 +1,15 @@
-import {
-  BsFillUsbDriveFill,
-  BsSimFill,
-  BsCurrencyBitcoin,
-} from "react-icons/bs";
+import { BsFillUsbDriveFill, BsSimFill } from "react-icons/bs";
 import { SiFidoalliance } from "react-icons/si";
-import { MenuItem } from "./menuItem/MenuItem";
 import styles from "./Menu.module.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import IMenuItem from "../../models/IMenuItem";
+import MenuItem from "./menuItem/MenuItem";
 
 /**
  * Bottom navigation menu that allows changing interface configurations
  */
-export const Menu: React.FC = () => {
+const Menu: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("FIDO");
   const navigate = useNavigate();
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -45,3 +41,5 @@ export const Menu: React.FC = () => {
     </div>
   );
 };
+
+export default Menu;

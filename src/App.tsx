@@ -1,13 +1,12 @@
 import {
   createBrowserRouter,
-  Outlet,
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-import { InterfaceConfiguration } from "./components/interfaceConfiguration/InterfaceConfiguration";
-import { MultiToolInterfaceConfiguration } from "./components/interfaceConfiguration/MultiToolInterfaceConfiguration";
-import { Menu } from "./components/menu/Menu";
-import { MenuSeparator } from "./components/menuSeparator/MenuSeparator";
+import InterfaceConfiguration from "./components/interfaceConfiguration/InterfaceConfiguration";
+import MultiToolInterfaceConfiguration from "./components/interfaceConfiguration/MultiToolInterfaceConfiguration";
+import Menu from "./components/menu/Menu";
+import MenuSeparator from "./components/menuSeparator/MenuSeparator";
 import ITool from "./models/ITool";
 import AnimatedOutlet from "./components/animation/animatedOutlet/AnimatedOutlet";
 

@@ -7,9 +7,7 @@ export interface IMultilineSelectOption extends OptionProps<any, false, any> {
     subLabel: string;
   };
 }
-export const MultilineSelectOption: React.FC<IMultilineSelectOption> = (
-  props
-) => {
+const MultilineSelectOption: React.FC<IMultilineSelectOption> = (props) => {
   return (
     <components.Option {...props}>
       <div
@@ -25,3 +23,5 @@ export const MultilineSelectOption: React.FC<IMultilineSelectOption> = (
     </components.Option>
   );
 };
+
+export default MultilineSelectOption;

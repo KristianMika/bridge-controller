@@ -1,16 +1,16 @@
 import styles from "./ToolMenu.module.css";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import React, { useCallback, useEffect, useState } from "react";
-import { ToolMenuItem } from "./toolMenuItem/ToolMenuItem";
-import { ToolMenuItemCreation } from "./toolMenuItemCreation/ToolMenuItemCreation";
-import { ToolMenuSeparator } from "./toolMenuSeparator/ToolMenuSeparator";
+import ToolMenuItem from "./toolMenuItem/ToolMenuItem";
+import ToolMenuItemCreation from "./toolMenuItemCreation/ToolMenuItemCreation";
+import ToolMenuSeparator from "./toolMenuSeparator/ToolMenuSeparator";
 import ITool from "../../models/ITool";
 import IToolMenu from "../../models/IToolMenu";
 
 /**
  * Enables the selection of a tool for which the configuration will be displayed
  */
-export const ToolMenu: React.FC<IToolMenu> = (props) => {
+const ToolMenu: React.FC<IToolMenu> = (props) => {
   const [isToolCreationEntryVisible, setIsToolCreationEntryVisible] =
     useState<boolean>(false);
 
@@ -69,3 +69,5 @@ export const ToolMenu: React.FC<IToolMenu> = (props) => {
     </div>
   );
 };
+
+export default ToolMenu;

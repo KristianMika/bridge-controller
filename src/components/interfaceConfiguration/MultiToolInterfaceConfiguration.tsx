@@ -4,12 +4,12 @@ import {
   getConfiguredTools,
   removeInterfaceConfiguration,
 } from "../../bindings";
-import { MenuSeparator } from "../menuSeparator/MenuSeparator";
-import { ToolMenu } from "../toolMenu/ToolMenu";
-import { InterfaceConfiguration } from "./InterfaceConfiguration";
 import IMultiToolInterfaceConfiguration from "../../models/IMultiToolInterfaceConfiguration";
 import ITool from "../../models/ITool";
 import AnimationComponent from "../animation/animatedComponent/AnimationComponent";
+import ToolMenu from "../toolMenu/ToolMenu";
+import MenuSeparator from "../menuSeparator/MenuSeparator";
+import InterfaceConfiguration from "./InterfaceConfiguration";
 
 /**
  * Backend only stores an array of tools, but we also need to represent an option for "any" tool.
@@ -26,7 +26,7 @@ const toolObjectFromValue = (tool: string | null): ITool =>
 /**
  * This component wraps `InterfaceConfigurationComponent` and enables per-tool configuration
  */
-export const MultiToolInterfaceConfiguration: React.FC<
+const MultiToolInterfaceConfiguration: React.FC<
   IMultiToolInterfaceConfiguration
 > = (props) => {
   const [tools, setTools] = useState<ITool[]>([]);
@@ -77,3 +77,5 @@ export const MultiToolInterfaceConfiguration: React.FC<
     </div>
   );
 };
+
+export default MultiToolInterfaceConfiguration;
