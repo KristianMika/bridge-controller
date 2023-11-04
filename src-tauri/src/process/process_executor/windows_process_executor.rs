@@ -1,6 +1,8 @@
 use std::process::Child;
 
-use super::{ProcessExecutor, process_manager_error::ProcessManagerError};
+use crate::process::process_manager::process_manager_error::ProcessManagerError;
+
+use super::ProcessExecutor;
 
 pub(crate) struct WindowsProcessExecutor {}
 
