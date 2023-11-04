@@ -10,6 +10,7 @@ import AnimationComponent from "../animation/animatedComponent/AnimationComponen
 import ToolMenu from "../toolMenu/ToolMenu";
 import MenuSeparator from "../menuSeparator/MenuSeparator";
 import InterfaceConfiguration from "./InterfaceConfiguration";
+import { toast } from "react-toastify";
 
 /**
  * Backend only stores an array of tools, but we also need to represent an option for "any" tool.
@@ -46,16 +47,34 @@ const MultiToolInterfaceConfiguration: React.FC<
   useEffect(() => {
     loadTools();
   }, []);
+
+  const isToolValidAndNotPresent = (newTool: ITool): boolean => {
+    return (
+      !tools.some((tool) => newTool.displayName === tool.displayName) &&
+      newTool.displayName !== "Any"
+    );
+  };
+
   const addTool = (tool: ITool) => {
+    if (!isToolValidAndNotPresent(tool)) {
+      toast.warning("This tool is already present");
+      return;
+    }
     setTools([...tools, tool]);
   };
+
   const removeTool = (tool: ITool) => {
+    if (tool.displayName === "Any") {
+      toast.warning("This option can't be removed");
+      return;
+    }
     setTools((currentTools) => currentTools.filter((t) => t != tool));
     removeInterfaceConfiguration(props.interfaceType, tool.tool);
     if (tools.length > 0) {
       setSelectedTool(tools[0]);
     }
   };
+
   return (
     <div className={styles["multi-tool-interface-configuration"]}>
       <ToolMenu
