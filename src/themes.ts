@@ -1,6 +1,12 @@
-import { Theme } from "react-select";
+import { CSSProperties } from "react";
+import { StylesConfig, Theme } from "react-select";
+import IOption from "./models/IOption";
 
-const selectTheme = (theme: Theme): Theme => ({
+export const primaryColor = getComputedStyle(document.body)
+  .getPropertyValue("--primary-color")
+  .trim();
+
+export const selectTheme = (theme: Theme): Theme => ({
   ...theme,
   borderRadius: 0,
   colors: {
@@ -12,4 +18,21 @@ const selectTheme = (theme: Theme): Theme => ({
   },
 });
 
-export default selectTheme;
+export const disabledSelectStyles: CSSProperties = {
+  background: "rgb(192, 192, 192)",
+  borderColor: "rgb(192, 192, 192)",
+  color: "rgba(0, 0, 0, 0.4)",
+};
+
+export const selectStyle: StylesConfig<IOption, false> = {
+  control: (provided, state) => {
+    provided.borderRadius = 0;
+    if (state.isDisabled) {
+      return {
+        ...provided,
+        ...disabledSelectStyles,
+      };
+    }
+    return provided;
+  },
+};

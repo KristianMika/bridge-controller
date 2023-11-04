@@ -4,7 +4,7 @@ import "react-dropdown/style.css";
 import Creatable from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import React, { useEffect, useState, CSSProperties } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CryptographicInterface,
   getInterfaceConfiguration,
@@ -16,47 +16,24 @@ import {
   CreatableInterface,
   isCertificatePresent,
 } from "../../bindings";
-import Select, { StylesConfig } from "react-select";
+import Select from "react-select";
 import MultilineSelectOption from "./MultilineSelectOption/MultilineSelectOption";
 import CertificateUpload from "./CertificateUpload";
 import IInterfaceForm, { defaultFormData } from "../../models/IInterfaceForm";
 import IInterfaceConfiguration from "../../models/IInterfaceConfiguration";
-import IOptionType from "../../models/IOptionType";
+import IMultiLabelOptionType from "../../models/IMultiLabelOptionType";
 import shortenHexString from "../../utils";
-import selectTheme from "../../themes";
+import { selectTheme, primaryColor, selectStyle } from "../../themes";
+import IOption from "../../models/IOption";
 
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
-
 const DEFAULT_COMMUNICATOR_URLS = ["meesign.crocs.fi.muni.cz", "localhost"];
 
-interface Option {
-  readonly label: string;
-  readonly value: string;
-}
-const disabledSelectStyles: CSSProperties = {
-  background: "rgb(192, 192, 192)",
-  borderColor: "rgb(192, 192, 192)",
-  color: "rgba(0, 0, 0, 0.4)",
-};
-
-const selectStyle: StylesConfig<Option, false> = {
-  control: (provided, state) => {
-    provided.borderRadius = 0;
-    if (state.isDisabled) {
-      return {
-        ...provided,
-        ...disabledSelectStyles,
-      };
-    }
-    return provided;
-  },
-};
-
-const createOption = (option: string): Option => {
+const createOption = (option: string): IOption => {
   return { value: option, label: option };
 };
 
-const createOptions = (options: string[]): Option[] => {
+const createOptions = (options: string[]): IOption[] => {
   return options.map(createOption);
 };
 
@@ -75,18 +52,14 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
       return { ...prev, isEnabled: checked };
     });
   };
-  const setSelectedGroup = (group: string) => {
-    setFormData((prev: IInterfaceForm) => {
-      return { ...prev, selectedGroup: group };
-    });
-  };
+
   const setCommunicatorUrl = (url: string) => {
     setFormData((prev) => {
       return { ...prev, communicatorUrl: url };
     });
   };
 
-  const handleGroupChange = (event: IOptionType) => {
+  const handleGroupChange = (event: IMultiLabelOptionType) => {
     setFormData((prev: IInterfaceForm) => {
       return { ...prev, selectedGroup: event.value };
     });
@@ -147,7 +120,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     toggleInterface(props.interfaceType, formData.isEnabled);
   };
 
-  const resolveGroupName = (groupPubkey: string): Option | null => {
+  const resolveGroupName = (groupPubkey: string): IOption | null => {
     if (groupPubkey.length == 0) {
       return null;
     }
@@ -194,7 +167,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
               onChange={handleIsEnabledChange}
               checked={formData.isEnabled}
               disabled={!props.canBeDisabled}
-              onColor={"#00e4d4"} // TODO: global color definition
+              onColor={primaryColor}
               boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
               activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
             />
@@ -284,7 +257,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
  * If the option is falsy, e.g., "" we need to pass a falsy value to react-select
  * or else the placeholder won't be displayed
  */
-const optionOrNull = (value: string | null): Option | null => {
+const optionOrNull = (value: string | null): IOption | null => {
   if (!value) {
     // value may == ""
     return null;
