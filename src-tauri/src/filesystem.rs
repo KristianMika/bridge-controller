@@ -26,14 +26,12 @@ impl FileSystem {
     }
 
     fn encode_url(&self, url: &str) -> String {
-        url.replace(".", "_")
+        url.replace('.', "_")
     }
     pub(crate) fn get_certificate_filepath(&self, url: &str) -> Result<PathBuf, Box<dyn Error>> {
         let encoded_url = self.encode_url(url);
         let certificate_filename = format!("{}_certificate.pem", encoded_url);
-        Ok(self
-            .get_certificate_directory()?
-            .join(&certificate_filename))
+        Ok(self.get_certificate_directory()?.join(certificate_filename))
     }
 
     pub(crate) fn copy_cerrtificate(

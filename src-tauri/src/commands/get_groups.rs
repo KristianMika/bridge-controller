@@ -66,7 +66,7 @@ async fn get_authentication_groups(
     let response = client.get_groups(request).await?;
     let groups = &response.get_ref().groups;
     let groups: Vec<Group> = groups
-        .into_iter()
+        .iter()
         // TODO: update meesign server to filter groups?
         .filter(|group| group.key_type == KeyType::SignChallenge as i32)
         .map(|group: &ProtoGroup| group.to_owned().into())

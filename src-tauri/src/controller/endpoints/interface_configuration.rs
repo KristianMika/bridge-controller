@@ -36,7 +36,7 @@ pub(crate) async fn get_configuration(
     };
 
     let filesystem = data.get_filesystem();
-    let Ok(filepath) = filesystem.get_certificate_filepath(&configuration.get_communicator_url())
+    let Ok(filepath) = filesystem.get_certificate_filepath(configuration.get_communicator_url())
     else {
         return HttpResponse::InternalServerError().finish();
     };

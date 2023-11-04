@@ -15,19 +15,18 @@ pub(crate) async fn set_interface_configuration(
 ) -> Result<(), String> {
     debug!("Command set_interface_configuration for interface '{cryptographic_interface:?}' and tool '{tool:?}' and configuration: {configuration:?}");
     let repo = state.get_controller_repo();
-    let configuration = repo
-        .set_interface_configuration(
-            configuration.into(),
-            cryptographic_interface.clone(),
-            tool.clone(),
-        )
-        .map_err(|err| {
-            error!("{err}");
-            String::from("Could not store interface configuration")
-        })?;
+    repo.set_interface_configuration(
+        configuration.into(),
+        cryptographic_interface.clone(),
+        tool.clone(),
+    )
+    .map_err(|err| {
+        error!("{err}");
+        String::from("Could not store interface configuration")
+    })?;
 
-    debug!("Command set_interface_configuration for {cryptographic_interface:?} and {tool:?}, returning {configuration:?}");
-    Ok(configuration)
+    debug!("Command set_interface_configuration for {cryptographic_interface:?} and {tool:?}");
+    Ok(())
 }
 
 #[tauri::command]
@@ -44,7 +43,7 @@ pub(crate) async fn get_interface_configuration(
             error!("{err}");
             String::from("Could not get interface configuration")
         })?
-        .and_then(|configuration| Some(configuration.into()));
+        .map(|configuration| configuration.into());
     debug!("Command get_interface_configuration for interface '{cryptographic_interface:?}' and tool '{tool:?}', returning {configuration:?}");
     Ok(configuration)
 }

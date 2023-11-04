@@ -31,7 +31,7 @@ impl SledControllerRepo {
     ) -> Result<(), ControllerRepoError> {
         let key: Vec<u8> = bincode::serialize(interface)?;
         let value: Vec<u8> = bincode::serialize(tools)?;
-        self.db.lock()?.insert(&key, value)?;
+        self.db.lock()?.insert(key, value)?;
         Ok(())
     }
 
@@ -66,7 +66,7 @@ impl SledControllerRepo {
             return Ok(());
         };
         let mut tools: HashSet<Option<String>> = bincode::deserialize(&tools)?;
-        if tools.remove(&tool) {
+        if tools.remove(tool) {
             self.store_configured_tools(&tools, interface)?;
         }
         Ok(())
@@ -84,7 +84,7 @@ impl ControllerRepo for SledControllerRepo {
         let key = ConfigurationKey::new(interface.clone(), tool.clone());
         let key: Vec<u8> = bincode::serialize(&key)?;
         let value: Vec<u8> = bincode::serialize(&configuration)?;
-        self.db.lock()?.insert(&key, value)?;
+        self.db.lock()?.insert(key, value)?;
         self.add_configured_tool_entry(tool, &interface)?;
         Ok(())
     }
@@ -96,7 +96,7 @@ impl ControllerRepo for SledControllerRepo {
     ) -> Result<Option<InternalInterfaceConfiguration>, ControllerRepoError> {
         let key = ConfigurationKey::new(interface.clone(), tool.clone());
         let key: Vec<u8> = bincode::serialize(&key)?;
-        let Some(value) = self.db.lock()?.get(&key)? else {
+        let Some(value) = self.db.lock()?.get(key)? else {
             return Ok(None);
         };
         let configuration: InternalInterfaceConfiguration = bincode::deserialize(&value[..])?;
@@ -108,7 +108,7 @@ impl ControllerRepo for SledControllerRepo {
         interface: &CryptographicInterface,
     ) -> Result<Vec<Option<String>>, ControllerRepoError> {
         let key: Vec<u8> = bincode::serialize(interface)?;
-        let Some(configured_tools) = self.db.lock()?.get(&key)? else {
+        let Some(configured_tools) = self.db.lock()?.get(key)? else {
             return Ok(vec![]);
         };
         let configured_tools: Vec<Option<String>> = bincode::deserialize(&configured_tools[..])?;
@@ -122,7 +122,7 @@ impl ControllerRepo for SledControllerRepo {
     ) -> Result<(), ControllerRepoError> {
         let key = ConfigurationKey::new(interface.clone(), tool.clone());
         let key: Vec<u8> = bincode::serialize(&key)?;
-        self.db.lock()?.remove(&key)?;
+        self.db.lock()?.remove(key)?;
         self.remove_configured_tool_entry(tool, interface)?;
         Ok(())
     }
