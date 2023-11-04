@@ -2,9 +2,7 @@ import { CSSProperties } from "react";
 import { StylesConfig, Theme } from "react-select";
 import IOption from "./models/IOption";
 
-export const primaryColor = getComputedStyle(document.body)
-  .getPropertyValue("--primary-color")
-  .trim();
+export const primaryColor = "#00e4d4";
 
 export const selectTheme = (theme: Theme): Theme => ({
   ...theme,
