@@ -41,6 +41,10 @@ jobs:
       - name: Install Protoc
         uses: arduino/setup-protoc@v2
 
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+        working-directory: ./src-tauri
+
       - name: Run rust tests
         run: cargo test
         working-directory: ./src-tauri
