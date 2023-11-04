@@ -1,5 +1,5 @@
 use actix_web::{get, web, HttpResponse, Responder};
-use log::debug;
+use log::{debug, error};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -36,10 +36,15 @@ pub(crate) async fn get_configuration(
     };
 
     let filesystem = data.get_filesystem();
-    let Ok(filepath) = filesystem.get_certificate_filepath(configuration.get_communicator_hostname())
-    else {
-        return HttpResponse::InternalServerError().finish();
-    };
+    let filepath =
+        match filesystem.get_certificate_filepath(configuration.get_communicator_hostname()) {
+            Ok(Some(filepath)) => filepath,
+            Ok(None) => return HttpResponse::NotFound().body("No certificate found"),
+            Err(err) => {
+                error!("Couldn't get certificate path: {err}");
+                return HttpResponse::InternalServerError().finish();
+            }
+        };
     let filepath = filepath.to_str().unwrap().to_string();
     let configuration = InterfaceConfiguration::new(
         configuration.get_communicator_hostname().into(),

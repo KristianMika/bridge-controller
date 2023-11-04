@@ -11,11 +11,12 @@ use home::home_dir;
 
 static CONTROLLER_DIRECTORY_NAME: &str = ".bridge-controller";
 
+/// Manages all interactions with the filesystem
+/// (directory creation, file creation, certificate storage and retrieval, etc.)
 #[derive(Clone)]
 pub(crate) struct FileSystem {}
 
 impl FileSystem {
-    // TODO: custom error
     fn get_controller_directory(&self) -> Result<PathBuf, Box<dyn Error>> {
         let home_directory = home_dir().expect("Couldn't get home directory");
         Ok(home_directory.join(CONTROLLER_DIRECTORY_NAME))
@@ -28,7 +29,14 @@ impl FileSystem {
     fn encode_hostname(&self, hostname: &str) -> String {
         hostname.replace('.', "_")
     }
-    pub(crate) fn get_certificate_filepath(
+
+    /// Constructs a filepath for a certificate given a hostname. The path is of form [certificate directory]/hostnamecertificate.pem.
+    /// Returning a valid path doesn't mean the certificate exists. To get an already present certificate, use `get_certificate_filepath`
+    ///
+    /// # Arguments
+    ///
+    /// * `hostname` - The hostname of the communicator.
+    pub fn construct_certificate_filepath(
         &self,
         hostname: &str,
     ) -> Result<PathBuf, Box<dyn Error>> {
@@ -37,12 +45,28 @@ impl FileSystem {
         Ok(self.get_certificate_directory()?.join(certificate_filename))
     }
 
+    /// Gets a certificate filepath for a given hostname. If the certificate doesn't exist, returns `None`.
+    ///
+    /// # Arguments
+    ///
+    /// * `hostname` - The hostname of the communicator for which the certificate should be returned
+    pub(crate) fn get_certificate_filepath(
+        &self,
+        hostname: &str,
+    ) -> Result<Option<PathBuf>, Box<dyn Error>> {
+        let certificate_filepath = self.construct_certificate_filepath(hostname)?;
+        if !certificate_filepath.exists() {
+            return Ok(None);
+        }
+        Ok(Some(certificate_filepath))
+    }
+
     pub(crate) fn copy_cerrtificate(
         &self,
         certificate_path: &str,
         hostname: &str,
     ) -> Result<u64, Box<dyn Error>> {
-        let destination_filepath = self.get_certificate_filepath(hostname)?;
+        let destination_filepath = self.construct_certificate_filepath(hostname)?;
         Ok(copy(certificate_path, destination_filepath)?)
     }
 

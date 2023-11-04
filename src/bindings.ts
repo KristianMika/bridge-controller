@@ -101,7 +101,7 @@ export function killInterfaceProcess(creatableInterface: CreatableInterface) {
 }
 
 /**
- * Checks if there is a certificate stored for the specified communicator.
+ * Checks if there is a certificate stored for the specified communicator hostname.
  * 
  * # Arguments
  * * `communicator_hostname` - The hostname of the communicator.

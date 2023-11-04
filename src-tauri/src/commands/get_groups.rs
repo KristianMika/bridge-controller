@@ -24,14 +24,22 @@ pub(crate) async fn get_groups(
     communicator_hostname: String,
     state: tauri::State<'_, State>,
 ) -> Result<Vec<Group>, String> {
-    // TODO: make sure we have the cert
-    let certificate_path = state
+    let certificate_path = match state
         .get_filesystem()
         .get_certificate_filepath(&communicator_hostname)
-        .map_err(|err| {
-            error!("{err}");
-            String::from("Could not get certificate file")
-        })?;
+    {
+        Ok(Some(path)) => path,
+        Ok(None) => {
+            return Err(String::from("Couldn't get groups: certificate not present"));
+        }
+        Err(err) => {
+            error!("command get group: get_certificate_path: {err}");
+            return Err(String::from(
+                "Couldn't get groups: coudln't get certificate file path",
+            ));
+        }
+    };
+
     let certificate_contents = std::fs::read(certificate_path).map_err(|err| {
         error!("{err}");
         String::from("Could not read certificate file")

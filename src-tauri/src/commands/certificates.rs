@@ -21,7 +21,7 @@ pub(crate) async fn is_certificate_present(
             String::from("Could not get certificate file")
         })?;
 
-    let exists = certificate_path.exists();
+    let exists = certificate_path.is_some();
     debug!(
         "Command is_certificate_present for hostname {communicator_hostname:?} returning {exists}"
     );
