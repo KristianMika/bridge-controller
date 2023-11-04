@@ -10,10 +10,7 @@ use std::sync::{Arc, Mutex};
 use actix_web::{web, App, HttpServer};
 use controller::{
     controller_repo::sled_controller_repo::SledControllerRepo,
-    endpoints::{
-        communicator_certificate_path::get_communicator_certificate_path,
-        interface_configuration::get_configuration,
-    },
+    endpoints::{get_communicator_certificate_path, get_configuration},
     state::State as ControllerState,
 };
 use env_logger::Target;
@@ -28,7 +25,6 @@ use tauri::{generate_handler, SystemTray};
 #[cfg(debug_assertions)]
 use tauri_specta::ts;
 
-use crate::commands::get_groups::get_groups;
 use crate::commands::process_management::kill_interface_process;
 use crate::commands::{
     certificates::*, get_groups::*, interface_configuration::*, process_management::*,

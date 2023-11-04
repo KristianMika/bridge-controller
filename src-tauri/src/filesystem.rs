@@ -36,7 +36,7 @@ impl FileSystem {
     /// # Arguments
     ///
     /// * `hostname` - The hostname of the communicator.
-    pub fn construct_certificate_filepath(
+    pub(crate) fn construct_certificate_filepath(
         &self,
         hostname: &str,
     ) -> Result<PathBuf, Box<dyn Error>> {
@@ -74,23 +74,19 @@ impl FileSystem {
         Ok(self.get_controller_directory()?.join(db_filename))
     }
 
-    fn ensure_controller_directory_exists(&self) -> Result<(), Box<dyn Error>> {
-        let controller_directory = self.get_controller_directory()?;
-        fs::create_dir_all(controller_directory)?;
-        Ok(())
-    }
-
-    fn ensure_certificates_directory_exists(&self) -> Result<(), Box<dyn Error>> {
-        let certificate_directory = self.get_certificate_directory()?;
-        fs::create_dir_all(certificate_directory)?;
+    fn ensure_directory_exists(&self, directory: &Path) -> Result<(), Box<dyn Error>> {
+        fs::create_dir_all(directory)?;
         Ok(())
     }
 
     pub(crate) fn ensure_controller_directory_structure_exists(
         &self,
     ) -> Result<(), Box<dyn Error>> {
-        self.ensure_controller_directory_exists()?;
-        self.ensure_certificates_directory_exists()
+        let controller_directory = self.get_controller_directory()?;
+        self.ensure_directory_exists(&controller_directory)?;
+
+        let certificate_directory = self.get_certificate_directory()?;
+        self.ensure_directory_exists(&certificate_directory)
     }
 
     #[cfg(not(debug_assertions))]

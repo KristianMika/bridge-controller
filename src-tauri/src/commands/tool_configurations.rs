@@ -2,7 +2,8 @@ use log::{debug, error};
 
 use crate::{interface::CryptographicInterface, state::State};
 
-/// Returns a list of tools for which there is a configuration present. None means that the configuration is tool-independent.
+/// Returns a list of tools for which there is a configuration present.
+/// Value None present in the list means that the configuration is tool-independent.
 ///
 /// # Arguments
 ///

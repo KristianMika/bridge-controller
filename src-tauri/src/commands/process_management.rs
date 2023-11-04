@@ -1,6 +1,6 @@
 use log::{debug, error};
 
-use crate::process::creatable_interface::CreatableInterface;
+use crate::interface::CreatableInterface;
 use crate::state::State;
 
 /// Launches an emulated interface process. If the process is running, returns an error.

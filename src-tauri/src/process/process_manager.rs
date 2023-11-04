@@ -5,14 +5,17 @@ use log::info;
 
 use self::process_manager_error::ProcessManagerError;
 
-use super::creatable_interface::CreatableInterface;
 use super::process_executor::PlatformSpecificProcessExecutor;
-use crate::process::process_executor::ProcessExecutor;
+use crate::{interface::CreatableInterface, process::process_executor::ProcessExecutor};
 
 pub(crate) mod process_manager_error;
 
+/// Manages the processes of emulated interfaces, its creation and termination
 pub(crate) struct ProcessManager {
+    /// A map of all running processes
     processes: DashMap<CreatableInterface, Child>,
+
+    /// The process executor for the current platform
     process_executor: PlatformSpecificProcessExecutor,
 }
 

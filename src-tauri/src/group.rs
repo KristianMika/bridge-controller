@@ -14,7 +14,11 @@ impl From<ProtoGroup> for Group {
     fn from(value: ProtoGroup) -> Self {
         Self {
             name: value.name,
-            group_id: format!("0x{}", value.identifier.encode_hex_upper::<String>()),
+            group_id: public_key_as_hex(&value.identifier),
         }
     }
+}
+
+fn public_key_as_hex(identifier: &[u8]) -> String {
+    format!("0x{}", identifier.encode_hex_upper::<String>())
 }

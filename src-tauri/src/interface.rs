@@ -1,10 +1,5 @@
-use serde::{Deserialize, Serialize};
-use specta::Type;
+pub(crate) use creatable_interface::CreatableInterface;
+pub(crate) use cryptographic_interface::CryptographicInterface;
 
-#[derive(Serialize, Deserialize, Type, Debug, Clone)]
-#[serde(rename_all = "lowercase")]
-pub(crate) enum CryptographicInterface {
-    Pcsc,
-    Cryptoki,
-    Webauthn,
-}
+mod creatable_interface;
+mod cryptographic_interface;

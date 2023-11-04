@@ -41,7 +41,7 @@ pub(crate) async fn get_groups(
     };
 
     let certificate_contents = std::fs::read(certificate_path).map_err(|err| {
-        error!("{err}");
+        error!("Cert reading error: {err}");
         String::from("Could not read certificate file")
     })?;
     let certificate = Certificate::from_pem(certificate_contents);
