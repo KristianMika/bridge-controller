@@ -112,7 +112,8 @@ export function isCertificatePresent(communicatorHostname: string) {
 }
 
 /**
- * Returns a list of tools for which there is a configuration present. None means that the configuration is tool-independent.
+ * Returns a list of tools for which there is a configuration present.
+ * Value None present in the list means that the configuration is tool-independent.
  * 
  * # Arguments
  * 
@@ -123,7 +124,10 @@ export function getConfiguredTools(cryptographicInterface: CryptographicInterfac
     return invoke()<(string | null)[]>("get_configured_tools", { cryptographicInterface })
 }
 
-export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorHostname: string; selectedGroup: string }
-export type CreatableInterface = "pcsc" | "webauthn"
-export type Group = { name: string; group_id: string }
 export type CryptographicInterface = "pcsc" | "cryptoki" | "webauthn"
+export type CreatableInterface = "pcsc" | "webauthn"
+/**
+ * Interface configuration used within the front-end
+ */
+export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorHostname: string; selectedGroup: string }
+export type Group = { name: string; group_id: string }
