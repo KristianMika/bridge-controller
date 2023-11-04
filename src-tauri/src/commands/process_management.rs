@@ -1,6 +1,7 @@
 use log::{debug, error};
 
-use crate::{process_manager::CreatableInterface, state::State};
+use crate::process::creatable_interface::CreatableInterface;
+use crate::state::State;
 
 #[tauri::command]
 #[specta::specta]

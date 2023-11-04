@@ -2,18 +2,22 @@ use std::sync::Arc;
 
 use crate::{
     controller::controller_repo::ControllerRepo, filesystem::FileSystem,
-    process_manager::ProcessManager,
+    process::process_manager::ProcessManager,
 };
 
+/// Holds the state of the application
 pub(crate) struct State {
-    controller_repo: Box<dyn ControllerRepo>,
+    /// A reference to the DB repository
+    controller_repo: Arc<dyn ControllerRepo>,
+    /// Filesystem object creates and manages files and directories
     filesystem: FileSystem,
+    /// Manages interface processes based on the requests from the front-end
     process_manager: Arc<ProcessManager>,
 }
 
 impl State {
     pub fn new(
-        controller_repo: Box<dyn ControllerRepo>,
+        controller_repo: Arc<dyn ControllerRepo>,
         filesystem: FileSystem,
         process_manager: Arc<ProcessManager>,
     ) -> Self {
@@ -23,7 +27,8 @@ impl State {
             process_manager,
         }
     }
-    pub fn get_controller_repo(&self) -> &Box<dyn ControllerRepo> {
+
+    pub fn get_controller_repo(&self) -> &Arc<dyn ControllerRepo> {
         &self.controller_repo
     }
 

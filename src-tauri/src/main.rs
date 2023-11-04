@@ -1,11 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::error::Error;
 use std::io;
 #[cfg(debug_assertions)]
 use std::path::Path;
 use std::sync::{Arc, Mutex};
-use std::{error::Error, io::ErrorKind};
 
 use actix_web::{web, App, HttpServer};
 use controller::{
@@ -18,8 +18,7 @@ use controller::{
 };
 use env_logger::Target;
 use filesystem::FileSystem;
-use log::{error, info};
-use process_manager::ProcessManager;
+use log::info;
 #[cfg(debug_assertions)]
 use specta::{collect_types, ts::TsExportError};
 use state::State;
@@ -35,14 +34,15 @@ use crate::commands::{
     certificates::*, get_groups::*, interface_configuration::*, process_management::*,
     tool_configurations::*,
 };
-use crate::process_manager::{PlatformSpecificProcessExecutor, ProcessExecutor};
+use crate::process::process_executor::{PlatformSpecificProcessExecutor, ProcessExecutor};
+use crate::process::process_manager::ProcessManager;
 
 mod commands;
 mod controller;
 mod filesystem;
 pub(crate) mod group;
 mod interface;
-mod process_manager;
+mod process;
 mod state;
 mod system_tray;
 
@@ -109,7 +109,7 @@ fn main() {
     let process_executor = PlatformSpecificProcessExecutor::new();
     let process_manager = ProcessManager::new(process_executor);
     let tauri_state = State::new(
-        Box::new(controller_repo.clone()),
+        Arc::new(controller_repo.clone()),
         filesystem.clone(),
         Arc::new(process_manager),
     );

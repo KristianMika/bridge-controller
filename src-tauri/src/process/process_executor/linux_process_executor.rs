@@ -2,7 +2,9 @@ use std::process::{Child, Command};
 
 use log::debug;
 
-use super::{process_manager_error::ProcessManagerError, ProcessExecutor};
+use crate::process::process_manager::process_manager_error::ProcessManagerError;
+
+use super::ProcessExecutor;
 
 pub(crate) struct LinuxProcessExecutor {}
 
