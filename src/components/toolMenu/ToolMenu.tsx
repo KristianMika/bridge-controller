@@ -3,7 +3,6 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import React, { useCallback, useEffect, useState } from "react";
 import ToolMenuItem from "./toolMenuItem/ToolMenuItem";
 import ToolMenuItemCreation from "./toolMenuItemCreation/ToolMenuItemCreation";
-import ToolMenuSeparator from "./toolMenuSeparator/ToolMenuSeparator";
 import ITool from "../../models/ITool";
 import IToolMenu from "../../models/IToolMenu";
 
@@ -48,7 +47,6 @@ const ToolMenu: React.FC<IToolMenu> = (props) => {
         isSelected={tool === props.selectedTool}
         setSelected={props.setSelectedTool}
       />
-      <ToolMenuSeparator />
     </>
   );
 

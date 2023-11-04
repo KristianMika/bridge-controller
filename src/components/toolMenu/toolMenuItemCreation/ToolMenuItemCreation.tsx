@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ITool from "../../../models/ITool";
 import IToolMenuItemCreation from "../../../models/IToolMenuItemCreation";
-import ToolMenuSeparator from "../toolMenuSeparator/ToolMenuSeparator";
 import styles from "./ToolMenuItemCreation.module.css";
 
 /**
@@ -84,7 +83,6 @@ const ToolMenuItemCreation: React.FC<IToolMenuItemCreation> = (props) => {
         className={styles["tool-menu__input-confirmation-button"]}
         onClick={confirmToolCreation}
       ></button>
-      <ToolMenuSeparator />
     </form>
   );
 };
