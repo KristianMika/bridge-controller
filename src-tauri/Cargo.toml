@@ -30,7 +30,7 @@ thiserror = "1.0.50"
 
 # Controller
 actix-web = "4"
-sled = "1.0.0-alpha.116" # TODO: when stable, choose 1
+sled = "1.0.0-alpha.118" # TODO: when stable, choose 1
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

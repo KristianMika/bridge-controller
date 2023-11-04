@@ -824,9 +824,9 @@ dependencies = [
 
 [[package]]
 name = "concurrent-map"
-version = "5.0.29"
+version = "5.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8d1347d995c14349b7d333b78c7518556e8d69c0bac134786218b22c72cd378"
+checksum = "aac12aa1390f521b8e3fcfb33e3ee4e97f95704c05e8ea27201bf277c14f2fcc"
 dependencies = [
  "ebr",
  "serde",
@@ -3916,9 +3916,9 @@ dependencies = [
 
 [[package]]
 name = "sled"
-version = "1.0.0-alpha.116"
+version = "1.0.0-alpha.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40cb01003b98199b617ef7b6f958788a1449343fd0eddecc7046e63ce4b89afa"
+checksum = "0bda356b4bec746d7648ce2e8df9973d0b7f98800178f6ae06a05e3d842dfeb7"
 dependencies = [
  "bincode",
  "cache-advisor",
