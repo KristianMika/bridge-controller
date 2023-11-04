@@ -33,7 +33,7 @@ pub(crate) trait ControllerRepo: Send + Sync {
     fn get_interface_configuration(
         &self,
         interface: &CryptographicInterface,
-        tool: &Option<String>,
+        tool: Option<String>,
     ) -> Result<Option<InternalInterfaceConfiguration>, ControllerRepoError>;
 
     /// Retrieves the list of tools for which there is a configuration

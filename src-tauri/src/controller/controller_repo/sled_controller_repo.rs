@@ -140,7 +140,7 @@ impl ControllerRepo for SledControllerRepo {
     fn get_interface_configuration(
         &self,
         interface: &CryptographicInterface,
-        tool: &Option<String>,
+        tool: Option<String>,
     ) -> Result<Option<InternalInterfaceConfiguration>, ControllerRepoError> {
         let key = ConfigurationKey::new(interface.clone(), tool.clone());
         let key: Vec<u8> = bincode::serialize(&key)?;

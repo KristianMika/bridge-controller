@@ -58,7 +58,7 @@ pub(crate) async fn get_interface_configuration(
 ) -> Result<Option<FrontEndInterfaceConfiguration>, String> {
     let repo = state.get_controller_repo();
     let configuration: Option<FrontEndInterfaceConfiguration> = repo
-        .get_interface_configuration(&cryptographic_interface, &tool)
+        .get_interface_configuration(&cryptographic_interface, tool.clone())
         .map_err(|err| {
             error!("{err}");
             String::from("Could not get interface configuration")
