@@ -12,13 +12,18 @@ use crate::{
 
 static MEESIGN_GRPC_PORT: &str = "1337";
 
+/// Fetches and filters authentication groups present on the specified communicator
+///
+/// # Arguments
+///
+/// * `communicator_url` - The url of the communicator.
+/// * `state` - The state of the application.
 #[tauri::command]
 #[specta::specta]
 pub(crate) async fn get_groups(
     communicator_url: String,
     state: tauri::State<'_, State>,
 ) -> Result<Vec<Group>, String> {
-    // TODO: consider storing into db as well
     // TODO: make sure we have the cert
     let certificate_path = state
         .get_filesystem()
@@ -47,12 +52,12 @@ pub(crate) async fn get_groups(
     Ok(groups)
 }
 
-// TODO: consider caching in the state so we don't create new instances of the client
 async fn get_authentication_groups(
     communicator_url: &str,
     cert: Certificate,
     server_uri: Uri,
 ) -> Result<Vec<Group>, Box<dyn Error>> {
+    // TODO: consider caching in the state so we don't create new instances of the client
     let client_tls_config = ClientTlsConfig::new()
         .domain_name(communicator_url)
         .ca_certificate(cert);

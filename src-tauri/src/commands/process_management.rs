@@ -3,11 +3,17 @@ use log::{debug, error};
 use crate::process::creatable_interface::CreatableInterface;
 use crate::state::State;
 
+/// Launches an emulated interface process. If the process is running, returns an error.
+///
+/// # Arguments
+///
+/// * `creatable_interface` - The emulated interface that should be launched
+/// * `state` - The state of the application
 #[tauri::command]
 #[specta::specta]
 pub(crate) async fn spawn_interface_process(
-    state: tauri::State<'_, State>,
     creatable_interface: CreatableInterface,
+    state: tauri::State<'_, State>,
 ) -> Result<(), String> {
     debug!("Command spawn_interface_process for interface '{creatable_interface:?}'");
     let process_manager = state.get_process_manager();
@@ -19,11 +25,17 @@ pub(crate) async fn spawn_interface_process(
         })
 }
 
+/// Kills an emulated interface process. If the process is not running, returns an error.
+///
+/// # Arguments
+///
+/// * `creatable_interface` - The interface whose process should be killed
+/// * `state` - The state of the application
 #[tauri::command]
 #[specta::specta]
 pub(crate) async fn kill_interface_process(
-    state: tauri::State<'_, State>,
     creatable_interface: CreatableInterface,
+    state: tauri::State<'_, State>,
 ) -> Result<(), String> {
     debug!("Command kill_interface_process for interface '{creatable_interface:?}'");
     let process_manager = state.get_process_manager();

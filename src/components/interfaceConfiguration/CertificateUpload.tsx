@@ -1,10 +1,10 @@
-import { setCommunicatorCertificatePath } from "../../bindings";
 import { open } from "@tauri-apps/api/dialog";
 import { BsUpload } from "react-icons/bs";
 import styles from "./CertificateUpload.module.css";
 import React, { useState } from "react";
 import * as path from "path";
 import ICertificateUpload from "../../models/ICertificateUpload";
+import { storeCommunicatorCertificate } from "../../bindings";
 
 const CertificateUpload: React.FC<ICertificateUpload> = (props) => {
   const [filename, setFilename] = useState<string | null>(null);
@@ -18,7 +18,7 @@ const CertificateUpload: React.FC<ICertificateUpload> = (props) => {
     }).then((filePath) => {
       if (filePath && typeof filePath === "string") {
         setFilename(filePath);
-        setCommunicatorCertificatePath(filePath, props.communicatorUrl);
+        storeCommunicatorCertificate(filePath, props.communicatorUrl);
         props.setIsUploaded(true);
       }
     });
