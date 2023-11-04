@@ -85,7 +85,7 @@ fn get_logger_target(filesystem: &FileSystem) -> Result<Target, Box<dyn Error>> 
 
 fn init_logger(filesystem: &FileSystem) -> Result<(), Box<dyn Error>> {
     env_logger::builder()
-        .filter_level(log::LevelFilter::Debug) // TODO: back to info
+        .filter_level(log::LevelFilter::Info)
         .target(get_logger_target(filesystem)?)
         .init();
     Ok(())
