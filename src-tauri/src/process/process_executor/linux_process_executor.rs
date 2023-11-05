@@ -39,6 +39,16 @@ impl ProcessExecutor for LinuxProcessExecutor {
     }
 
     fn create_pcsc_process(&self) -> Result<Child, ProcessManagerError> {
-        todo!()
+        let pcsc_child = Command::new("sh")
+            .arg("vicc")
+            .arg("-t")
+            .arg("meesign")
+            .spawn()?;
+        debug!(
+            "PC/SC process has been spawned with PID {}",
+            pcsc_child.id()
+        );
+
+        Ok(pcsc_child)
     }
 }
