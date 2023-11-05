@@ -16,8 +16,10 @@ const invoke = () => window.__TAURI_INVOKE__;
  * 
  * # Arguments
  * 
- * * `cryptographic_interface` - The cryptographic interface for which the configuration should be stored
- * * `tool` - The tool for which the configuration should be stored, if None, the configuration is handled as tool-independent
+ * * `cryptographic_interface` - The cryptographic interface for which
+ * the configuration should be stored
+ * * `tool` - The tool for which the configuration should be stored,
+ * if None, the configuration is handled as tool-independent
  * * `configuration` - The configuration that should be stored
  * * `state` - The state of the application
  */
@@ -30,8 +32,10 @@ export function setInterfaceConfiguration(cryptographicInterface: CryptographicI
  * 
  * # Arguments
  * 
- * * `cryptographic_interface` - The cryptographic interface for which the configuration should be fetched
- * * `tool` - The tool for which the configuration should be fetched, if None, the general, tool-independent configuration is returned
+ * * `cryptographic_interface` - The cryptographic interface
+ * for which the configuration should be fetched
+ * * `tool` - The tool for which the configuration should be fetched,
+ * if None, the general, tool-independent configuration is returned
  * * `state` - The state of the application
  */
 export function getInterfaceConfiguration(cryptographicInterface: CryptographicInterface, tool: string | null) {
@@ -44,8 +48,10 @@ export function getInterfaceConfiguration(cryptographicInterface: CryptographicI
  * # Arguments
  * 
  * * `state` - The state of the application
- * * `cryptographic_interface` - The cryptographic interface for which the configuration should be removed
- * * `tool` - The tool for which the configuration should be removed, if None, the general, tool-independent configuration is removed
+ * * `cryptographic_interface` - The cryptographic interface
+ * for which the configuration should be removed
+ * * `tool` - The tool for which the configuration should be removed,
+ * if None, the general, tool-independent configuration is removed
  */
 export function removeInterfaceConfiguration(cryptographicInterface: CryptographicInterface, tool: string | null) {
     return invoke()<null>("remove_interface_configuration", { cryptographicInterface,tool })
@@ -77,11 +83,13 @@ export function storeCommunicatorCertificate(certificatePath: string, communicat
 }
 
 /**
- * Launches an emulated interface process. If the process is running, returns an error.
+ * Launches an emulated interface process. If the process is running,
+ * returns an error.
  * 
  * # Arguments
  * 
- * * `creatable_interface` - The emulated interface that should be launched
+ * * `creatable_interface` - The emulated interface that
+ * should be launched
  * * `state` - The state of the application
  */
 export function spawnInterfaceProcess(creatableInterface: CreatableInterface) {
@@ -89,7 +97,8 @@ export function spawnInterfaceProcess(creatableInterface: CreatableInterface) {
 }
 
 /**
- * Kills an emulated interface process. If the process is not running, returns an error.
+ * Kills an emulated interface process. If the process is not running,
+ * returns an error.
  * 
  * # Arguments
  * 
@@ -117,7 +126,8 @@ export function isCertificatePresent(communicatorHostname: string) {
  * 
  * # Arguments
  * 
- * * `cryptographic_interface` - The cryptographic interface for which the configured tools should be returned
+ * * `cryptographic_interface` - The cryptographic interface
+ * for which the configured tools should be returned
  * * `state` - The state of the application
  */
 export function getConfiguredTools(cryptographicInterface: CryptographicInterface) {
@@ -125,6 +135,9 @@ export function getConfiguredTools(cryptographicInterface: CryptographicInterfac
 }
 
 export type CryptographicInterface = "pcsc" | "cryptoki" | "webauthn"
+/**
+ * Represents an interface that a process can be spawned for.
+ */
 export type CreatableInterface = "pcsc" | "webauthn"
 /**
  * Interface configuration used within the front-end

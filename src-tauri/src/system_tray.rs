@@ -17,7 +17,8 @@ pub(crate) fn create_tray_menu() -> SystemTrayMenu {
         .add_item(quit)
 }
 
-/// A system tray event handler that executes system tray events, e.g., quits the process
+/// A system tray event handler that executes system tray events,
+/// e.g., quits the process
 pub(crate) fn system_tray_event_handler(app: &AppHandle, event: SystemTrayEvent) {
     if let SystemTrayEvent::MenuItemClick { id, .. } = &event {
         match id.as_str() {
