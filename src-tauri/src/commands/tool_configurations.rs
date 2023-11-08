@@ -20,7 +20,7 @@ pub(crate) async fn get_configured_tools(
         .get_controller_repo()
         .get_configured_tools(&cryptographic_interface)
         .map_err(|err| {
-            error!("{err}");
+            error!("{err:?}");
             String::from("Couldn't get configured tools")
         })?;
     debug!("command get_configured_tools for {cryptographic_interface:?}, returning {tools:?}");

@@ -33,7 +33,7 @@ pub(crate) async fn get_groups(
             return Err(String::from("Couldn't get groups: certificate not present"));
         }
         Err(err) => {
-            error!("command get group: get_certificate_path: {err}");
+            error!("command get group: get_certificate_path: {err:?}");
             return Err(String::from(
                 "Couldn't get groups: coudln't get certificate file path",
             ));
@@ -41,7 +41,7 @@ pub(crate) async fn get_groups(
     };
 
     let certificate_contents = std::fs::read(certificate_path).map_err(|err| {
-        error!("Cert reading error: {err}");
+        error!("Cert reading error: {err:?}");
         String::from("Could not read certificate file")
     })?;
     let certificate = Certificate::from_pem(certificate_contents);
@@ -53,7 +53,7 @@ pub(crate) async fn get_groups(
     let groups = get_authentication_groups(&communicator_hostname, certificate, server_uri)
         .await
         .map_err(|err| {
-            error!("Couldn't get groups: {err}");
+            error!("Couldn't get groups: {err:?}");
             String::from("Could not get groups")
         })?;
     debug!("Command get_groups for hostname {communicator_hostname:?} returning {groups:?}");

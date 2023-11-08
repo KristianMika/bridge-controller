@@ -32,7 +32,7 @@ pub(crate) async fn set_interface_configuration(
         tool.clone(),
     )
     .map_err(|err| {
-        error!("{err}");
+        error!("{err:?}");
         String::from("Could not store interface configuration")
     })?;
 
@@ -60,7 +60,7 @@ pub(crate) async fn get_interface_configuration(
     let configuration: Option<FrontEndInterfaceConfiguration> = repo
         .get_interface_configuration(&cryptographic_interface, tool.clone())
         .map_err(|err| {
-            error!("{err}");
+            error!("{err:?}");
             String::from("Could not get interface configuration")
         })?
         .map(|configuration| configuration.into());
@@ -88,7 +88,7 @@ pub(crate) async fn remove_interface_configuration(
     let repo = state.get_controller_repo();
     repo.remove_interface_configuration(&cryptographic_interface, &tool)
         .map_err(|err| {
-            error!("{err}");
+            error!("{err:?}");
             String::from("Could not get interface configuration")
         })
 }

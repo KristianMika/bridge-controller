@@ -19,7 +19,7 @@ pub(crate) async fn get_communicator_certificate_path(
         Ok(Some(filepath)) => filepath,
         Ok(None) => return HttpResponse::NotFound().body("No certificate found"),
         Err(err) => {
-            error!("Couldn't get certificate path: {err}");
+            error!("Couldn't get certificate path: {err:?}");
             return HttpResponse::InternalServerError().finish();
         }
     };

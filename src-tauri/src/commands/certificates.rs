@@ -17,7 +17,7 @@ pub(crate) async fn is_certificate_present(
         .get_filesystem()
         .get_certificate_filepath(&communicator_hostname)
         .map_err(|err| {
-            error!("{err}");
+            error!("{err:?}");
             String::from("Could not get certificate file")
         })?;
 
@@ -47,7 +47,7 @@ pub(crate) async fn store_communicator_certificate(
     let _ = filesystem
         .copy_cerrtificate(&certificate_path, &communicator_hostname)
         .map_err(|err| {
-            error!("{err}");
+            error!("{err:?}");
             String::from("Could not store certificate file")
         })?;
     Ok(())

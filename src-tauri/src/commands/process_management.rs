@@ -22,7 +22,7 @@ pub(crate) async fn spawn_interface_process(
     process_manager
         .spawn_process(creatable_interface)
         .map_err(|err| {
-            error!("{err}");
+            error!("{err:?}");
             String::from("Could not spawn process")
         })
 }
@@ -45,7 +45,7 @@ pub(crate) async fn kill_interface_process(
     process_manager
         .kill_process(&creatable_interface)
         .map_err(|err| {
-            error!("{err}");
+            error!("{err:?}");
             String::from("Could not kill process")
         })
 }

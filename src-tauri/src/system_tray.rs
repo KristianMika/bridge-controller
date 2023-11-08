@@ -36,7 +36,7 @@ pub(crate) fn system_tray_event_handler(app: &AppHandle, event: SystemTrayEvent)
                     .get_window("main")
                     .expect("Couldn't not get the main window.");
                 if let Err(err) = window.move_window(Position::TopRight) {
-                    error!("Couldn't center the main window: {}", err);
+                    error!("Couldn't center the main window: {:?}", err);
                 }
 
                 window.show().expect("Couldn't show the main window");
