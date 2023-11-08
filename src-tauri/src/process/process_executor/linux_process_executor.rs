@@ -15,8 +15,7 @@ impl ProcessExecutor for LinuxProcessExecutor {
 
     fn create_webauthn_process(&self) -> Result<Child, ProcessManagerError> {
         let softfido_child = Command::new("softfido")
-            .arg("--token-label")
-            .arg("Meesign: testgrp")
+            .arg("--cryptoki-bridge-mode")
             .arg("--pkcs11-module")
             .arg("/usr/lib/libcryptoki_bridge.so")
             .env("USED_AS_FIDO", "1")
