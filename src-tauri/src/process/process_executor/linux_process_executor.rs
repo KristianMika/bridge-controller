@@ -25,12 +25,13 @@ impl ProcessExecutor for LinuxProcessExecutor {
             softfido_child.id()
         );
         std::thread::sleep(std::time::Duration::from_millis(500));
-        let _usb_ip_attach = Command::new("usbip")
-            .arg("attach")
-            .arg("--remote")
-            .arg("127.0.0.1")
-            .arg("--busid")
-            .arg("1-1")
+        let _usb_ip_attach = Command::new("sh")
+            .arg("-c")
+            // A temporary sollution that will by fixed by writing proper udev rules.
+            // As of now, I was not able to accomplish that, but it should be possible.
+            // To make this command work, the current user has to have configured
+            // passwordless sudo. This requirement will also be dropped
+            .arg("sudo usbip attach --remote 127.0.0.1 --busid 1-1")
             .spawn()?;
         debug!("usbip attach process has been spawned");
 
