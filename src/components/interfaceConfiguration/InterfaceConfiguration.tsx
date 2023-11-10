@@ -90,6 +90,14 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     loadFormData().catch((_err) => {});
   }, [props.tool, props.interfaceType]);
 
+  useEffect(() => {
+    // load groups when certificate is uploaded
+    if (!isCertUploaded) {
+      return;
+    }
+    loadGroups(formData.communicatorHostname).catch((_err) => {});
+  }, [isCertUploaded]);
+
   const handleCommunicatorHostnameCreation = (inputValue: string) => {
     setCommunicatorHostname(inputValue);
     setOptions((prev) => [...prev, createOption(inputValue)]);
