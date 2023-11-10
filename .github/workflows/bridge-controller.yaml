@@ -42,6 +42,7 @@ jobs:
         uses: arduino/setup-protoc@v2
 
       - name: Run clippy
+        if: ${{ matrix.target == 'Linux' }}
         run: cargo clippy --all-targets --all-features -- -D warnings
         working-directory: ./src-tauri
 
