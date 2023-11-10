@@ -12,4 +12,6 @@ pub(crate) enum ProcessManagerError {
     ProcessNotRunning(CreatableInterface),
     #[error("IO error: {0}")]
     IoError(#[from] io::Error),
+    #[error("Couldn't run inerface")]
+    InterfaceEmulationError,
 }

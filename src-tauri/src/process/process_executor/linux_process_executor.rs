@@ -1,6 +1,6 @@
 use std::process::{Child, Command};
 
-use log::debug;
+use log::{debug, error};
 
 use crate::process::process_manager::process_manager_error::ProcessManagerError;
 
@@ -14,7 +14,7 @@ impl ProcessExecutor for LinuxProcessExecutor {
     }
 
     fn create_webauthn_process(&self) -> Result<Child, ProcessManagerError> {
-        let softfido_child = Command::new("softfido")
+        let mut softfido_child = Command::new("softfido")
             .arg("--cryptoki-bridge-mode")
             .arg("--pkcs11-module")
             .arg("/usr/lib/libcryptoki_bridge.so")
@@ -25,14 +25,21 @@ impl ProcessExecutor for LinuxProcessExecutor {
             softfido_child.id()
         );
         std::thread::sleep(std::time::Duration::from_millis(500));
-        let _usb_ip_attach = Command::new("sh")
+        let usbip_attach_status = Command::new("sh")
             .arg("-c")
             // A temporary sollution that will by fixed by writing proper udev rules.
             // As of now, I was not able to accomplish that, but it should be possible.
             // To make this command work, the current user has to have configured
             // passwordless sudo. This requirement will also be dropped
             .arg("sudo usbip attach --remote 127.0.0.1 --busid 1-1")
-            .spawn()?;
+            .output()?
+            .status;
+        if !usbip_attach_status.success() {
+            softfido_child.kill()?;
+            softfido_child.wait()?;
+            error!("usbip attach failed, returned: {usbip_attach_status}");
+            return Err(ProcessManagerError::InterfaceEmulationError);
+        }
         debug!("usbip attach process has been spawned");
 
         Ok(softfido_child)
