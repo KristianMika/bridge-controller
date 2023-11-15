@@ -49,3 +49,20 @@ pub(crate) async fn kill_interface_process(
             String::from("Could not kill process")
         })
 }
+
+/// Checks if the specified process is running at the moment
+/// regardless of the configuration
+///
+/// # Arguments
+///
+/// * `creatable_interface` - Specified interface
+/// * `state` - The state of the application
+#[tauri::command]
+#[specta::specta]
+pub(crate) async fn is_interface_process_running(
+    creatable_interface: CreatableInterface,
+    state: tauri::State<'_, State>,
+) -> Result<bool, ()> {
+    let process_manager = state.get_process_manager();
+    Ok(process_manager.is_process_running(&creatable_interface))
+}

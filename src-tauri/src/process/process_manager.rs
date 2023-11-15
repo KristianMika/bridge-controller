@@ -63,4 +63,8 @@ impl ProcessManager {
 
         Ok(())
     }
+
+    pub(crate) fn is_process_running(&self, interface: &CreatableInterface) -> bool {
+        self.processes.contains_key(interface)
+    }
 }

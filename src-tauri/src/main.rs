@@ -108,6 +108,7 @@ fn generate_typescript_bindings(bindings_filename: &str) -> Result<(), TsExportE
             store_communicator_certificate,
             spawn_interface_process,
             kill_interface_process,
+            is_interface_process_running,
             is_certificate_present,
             get_configured_tools
         ],
@@ -156,6 +157,7 @@ fn main() {
             store_communicator_certificate,
             spawn_interface_process,
             kill_interface_process,
+            is_interface_process_running,
             is_certificate_present,
             get_configured_tools
         ])

@@ -110,6 +110,19 @@ export function killInterfaceProcess(creatableInterface: CreatableInterface) {
 }
 
 /**
+ * Checks if the specified process is running at the moment
+ * regardless of the configuration
+ * 
+ * # Arguments
+ * 
+ * * `creatable_interface` - Specified interface
+ * * `state` - The state of the application
+ */
+export function isInterfaceProcessRunning(creatableInterface: CreatableInterface) {
+    return invoke()<boolean>("is_interface_process_running", { creatableInterface })
+}
+
+/**
  * Checks if there is a certificate stored for the specified communicator hostname.
  * 
  * # Arguments

@@ -1,5 +1,6 @@
 import styles from "./InterfaceConfiguration.module.css";
 import Switch from "react-switch";
+import { IoWarning } from "react-icons/io5";
 import "react-dropdown/style.css";
 import Creatable from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
@@ -15,6 +16,7 @@ import {
   killInterfaceProcess,
   CreatableInterface,
   isCertificatePresent,
+  isInterfaceProcessRunning,
 } from "../../bindings";
 import Select from "react-select";
 import MultilineSelectOption from "./MultilineSelectOption/MultilineSelectOption";
@@ -23,7 +25,12 @@ import IInterfaceForm, { defaultFormData } from "../../models/IInterfaceForm";
 import IInterfaceConfiguration from "../../models/IInterfaceConfiguration";
 import IMultiLabelOptionType from "../../models/IMultiLabelOptionType";
 import shortenHexString from "../../utils";
-import { selectTheme, primaryColor, selectStyle } from "../../themes";
+import {
+  selectTheme,
+  primaryColor,
+  selectStyle,
+  warningTriangleIconStyles,
+} from "../../themes";
 import IOption from "../../models/IOption";
 
 const HEX_PUBKEY_DISPLAY_CHARS_COUNT = 10;
@@ -44,11 +51,13 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
   const [formData, setFormData] = useState<IInterfaceForm>(() => {
     return { ...defaultFormData, isEnabled: !props.canBeDisabled };
   });
+  const [pastFormData, setPastFormData] = useState<IInterfaceForm>(formData);
   const [groups, setGroups] = useState<Group[]>([]);
   const [isCertUploaded, setIsCertUploaded] = useState<boolean>(false);
   const [options, setOptions] = useState(
     createOptions(DEFAULT_COMMUNICATOR_HOSTNAMES)
   );
+  const [isInterfaceRunning, setIsInterfaceRunning] = useState<boolean>(true);
 
   const handleIsEnabledChange = (checked: boolean) => {
     setFormData((prev: IInterfaceForm) => {
@@ -80,6 +89,13 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
       configuration.communicatorHostname
     );
     setFormData(configuration);
+    setPastFormData(configuration);
+    if (isCreatableInterface(props.interfaceType)) {
+      let isInterfaceRunning = await isInterfaceProcessRunning(
+        props.interfaceType
+      );
+      setIsInterfaceRunning(isInterfaceRunning);
+    }
 
     let certPresent = await isCertificatePresentPromise;
     setIsCertUploaded(certPresent);
@@ -128,6 +144,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     setInterfaceConfiguration(props.interfaceType, tool, formData)
       .then(() => toast.success("Configuration saved"))
       .catch(() => toast.error("Failed to save configuration"));
+    setPastFormData(formData);
     toggleInterface(props.interfaceType, formData.isEnabled);
   };
 
@@ -169,11 +186,21 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     loadGroups(newValue.value);
   };
 
+  const shouldInterfaceNotRunningWarningBeDisplayed = (): boolean =>
+    props.canBeDisabled && pastFormData.isEnabled && !isInterfaceRunning;
+  const warningIcon = shouldInterfaceNotRunningWarningBeDisplayed() ? (
+    <IoWarning
+      title="It seems that the interface process is not running"
+      style={warningTriangleIconStyles}
+    />
+  ) : null;
+
   return (
     <>
       <div className={styles["interface-configuration"]}>
         <form className={styles["interface-configuration__form"]}>
           <div className={styles["form--enabled"]}>
+            {warningIcon}
             <Switch
               onChange={handleIsEnabledChange}
               checked={formData.isEnabled}

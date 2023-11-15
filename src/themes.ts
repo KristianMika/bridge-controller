@@ -34,3 +34,9 @@ export const selectStyle: StylesConfig<IOption, false> = {
     return provided;
   },
 };
+
+export const warningTriangleIconStyles: CSSProperties = {
+  fontSize: "1.7rem",
+  marginRight: "0.2rem",
+  color: "#ffb300",
+};
