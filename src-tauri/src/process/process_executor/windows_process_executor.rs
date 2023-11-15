@@ -18,4 +18,12 @@ impl ProcessExecutor for WindowsProcessExecutor {
     fn create_pcsc_process(&self) -> Result<Child, ProcessManagerError> {
         todo!()
     }
+
+    fn kill_webauthn_process(&self, process: Child) -> Result<(), ProcessManagerError> {
+        todo!()
+    }
+
+    fn kill_pcsc_process(&self, process: Child) -> Result<(), ProcessManagerError> {
+        todo!()
+    }
 }

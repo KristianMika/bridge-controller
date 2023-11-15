@@ -12,8 +12,8 @@ pub(crate) use windows_process_executor::WindowsProcessExecutor as PlatformSpeci
 
 use super::process_manager::process_manager_error::ProcessManagerError;
 
-/// ProcessExecutor is responsible for spawning
-/// new processes of emulated interfaces
+/// ProcessExecutor is responsible for spawning and terminating
+/// processes of emulated interfaces
 pub(crate) trait ProcessExecutor {
     /// Instantiates a new ProcessExecutor
     fn new() -> Self;
@@ -23,4 +23,10 @@ pub(crate) trait ProcessExecutor {
 
     /// Launches a new PCSC process
     fn create_pcsc_process(&self) -> Result<Child, ProcessManagerError>;
+
+    /// Terminates the WebAuthn process
+    fn kill_webauthn_process(&self, process: Child) -> Result<(), ProcessManagerError>;
+
+    /// Terminates the PCSC process
+    fn kill_pcsc_process(&self, process: Child) -> Result<(), ProcessManagerError>;
 }

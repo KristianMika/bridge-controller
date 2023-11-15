@@ -52,12 +52,14 @@ impl ProcessManager {
         &self,
         interface: &CreatableInterface,
     ) -> Result<(), ProcessManagerError> {
-        let Some((_, mut process)) = self.processes.remove(interface) else {
+        let Some((_, process)) = self.processes.remove(interface) else {
             return Err(ProcessManagerError::ProcessNotRunning(*interface));
         };
 
-        process.kill()?;
-        process.wait()?;
+        match interface {
+            CreatableInterface::Pcsc => self.process_executor.kill_pcsc_process(process)?,
+            CreatableInterface::Webauthn => self.process_executor.kill_webauthn_process(process)?,
+        }
 
         Ok(())
     }

@@ -25,7 +25,7 @@ impl ProcessExecutor for LinuxProcessExecutor {
             softfido_child.id()
         );
         std::thread::sleep(std::time::Duration::from_millis(500));
-        let usbip_attach_status = Command::new("sh")
+        let usbip_attach_status = Command::new("bash")
             .arg("-c")
             // A temporary sollution that will by fixed by writing proper udev rules.
             // As of now, I was not able to accomplish that, but it should be possible.
@@ -57,5 +57,32 @@ impl ProcessExecutor for LinuxProcessExecutor {
         );
 
         Ok(pcsc_child)
+    }
+
+    fn kill_webauthn_process(&self, mut process: Child) -> Result<(), ProcessManagerError> {
+        let usbip_dettach_status = Command::new("bash")
+            .arg("-c")
+            // A temporary sollution that will by fixed by writing proper udev rules.
+            // As of now, I was not able to accomplish that, but it should be possible.
+            // To make this command work, the current user has to have configured
+            // passwordless sudo. This requirement will also be dropped
+            .arg("sudo usbip detach -p 00")
+            .output()?
+            .status;
+
+        if !usbip_dettach_status.success() {
+            error!("usbip dettach failed, returned: {usbip_dettach_status}");
+            return Err(ProcessManagerError::InterfaceEmulationError);
+        }
+
+        process.kill()?;
+        process.wait()?;
+        Ok(())
+    }
+
+    fn kill_pcsc_process(&self, mut process: Child) -> Result<(), ProcessManagerError> {
+        process.kill()?;
+        process.wait()?;
+        Ok(())
     }
 }
