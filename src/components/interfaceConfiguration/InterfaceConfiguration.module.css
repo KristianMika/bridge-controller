@@ -109,3 +109,19 @@ button:not(:disabled):focus {
 button:not(:disabled):active {
   transform: scale(0.99);
 }
+
+@keyframes fadeIn {
+  0%,
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.form__warning-icon {
+  margin-right: 0.2rem;
+  opacity: 0;
+  animation: fadeIn 1.5s linear forwards;
+}

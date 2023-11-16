@@ -90,12 +90,7 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     );
     setFormData(configuration);
     setPastFormData(configuration);
-    if (isCreatableInterface(props.interfaceType)) {
-      let isInterfaceRunning = await isInterfaceProcessRunning(
-        props.interfaceType
-      );
-      setIsInterfaceRunning(isInterfaceRunning);
-    }
+    updateProcessRunning();
 
     let certPresent = await isCertificatePresentPromise;
     setIsCertUploaded(certPresent);
@@ -136,22 +131,39 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     return true;
   };
 
-  const saveConfiguration = (event: React.MouseEvent<HTMLElement>) => {
-    event.preventDefault();
-    if (!isConfigurationValidWithSideEffects()) {
+  const updateProcessRunning = () => {
+    if (!isCreatableInterface(props.interfaceType)) {
       return;
     }
+    isInterfaceProcessRunning(props.interfaceType).then(
+      (isInterfaceRunning) => {
+        setIsInterfaceRunning(isInterfaceRunning);
+      }
+    );
+  };
+  const saveConfiguration = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    if (
+      !isConfigurationValidWithSideEffects() ||
+      !wasConfigurationModified(pastFormData, formData)
+    ) {
+      return;
+    }
+
     let tool = props.tool.tool;
     const wasInterfaceToggleSwitched =
       pastFormData.isEnabled != formData.isEnabled;
-    if (wasInterfaceToggleSwitched) {
-      toggleInterface(props.interfaceType, formData.isEnabled);
-      setPastFormData((prev) => ({ ...prev, isEnabled: formData.isEnabled }));
+    if (
+      wasInterfaceToggleSwitched &&
+      isCreatableInterface(props.interfaceType)
+    ) {
+      toggleInterface(
+        props.interfaceType,
+        formData.isEnabled,
+        updateProcessRunning
+      );
     }
 
-    if (!wasConfigurationModified(pastFormData, formData)) {
-      return;
-    }
     setInterfaceConfiguration(props.interfaceType, tool, formData)
       .then(() => toast.success("Configuration saved"))
       .catch(() => toast.error("Failed to save configuration"));
@@ -201,9 +213,11 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
   const shouldInterfaceNotRunningWarningBeDisplayed = (): boolean =>
     props.canBeDisabled && pastFormData.isEnabled && !isInterfaceRunning;
   const warningIcon = shouldInterfaceNotRunningWarningBeDisplayed() ? (
+    // TODO: consider making a custom component for this
     <IoWarning
       title="It seems that the interface process is not running"
       style={warningTriangleIconStyles}
+      className={styles["form__warning-icon"]}
     />
   ) : null;
 
@@ -317,18 +331,22 @@ const optionOrNull = (value: string | null): IOption | null => {
 
 const toggleInterface = (
   interfaceType: CryptographicInterface,
-  isEnabled: boolean
+  isEnabled: boolean,
+  callBack: () => void
 ) => {
   if (!isCreatableInterface(interfaceType)) {
     return;
   }
   const creatableInterface = interfaceType as CreatableInterface;
   let toggleFunction = isEnabled ? spawnInterfaceProcess : killInterfaceProcess;
-  toast.promise(toggleFunction(creatableInterface), {
-    pending: "Toggling interface process...",
-    success: "Interface process toggled successfully",
-    error: "Could not toggle interface process",
-  });
+  toast.promise(
+    toggleFunction(creatableInterface).then(() => callBack()),
+    {
+      pending: "Toggling interface process...",
+      success: "Interface process toggled successfully",
+      error: "Could not toggle interface process",
+    }
+  );
 };
 
 const isCreatableInterface = (
@@ -341,12 +359,4 @@ export default InterfaceConfiguration;
 const wasConfigurationModified = (
   pastFormData: IInterfaceForm,
   formData: IInterfaceForm
-): boolean => {
-  let { isEnabled, ...formDataWithoutIsEnabled } = formData;
-  let { isEnabled: pastIsEnabled, ...pastFormDataWithoutIsEnabled } =
-    pastFormData;
-  return (
-    JSON.stringify(formDataWithoutIsEnabled) !==
-    JSON.stringify(pastFormDataWithoutIsEnabled)
-  );
-};
+): boolean => JSON.stringify(pastFormData) !== JSON.stringify(formData);
