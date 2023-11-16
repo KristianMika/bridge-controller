@@ -31,7 +31,7 @@ impl ProcessExecutor for LinuxProcessExecutor {
             // As of now, I was not able to accomplish that, but it should be possible.
             // To make this command work, the current user has to have configured
             // passwordless sudo. This requirement will also be dropped
-            .arg("sudo usbip attach --remote 127.0.0.1 --busid 1-1")
+            .arg("timeout 3 sudo usbip attach --remote 127.0.0.1 --busid 1-1")
             .output()?
             .status;
         if !usbip_attach_status.success() {
@@ -66,7 +66,7 @@ impl ProcessExecutor for LinuxProcessExecutor {
             // As of now, I was not able to accomplish that, but it should be possible.
             // To make this command work, the current user has to have configured
             // passwordless sudo. This requirement will also be dropped
-            .arg("sudo usbip detach -p 00")
+            .arg("timeout 3 sudo usbip detach -p 00")
             .output()?
             .status;
 
