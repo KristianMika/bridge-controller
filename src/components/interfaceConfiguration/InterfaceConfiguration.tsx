@@ -135,18 +135,26 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     }
     return true;
   };
+
   const saveConfiguration = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     if (!isConfigurationValidWithSideEffects()) {
       return;
     }
     let tool = props.tool.tool;
+    const wasInterfaceToggleSwitched =
+      pastFormData.isEnabled != formData.isEnabled;
+    if (wasInterfaceToggleSwitched) {
+      toggleInterface(props.interfaceType, formData.isEnabled);
+      setPastFormData((prev) => ({ ...prev, isEnabled: formData.isEnabled }));
+    }
+
+    if (!wasConfigurationModified(pastFormData, formData)) {
+      return;
+    }
     setInterfaceConfiguration(props.interfaceType, tool, formData)
       .then(() => toast.success("Configuration saved"))
       .catch(() => toast.error("Failed to save configuration"));
-    if (pastFormData.isEnabled != formData.isEnabled) {
-      toggleInterface(props.interfaceType, formData.isEnabled);
-    }
     setPastFormData(formData);
   };
 
@@ -329,3 +337,16 @@ const isCreatableInterface = (
   interfaceType == "webauthn" || interfaceType == "pcsc";
 
 export default InterfaceConfiguration;
+
+const wasConfigurationModified = (
+  pastFormData: IInterfaceForm,
+  formData: IInterfaceForm
+): boolean => {
+  let { isEnabled, ...formDataWithoutIsEnabled } = formData;
+  let { isEnabled: pastIsEnabled, ...pastFormDataWithoutIsEnabled } =
+    pastFormData;
+  return (
+    JSON.stringify(formDataWithoutIsEnabled) !==
+    JSON.stringify(pastFormDataWithoutIsEnabled)
+  );
+};
