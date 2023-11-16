@@ -23,7 +23,7 @@ pub(crate) fn system_tray_event_handler(app: &AppHandle, event: SystemTrayEvent)
     if let SystemTrayEvent::MenuItemClick { id, .. } = &event {
         match id.as_str() {
             "quit" => {
-                std::process::exit(0);
+                app.exit(0);
             }
             "hide" => {
                 let window = app
