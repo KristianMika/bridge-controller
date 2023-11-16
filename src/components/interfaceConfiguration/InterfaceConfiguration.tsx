@@ -175,7 +175,9 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
       let groups = await getGroups(communicatorHostname);
       setGroups(groups);
     } catch (_err) {
-      toast.error(`Failed to fetch groups from "${communicatorHostname}"`);
+      toast.error(`Failed to fetch groups from "${communicatorHostname}"`, {
+        toastId: "loadGroupsFailed",
+      });
     }
   };
 
