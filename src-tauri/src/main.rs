@@ -22,13 +22,14 @@ use std::sync::{Arc, Mutex};
 
 use actix_web::{web, App, HttpServer};
 use controller::{
-    controller_repo::sled_controller_repo::SledControllerRepo,
+    controller_repo::{sled_controller_repo::SledControllerRepo, ControllerRepo},
     endpoints::{get_communicator_certificate_path, get_configuration},
     state::State as ControllerState,
 };
 use env_logger::Target;
 use filesystem::FileSystem;
 use log::info;
+use process::spawn_enabled_interfaces;
 #[cfg(debug_assertions)]
 use specta::{collect_types, ts::TsExportError};
 use state::State;
@@ -134,18 +135,22 @@ fn main() {
     let controller_repo = SledControllerRepo::new(Arc::new(Mutex::new(db)));
     let process_executor = PlatformSpecificProcessExecutor::new();
     let process_manager = ProcessManager::new(process_executor);
+    let process_manager = Arc::new(process_manager);
+
+    let repo_arc: Arc<dyn ControllerRepo> = Arc::new(controller_repo);
     let tauri_state = State::new(
-        Arc::new(controller_repo.clone()),
+        repo_arc.clone(),
         filesystem.clone(),
-        Arc::new(process_manager),
+        process_manager.clone(),
     );
-    let controller_state = ControllerState::new(Arc::new(controller_repo), filesystem);
+    let controller_state = ControllerState::new(repo_arc.clone(), filesystem);
     // wrapped just so the the closure can take ownership of it multiple times
     let wrapped_controller_state = Arc::new(Mutex::new(controller_state));
 
     tauri::Builder::default()
-        .setup(|_app| {
+        .setup(move |_app| {
             spawn_controller_server(wrapped_controller_state, CONTROLLER_PORT);
+            let _ = spawn_enabled_interfaces(&repo_arc, &process_manager);
             Ok(())
         })
         .manage(tauri_state)

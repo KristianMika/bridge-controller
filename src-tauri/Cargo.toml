@@ -27,6 +27,8 @@ hex = "0.4.3"
 home = "0.5.5"
 dashmap = "5.5.3"
 thiserror = "1.0.50"
+strum = "0.25.0"
+strum_macros = "0.25.0"
 
 # Controller
 actix-web = "4"
