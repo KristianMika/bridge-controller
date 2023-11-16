@@ -67,4 +67,18 @@ impl ProcessManager {
     pub(crate) fn is_process_running(&self, interface: &CreatableInterface) -> bool {
         self.processes.contains_key(interface)
     }
+
+    pub(crate) fn terminate_all_processes(&self) -> Result<(), ProcessManagerError> {
+        self.processes
+            .iter()
+            .map(|entry| self.kill_process(entry.key()))
+            .find(|result| result.is_err())
+            .unwrap_or(Ok(()))
+    }
+}
+
+impl Drop for ProcessManager {
+    fn drop(&mut self) {
+        let _ = self.terminate_all_processes();
+    }
 }

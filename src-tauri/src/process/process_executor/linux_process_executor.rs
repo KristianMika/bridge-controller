@@ -70,13 +70,13 @@ impl ProcessExecutor for LinuxProcessExecutor {
             .output()?
             .status;
 
+        process.kill()?;
+        process.wait()?;
+
         if !usbip_dettach_status.success() {
             error!("usbip dettach failed, returned: {usbip_dettach_status}");
             return Err(ProcessManagerError::InterfaceEmulationError);
         }
-
-        process.kill()?;
-        process.wait()?;
         Ok(())
     }
 

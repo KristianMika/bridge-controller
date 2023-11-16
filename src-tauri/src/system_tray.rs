@@ -5,6 +5,8 @@ use tauri::{
 };
 use tauri_plugin_positioner::{Position, WindowExt};
 
+use crate::state::State;
+
 /// Creates a system tray menu with options `show`, `hide`, and `quit`
 pub(crate) fn create_tray_menu() -> SystemTrayMenu {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit").accelerator("Cmd+Q");
@@ -23,6 +25,12 @@ pub(crate) fn system_tray_event_handler(app: &AppHandle, event: SystemTrayEvent)
     if let SystemTrayEvent::MenuItemClick { id, .. } = &event {
         match id.as_str() {
             "quit" => {
+                let state: tauri::State<State> = app.state();
+                // TODO: a more thorough investigation of why tauri doesn't drop
+                // its managed state is needed
+                if let Err(err) = state.get_process_manager().terminate_all_processes() {
+                    error!("Couldn't terminate all processes: {:?}", err);
+                }
                 app.exit(0);
             }
             "hide" => {
