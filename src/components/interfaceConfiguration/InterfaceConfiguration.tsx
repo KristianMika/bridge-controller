@@ -144,8 +144,10 @@ const InterfaceConfiguration: React.FC<IInterfaceConfiguration> = (props) => {
     setInterfaceConfiguration(props.interfaceType, tool, formData)
       .then(() => toast.success("Configuration saved"))
       .catch(() => toast.error("Failed to save configuration"));
+    if (pastFormData.isEnabled != formData.isEnabled) {
+      toggleInterface(props.interfaceType, formData.isEnabled);
+    }
     setPastFormData(formData);
-    toggleInterface(props.interfaceType, formData.isEnabled);
   };
 
   const resolveGroupName = (groupPubkey: string): IOption | null => {
@@ -311,11 +313,12 @@ const toggleInterface = (
     return;
   }
   const creatableInterface = interfaceType as CreatableInterface;
-  if (isEnabled) {
-    spawnInterfaceProcess(creatableInterface);
-  } else {
-    killInterfaceProcess(creatableInterface);
-  }
+  let toggleFunction = isEnabled ? spawnInterfaceProcess : killInterfaceProcess;
+  toast.promise(toggleFunction(creatableInterface), {
+    pending: "Toggling interface process...",
+    success: "Interface process toggled successfully",
+    error: "Could not toggle interface process",
+  });
 };
 
 const isCreatableInterface = (

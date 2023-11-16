@@ -147,13 +147,13 @@ export function getConfiguredTools(cryptographicInterface: CryptographicInterfac
     return invoke()<(string | null)[]>("get_configured_tools", { cryptographicInterface })
 }
 
-export type CryptographicInterface = "pcsc" | "cryptoki" | "webauthn"
-/**
- * Represents an interface that a process can be spawned for.
- */
-export type CreatableInterface = "pcsc" | "webauthn"
 /**
  * Interface configuration used within the front-end
  */
 export type FrontEndInterfaceConfiguration = { isEnabled: boolean; communicatorHostname: string; selectedGroup: string }
 export type Group = { name: string; group_id: string }
+export type CryptographicInterface = "pcsc" | "cryptoki" | "webauthn"
+/**
+ * Represents an interface that a process can be spawned for.
+ */
+export type CreatableInterface = "pcsc" | "webauthn"
