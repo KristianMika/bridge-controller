@@ -42,7 +42,7 @@ const MultiToolInterfaceConfiguration: React.FC<
       // it may not be present in clean DB, but we don't want to init the db
       // with dummy values
       let anyTool: ITool = { displayName: "Any", tool: null };
-      mappedTools.push(anyTool);
+      mappedTools = [anyTool, ...mappedTools];
     }
     let tool = mappedTools[0] as ITool;
     setSelectedTool(tool);
