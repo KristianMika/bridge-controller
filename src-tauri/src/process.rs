@@ -16,6 +16,7 @@ pub(crate) mod process_manager;
 ///
 /// * `repo` - The controller repository
 /// * `process_manager` - The process manager
+#[allow(dead_code)]
 pub(crate) fn spawn_enabled_interfaces(
     repo: &Arc<dyn ControllerRepo>,
     process_manager: &ProcessManager,

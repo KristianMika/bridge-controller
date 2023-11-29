@@ -29,7 +29,6 @@ use controller::{
 use env_logger::Target;
 use filesystem::FileSystem;
 use log::info;
-use process::spawn_enabled_interfaces;
 #[cfg(debug_assertions)]
 use specta::{collect_types, ts::TsExportError};
 use state::State;
@@ -150,7 +149,7 @@ fn main() {
     tauri::Builder::default()
         .setup(move |_app| {
             spawn_controller_server(wrapped_controller_state, CONTROLLER_PORT);
-            let _ = spawn_enabled_interfaces(&repo_arc, &process_manager);
+            // let _ = spawn_enabled_interfaces(&repo_arc, &process_manager);
             Ok(())
         })
         .manage(tauri_state)
