@@ -53,12 +53,11 @@ const App = () => {
         {
           path: "pcsc",
           element: (
-            <InterfaceConfiguration
+            <MultiToolInterfaceConfiguration
               key="pcsc"
               displayName="PC/SC"
               canBeDisabled={true}
               interfaceType={"pcsc"}
-              tool={anyTool}
             />
           ),
         },
