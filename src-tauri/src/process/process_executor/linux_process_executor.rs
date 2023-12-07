@@ -46,10 +46,14 @@ impl ProcessExecutor for LinuxProcessExecutor {
     }
 
     fn create_pcsc_process(&self) -> Result<Child, ProcessManagerError> {
-        let pcsc_child = Command::new("sh")
-            .arg("vicc")
-            .arg("-t")
-            .arg("meesign")
+        let _ = Command::new("bash")
+            .arg("-c")
+            .arg("timeout 3 sudo systemctl restart pcscd")
+            .output()?
+            .status;
+        let pcsc_child = Command::new("bash")
+            .arg("-c")
+            .arg("vicc -t meesign")
             .spawn()?;
         debug!(
             "PC/SC process has been spawned with PID {}",
