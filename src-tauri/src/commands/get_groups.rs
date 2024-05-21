@@ -6,7 +6,7 @@ use tonic::transport::{Certificate, Channel, ClientTlsConfig};
 
 use crate::{
     group::Group,
-    proto::{mpc_client::MpcClient, Group as ProtoGroup, GroupsRequest, KeyType},
+    proto::{mee_sign_client::MeeSignClient, Group as ProtoGroup, GroupsRequest, KeyType},
     state::State,
 };
 
@@ -73,7 +73,7 @@ async fn get_authentication_groups(
         .tls_config(client_tls_config)?
         .connect()
         .await?;
-    let mut client = MpcClient::new(channel);
+    let mut client = MeeSignClient::new(channel);
     let request = tonic::Request::new(GroupsRequest { device_id: None });
 
     let response = client.get_groups(request).await?;

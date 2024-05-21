@@ -1,7 +1,7 @@
 use std::{error::Error, path::Path};
 
 static PROTO_INPUT_DIRECTORY: &str = "proto";
-static PROTO_INPUT_FILE: &str = "mpc.proto";
+static PROTO_INPUT_FILE: &str = "meesign.proto";
 
 fn main() {
     compile_protofiles(PROTO_INPUT_DIRECTORY, PROTO_INPUT_FILE)
