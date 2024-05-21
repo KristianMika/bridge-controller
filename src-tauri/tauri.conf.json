@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "bridge-controller",
-    "version": "0.1.3"
+    "version": "0.2.0"
   },
   "tauri": {
     "allowlist": {
@@ -37,17 +37,17 @@
       "active": false
     },
     "windows": [
-        {
-          "fullscreen": false,
-          "height": 400,
-          "resizable": false,
-          "title": "mpc-bridge",
-          "width": 550,
-          "visible": false,
-          "hiddenTitle": true,
-          "decorations": false,
-          "transparent": false
-        }
+      {
+        "fullscreen": false,
+        "height": 400,
+        "resizable": false,
+        "title": "mpc-bridge",
+        "width": 550,
+        "visible": false,
+        "hiddenTitle": true,
+        "decorations": false,
+        "transparent": false
+      }
     ],
     "systemTray": {
       "iconPath": "icons/icon.png",
