@@ -16,7 +16,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install tauri dependencies
         if: ${{ matrix.target == 'Linux' }}
@@ -34,12 +34,12 @@ jobs:
             librsvg2-dev
 
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
 
       - name: Install Protoc
-        uses: arduino/setup-protoc@v2
+        uses: arduino/setup-protoc@v3
 
       - name: Run clippy
         if: ${{ matrix.target == 'Linux' }}
@@ -53,7 +53,7 @@ jobs:
       # TODO: run front-end tests
 
       - name: Install node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: latest
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: Upload app image
         if: ${{ matrix.target == 'Linux' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bridge-controller-appimage
           path: src-tauri/target/release/bundle/appimage/bridge-controller_*_amd64.AppImage
@@ -73,7 +73,7 @@ jobs:
 
       - name: Upload Debian package
         if: ${{ matrix.target == 'Linux' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bridge-controller-deb
           path: src-tauri/target/release/bundle/deb/bridge-controller_*_amd64.deb
@@ -81,7 +81,7 @@ jobs:
 
       - name: Upload Windows msi installer
         if: ${{ matrix.target == 'Windows' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bridge-controller-msi
           path: src-tauri\target\release\bundle\msi\bridge-controller_*_x64_en-US.msi
@@ -89,7 +89,7 @@ jobs:
 
       - name: Upload Windows exe binary
         if: ${{ matrix.target == 'Windows' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bridge-controller-exe
           path: src-tauri\target\release\bundle\nsis\bridge-controller_*_x64-setup.exe
@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Debian package
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bridge-controller-deb
           path: .
