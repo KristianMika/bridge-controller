@@ -8,14 +8,17 @@
         "dockerfile": "Dockerfile",
         "args": {}
     },
-    "settings": {},
-    "extensions": [
-        "rust-lang.rust-analyzer",
-        "tauri-apps.tauri-vscode",
-        "serayuzgur.crates",
-        "usernamehw.errorlens",
-        "dsznajder.es7-react-js-snippets"
-    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer",
+                "tauri-apps.tauri-vscode",
+                "serayuzgur.crates",
+                "usernamehw.errorlens",
+                "dsznajder.es7-react-js-snippets"
+            ]
+        }
+    },
     "postCreateCommand": "npm install",
     "containerEnv": {
         "DISPLAY": "unix:0"
